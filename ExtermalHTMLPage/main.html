@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>API Communication Test</title>
+    </head>
+    <body>
+        <div id="result"></div>
+        <p>is running...</p>
+        <script>
+            async function fetchData() {
+                try {
+                    const response = await fetch('localhost:9999/api/HelloWorld/greet');
+                    const data = await response.text();
+                    document.getElementById("result").innerText = data;
+                } catch (error) {
+                    console.error('Error fetching data:', error)
+                }
+            }
+
+            window.onload = fetchData;
+
+
+        </script>
+
+    </body>
+</html>
