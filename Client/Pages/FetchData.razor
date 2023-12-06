@@ -40,11 +40,14 @@ else
 }
 
 @code {
-    [Inject] IRestInterop restInterop { get; set; } = default; 
+    [Inject] IRestInteropFactory RestInteropFactory { get; set; } = default!; 
     private WeatherForecast[]? forecasts;
+    private IRestInterop _restInterop { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("api/WeatherForecast");
+        _restInterop = RestInteropFactory.CreateRestInterop("api/WeatherForecast");
+        //forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("api/WeatherForecast");
+        forecasts = await _restInterop.GetAsync<WeatherForecast[]>("");
     }
 }
