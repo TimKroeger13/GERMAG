@@ -47,7 +47,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         _restInterop = RestInteropFactory.CreateRestInterop("api/WeatherForecast");
-        //forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("api/WeatherForecast");
-        forecasts = await _restInterop.GetAsync<WeatherForecast[]>("");
+        forecasts = await _restInterop.GetAsync<WeatherForecast[]>("sampledata");
     }
 }

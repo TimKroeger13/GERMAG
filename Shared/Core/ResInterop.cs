@@ -54,7 +54,7 @@ public class RestInterop : IRestInterop
     {
         if (statusCode == HttpStatusCode.Unauthorized || statusCode == HttpStatusCode.Forbidden)
         {
-            await _logger.LogError("Rechte sind nicht ausreichend für die Aktion.");
+            await _logger.LogError("Rights are not sufficient for the action");
         }
     }
 
