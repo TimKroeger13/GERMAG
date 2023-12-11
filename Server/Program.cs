@@ -10,7 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseNpgsql(,npg =>
+    options.UseNpgsql(npg =>
     {
         npg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
     });
