@@ -9,7 +9,7 @@ namespace GERMAG.Server.Controllers
         [HttpGet("greet")]
         public string Get()
         {
-            return "Hello";
+            return "Test String";
         }
     }
 }

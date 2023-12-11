@@ -1,4 +1,6 @@
 ﻿@page "/fetchdata"
+@using GERMAG.Client.Services
+@using GERMAG.DataModel
 @using GERMAG.Shared
 @using GERMAG.Client.Core
 @using GERMAG.Shared.Core
@@ -35,18 +37,30 @@ else
                     <td>@forecast.Summary</td>
                 </tr>
             }
+            @foreach (var model in _geoModels)
+            {
+                <tr>
+                    <td>@model.LastPing?.ToShortDateString()</td>
+                    <td>@model.Getrequest</td>
+                    <td>@model.LastPing</td>
+                    <td>@model.Id</td>
+                </tr>
+            }
         </tbody>
     </table>
 }
 
 @code {
-    [Inject] IRestInteropFactory RestInteropFactory { get; set; } = default!; 
+    [Inject] IRestInteropFactory RestInteropFactory { get; set; } = default!;
+    [Inject] IGeothermalParameterService ParameterService { get; set; } = default!;
     private WeatherForecast[]? forecasts;
     private IRestInterop _restInterop { get; set; } = default!;
+    private IEnumerable<GeothermalParameterModel> _geoModels = [];
 
     protected override async Task OnInitializedAsync()
     {
         _restInterop = RestInteropFactory.CreateRestInterop("api/WeatherForecast");
         forecasts = await _restInterop.GetAsync<WeatherForecast[]>("sampledata");
+        _geoModels = await ParameterService.GetParameters() ?? [];
     }
 }
