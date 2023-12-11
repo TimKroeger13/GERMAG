@@ -1,4 +1,5 @@
 using GERMAG.DataModel.Database;
+using GERMAG.Server.Core.Configurations;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,9 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+var options = builder.Configuration.GetSection(ConfigurationOptions.Configuration).Get<ConfigurationOptions>()
+    ?? throw new Exception("Configuration could not be found");
+IEnviromentConfiguration configuration = builder.Environment.IsDevelopment() ?
+    new DebugConfiguration(options) : new ReleaseConfiguration(options);
+builder.Services.AddSingleton(configuration);
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseNpgsql(npg =>
+    options.UseNpgsql(configuration.DatabaseConnection, npg =>
     {
         npg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
     });
