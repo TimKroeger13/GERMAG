@@ -6,8 +6,6 @@
 @using GERMAG.Shared.Core
 @inject HttpClient Http
 
-<PageTitle>Weather forecast</PageTitle>
-
 <h1>Weather forecast</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
@@ -24,6 +22,7 @@ else
                 <th>Date</th>
                 <th>Temp. (C)</th>
                 <th>Temp. (F)</th>
+                <th>Temp. (F*Pi)</th>
                 <th>Summary</th>
             </tr>
         </thead>
@@ -34,6 +33,7 @@ else
                     <td>@forecast.Date.ToShortDateString()</td>
                     <td>@forecast.TemperatureC</td>
                     <td>@forecast.TemperatureF</td>
+                    <td>@(forecast.TemperatureF * Math.PI)</td>
                     <td>@forecast.Summary</td>
                 </tr>
             }
@@ -43,6 +43,7 @@ else
                     <td>@model.LastPing?.ToShortDateString()</td>
                     <td>@model.Getrequest</td>
                     <td>@model.LastPing</td>
+                    <td>@model.Srid</td>
                     <td>@model.Id</td>
                 </tr>
             }
@@ -64,3 +65,4 @@ else
         _geoModels = await ParameterService.GetParameters() ?? [];
     }
 }
+

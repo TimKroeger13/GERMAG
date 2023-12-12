@@ -4,7 +4,7 @@ namespace GERMAG.DataModel.Database;
 
 public partial class DataContext : DbContext
 {
-    public virtual DbSet<GeothermalParameter> GeothermalParameters { get; set; }
+    public virtual DbSet<GeothermalParameter> GeothermalParameter { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

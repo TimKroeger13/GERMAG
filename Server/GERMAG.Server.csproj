@@ -25,5 +25,9 @@
     <ProjectReference Include="..\Shared\GERMAG.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataPulling\CheckingData\" />
+  </ItemGroup>
+
 
 </Project>

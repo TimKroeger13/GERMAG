@@ -2,7 +2,7 @@
 
 public partial class GeothermalParameter
 {
-    public GeothermalParameter(GeothermalParameter model)
+    public GeothermalParameter(GeothermalParameterModel model)
     {
         Getrequest = model.Getrequest;
         Srid = model.Srid;
@@ -12,6 +12,13 @@ public partial class GeothermalParameter
 
     public GeothermalParameterModel Model()
     {
-        return new() { Srid = Srid, LastUpdate = LastUpdate, LastPing = LastPing, Getrequest = Getrequest, Id = Id };
+        return new()
+        {
+            Srid = Srid,
+            LastUpdate = LastUpdate,
+            Getrequest = Getrequest,
+            Id = Id,
+            LastPing = LastPing
+        };
     }
 }

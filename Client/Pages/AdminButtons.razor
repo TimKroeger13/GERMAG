@@ -1,0 +1,18 @@
+﻿@page "/admin"
+
+<PageTitle>Admin buttons</PageTitle>
+
+<h1>Buttons</h1>
+
+<p role="status">Is updating: @IsUpdateing</p>
+
+<button class="btn btn-primary" @onclick="FetchAllDataRequest">Fetch Data from Fisbroker</button>
+
+@code {
+    private string @IsUpdateing = "Not checked";
+
+    private void FetchAllDataRequest()
+    {
+        Console.WriteLine("Function clicked");
+    }
+}

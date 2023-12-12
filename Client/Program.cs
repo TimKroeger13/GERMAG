@@ -11,7 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddTransient<IErrorLogger, JsInterop>();
-builder.Services.AddTransient<GeothermalParameterService, GeothermalParameterService>();
+builder.Services.AddTransient<IGeothermalParameterService, GeothermalParameterService>();
 builder.Services.AddTransient<IRestInteropFactory, RestInteropFactory>();
 
 await builder.Build().RunAsync();

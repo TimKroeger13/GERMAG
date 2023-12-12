@@ -2,7 +2,7 @@
 
 public partial class GeothermalParameter
 {
-    public GeothermalParameter(GeothermalParameterModel model)
+    public GeothermalParameter()
     {
     }
 

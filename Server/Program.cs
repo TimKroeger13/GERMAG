@@ -1,5 +1,6 @@
 using GERMAG.DataModel.Database;
 using GERMAG.Server.Core.Configurations;
+using GERMAG.Server.DataPulling;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
