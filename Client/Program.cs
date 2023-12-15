@@ -13,5 +13,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddTransient<IErrorLogger, JsInterop>();
 builder.Services.AddTransient<IGeothermalParameterService, GeothermalParameterService>();
 builder.Services.AddTransient<IRestInteropFactory, RestInteropFactory>();
+builder.Services.AddTransient<IUpdateDatabaseService, UpdateDatabaseService>();
 
 await builder.Build().RunAsync();

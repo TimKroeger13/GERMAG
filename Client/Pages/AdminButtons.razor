@@ -1,4 +1,5 @@
 ﻿@page "/admin"
+@using GERMAG.Client.Services
 
 <PageTitle>Admin buttons</PageTitle>
 
@@ -9,10 +10,14 @@
 <button class="btn btn-primary" @onclick="FetchAllDataRequest">Fetch Data from Fisbroker</button>
 
 @code {
+    [Inject] IUpdateDatabaseService UpdateDatabaseService { get; set; } = default!;
+
     private string @IsUpdateing = "Not checked";
 
-    private void FetchAllDataRequest()
+    private async Task FetchAllDataRequest()
     {
         Console.WriteLine("Function clicked");
+
+        IsUpdateing = await UpdateDatabaseService.greetFunction();
     }
 }
