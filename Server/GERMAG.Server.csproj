@@ -17,7 +17,8 @@
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
-	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" /> 
+	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+	  <PackageReference Include="Npgsql.NetTopologySuite" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

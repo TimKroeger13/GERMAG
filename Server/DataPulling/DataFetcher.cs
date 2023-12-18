@@ -1,4 +1,7 @@
-﻿namespace GERMAG.Server.DataPulling;
+﻿using System.Xml.Linq;
+using System;
+
+namespace GERMAG.Server.DataPulling;
 
 public interface IDataFetcher
 {
@@ -16,12 +19,37 @@ public class DataFetcher(IDatabaseUpdater databaseUpdater) : IDataFetcher
         // for (int i = 0; i < x; i++) {}
 
         // Example URL
-        var currentURL = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100";
+        var url = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100";
         
-        var connectionFeedback = _databaseUpdater.updateDatabase(currentURL, "Entzugsleistung_100M_2400HP");
 
-        Console.WriteLine(connectionFeedback);
+        try
+        {
+            XDocument xml = XDocument.Load(url);
 
+            // <- Save downloaded Data in a Database here
+
+
+            // For testing, before a DB is connected: Saving of the GML 
+            var savePath = Directory.GetCurrentDirectory() + "..\\..\\Resources\\Test.gml";
+            Directory.CreateDirectory(Path.GetDirectoryName(savePath) ?? "");
+
+            if (savePath != null)
+            {
+                xml.Save(savePath);
+            }
+            else
+            {
+                // Do Something
+            }
+
+
+           
+        }
+        catch (Exception)
+        {
+        }
+
+        _databaseUpdater.updateDatabase();
 
     }
 }
