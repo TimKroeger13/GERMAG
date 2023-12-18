@@ -15,6 +15,8 @@ var options = builder.Configuration.GetSection(ConfigurationOptions.Configuratio
 IEnviromentConfiguration configuration = builder.Environment.IsDevelopment() ?
     new DebugConfiguration(options) : new ReleaseConfiguration(options);
 builder.Services.AddSingleton(configuration);
+builder.Services.AddTransient<IDataFetcher, DataFetcher>();
+builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(configuration.DatabaseConnection, npg =>

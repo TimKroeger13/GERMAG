@@ -19,5 +19,6 @@
         Console.WriteLine("Function clicked");
 
         IsUpdateing = await UpdateDatabaseService.greetFunction();
+        await UpdateDatabaseService.checkForUpdates();   
     }
 }
