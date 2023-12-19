@@ -43,12 +43,11 @@ last_update TIMESTAMP,
 last_ping TIMESTAMP
 );
 
-CREATE TABLE public.geo_data
+CREATE TABLE geo_data
 (
-    id integer NOT NULL DEFAULT nextval('geothermal_parameter_id_seq'::regclass),
+    id SERIAL PRIMARY KEY NOT NULL,
     parameter_key integer NOT NULL,
     geom geometry,
-    PRIMARY KEY (id),
     CONSTRAINT parameter_key FOREIGN KEY (parameter_key)
         REFERENCES public.geothermal_parameter (id)
 );
