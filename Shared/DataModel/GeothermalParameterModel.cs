@@ -1,4 +1,6 @@
 ﻿namespace GERMAG.DataModel;
+
+using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 
 public class GeothermalParameterModel
@@ -10,6 +12,8 @@ public class GeothermalParameterModel
 
     [Range(0, int.MaxValue)]
     public int? Srid { get; set; }
+
+    public Geometry? Geometry { get; set; }
 
     public DateTime? LastUpdate { get; set; }
 

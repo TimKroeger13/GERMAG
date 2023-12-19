@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using System;
+using GERMAG.DataModel.Database;
 
 namespace GERMAG.Server.DataPulling;
 
@@ -8,7 +9,7 @@ public interface IDataFetcher
     void fetchAllData();
 }
 
-public class DataFetcher(IDatabaseUpdater databaseUpdater) : IDataFetcher
+public class DataFetcher(IDatabaseUpdater databaseUpdater, DataContext context) : IDataFetcher
 {
     private readonly IDatabaseUpdater _databaseUpdater = databaseUpdater;
 
