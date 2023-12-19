@@ -1,20 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 
 namespace GERMAG.DataModel.Database;
 
 public partial class DataContext : DbContext
 {
+    [Obsolete]
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
         Initialize();
     }
 
+    [Obsolete]
     private static void Initialize()
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        //Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<DeliveryType>("delivery_type");
-#pragma warning restore CS0618 // Type or member is obsolete
+        Npgsql.NpgsqlConnection.GlobalTypeMapper.UseNetTopologySuite();
     }
 
     private partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
