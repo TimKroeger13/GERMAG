@@ -9,7 +9,7 @@ public interface IDataFetcher
     void fetchAllData();
 }
 
-public class DataFetcher(IDatabaseUpdater databaseUpdater, DataContext context) : IDataFetcher
+public class DataFetcher(IDatabaseUpdater databaseUpdater) : IDataFetcher
 {
     private readonly IDatabaseUpdater _databaseUpdater = databaseUpdater;
 
@@ -21,36 +21,19 @@ public class DataFetcher(IDatabaseUpdater databaseUpdater, DataContext context) 
 
         // Example URL
         var url = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100";
+
+
+        XDocument xml = XDocument.Load(url);
+
+        // <- Save downloaded Data in a Database here
+
+
+        // For testing, before a DB is connected: Saving of the GML 
+        var savePath = Directory.GetCurrentDirectory() + "..\\..\\Resources\\Test.gml";
+        Directory.CreateDirectory(Path.GetDirectoryName(savePath) ?? "");
+
         
-
-        try
-        {
-            XDocument xml = XDocument.Load(url);
-
-            // <- Save downloaded Data in a Database here
-
-
-            // For testing, before a DB is connected: Saving of the GML 
-            var savePath = Directory.GetCurrentDirectory() + "..\\..\\Resources\\Test.gml";
-            Directory.CreateDirectory(Path.GetDirectoryName(savePath) ?? "");
-
-            if (savePath != null)
-            {
-                xml.Save(savePath);
-            }
-            else
-            {
-                // Do Something
-            }
-
-
-           
-        }
-        catch (Exception)
-        {
-        }
-
-        _databaseUpdater.updateDatabase();
+        _databaseUpdater.updateDatabase(xml, savePath);
 
     }
 }
