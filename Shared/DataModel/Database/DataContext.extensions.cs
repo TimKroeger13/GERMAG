@@ -22,7 +22,7 @@ public partial class DataContext : DbContext
     {
         modelBuilder.Entity<GeothermalParameter>(entity =>
         {
-            entity.Property(p => p.Geometry).HasColumnName("geometry").HasColumnName("geom");
+            entity.Property(p => p.Geom).HasColumnName("geometry").HasColumnName("geom");
         });
     }
 }
