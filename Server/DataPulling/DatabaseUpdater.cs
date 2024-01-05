@@ -23,10 +23,6 @@ namespace GERMAG.Server.DataPulling
 
             context.SaveChanges();
 
-            //var xmlString = xml.ToString();
-            //var envelope = Envelope.Parse(xmlString);
-            //context.GeothermalParameter.First().Geom = Geometry.DefaultFactory.ToGeometry(envelope);
-            //context.SaveChanges();
         }
 
         [GeneratedRegex("EPSG:")]
