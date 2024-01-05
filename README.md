@@ -1,7 +1,7 @@
 <h2>Database scaffolding:</h2>
 
 ````
-Scaffold-DbContext "Host=10.140.24.238:5433;Database=postgres;Username=postgres;Password=password" Npgsql.EntityFrameworkCore.PostgreSQL -NoOnConfiguring -OutputDir ../Shared/DataModel/Database -Force -Context DataContext -Namespace GERMAG.DataModel.Database -StartupProject GERMAG.Server -Project GERMAG.Shared
+Scaffold-DbContext "Host=192.168.1.25:5433;Database=postgres;Username=postgres;Password=password" Npgsql.EntityFrameworkCore.PostgreSQL -NoOnConfiguring -OutputDir ../Shared/DataModel/Database -Force -Context DataContext -Namespace GERMAG.DataModel.Database -StartupProject GERMAG.Server -Project GERMAG.Shared
 ````
 <h2>Database creation sql:</h2>
 
@@ -43,6 +43,13 @@ last_update TIMESTAMP,
 last_ping TIMESTAMP
 );
 
+
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service, srid)
+    VALUES ('thermal_con_100','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json','restrictive','12345');
+
+
+--
+
 CREATE TABLE geo_data
 (
     id SERIAL PRIMARY KEY NOT NULL,
@@ -51,4 +58,5 @@ CREATE TABLE geo_data
     CONSTRAINT parameter_key FOREIGN KEY (parameter_key)
         REFERENCES public.geothermal_parameter (id)
 );
+
 ````
