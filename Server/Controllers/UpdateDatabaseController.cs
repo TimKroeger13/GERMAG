@@ -10,14 +10,14 @@ namespace GERMAG.Server.Controllers;
 public class UpdateDatabaseController(IDataFetcher fetchData) : Controller
 {
     [HttpGet("greet")]
-    public string greetFunction()
+    public string GreetFunction()
     {
         return "Database Update command was run successfully! But the function is not fully impelmented yet.";
     }
 
     [HttpGet("checkForUpdates")]
-    public void updateDatabase()
+    public async Task UpdateDatabase()
     {
-        fetchData.fetchAllData();
+        await fetchData.FetchAllData();
     }
 }
