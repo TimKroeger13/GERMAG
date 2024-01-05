@@ -1,7 +1,6 @@
 using GERMAG.DataModel.Database;
 using GERMAG.Server.Core.Configurations;
 using GERMAG.Server.DataPulling;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +14,7 @@ var options = builder.Configuration.GetSection(ConfigurationOptions.Configuratio
 IEnviromentConfiguration configuration = builder.Environment.IsDevelopment() ?
     new DebugConfiguration(options) : new ReleaseConfiguration(options);
 builder.Services.AddSingleton(configuration);
+builder.Services.AddTransient<HttpClient>();
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
 builder.Services.AddDbContext<DataContext>(options =>
@@ -45,7 +45,6 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 
 app.MapRazorPages();
 app.MapControllers();

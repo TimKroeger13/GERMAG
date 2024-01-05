@@ -1,6 +1,4 @@
-﻿using NetTopologySuite.Geometries;
-
-namespace GERMAG.DataModel.Database;
+﻿namespace GERMAG.DataModel.Database;
 
 public partial class GeothermalParameter
 {
@@ -17,7 +15,7 @@ public partial class GeothermalParameter
         return new()
         {
             Srid = Srid,
-            Geometry = Geom,
+            //Geometry = Geom,
             LastUpdate = LastUpdate,
             Getrequest = Getrequest,
             Id = Id,

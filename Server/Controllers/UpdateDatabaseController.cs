@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using GERMAG.Shared;
-using GERMAG.DataModel.Database;
-using GERMAG.DataModel;
+﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling;
+using Microsoft.AspNetCore.Mvc;
+
 namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UpdateDatabaseController(IDataFetcher fetchData) : Controller
+public class UpdateDatabaseController(IDataFetcher fetchData, DataContext context) : Controller
 {
     [HttpGet("greet")]
     public string greetFunction()
@@ -16,8 +15,9 @@ public class UpdateDatabaseController(IDataFetcher fetchData) : Controller
     }
 
     [HttpGet("checkForUpdates")]
-    public void updateDatabase()
+    public async Task UpdateDatabase()
     {
-        fetchData.fetchAllData();
+        var test = context.GeothermalParameter.First();
+        await fetchData.FetchAllData();
     }
 }

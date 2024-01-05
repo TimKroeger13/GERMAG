@@ -1,16 +1,11 @@
-﻿using System.Xml.Linq;
-using System;
-using GERMAG.DataModel.Database;
+﻿using GERMAG.DataModel.Database;
 using System.Text.Json;
-using GERMAG.Shared;
-using System.Net;
-using Microsoft.EntityFrameworkCore.Storage.Json;
 
 namespace GERMAG.Server.DataPulling;
 
 public interface IDataFetcher
 {
-    void fetchAllData();
+    Task FetchAllData();
 }
 
 public class Crs
@@ -49,36 +44,31 @@ public class Root
     public Crs? crs { get; set; }
 }
 
-public class DataFetcher(IDatabaseUpdater databaseUpdater, DataContext context) : IDataFetcher
+public class DataFetcher(IDatabaseUpdater databaseUpdater, DataContext context, HttpClient client) : IDataFetcher
 {
-    private readonly IDatabaseUpdater _databaseUpdater = databaseUpdater;
-
-    public async void fetchAllData()
+    public async Task FetchAllData()
     {
-        // <- Add reference Database connection here
-        // <- Feed all get request in noted in the database by a loop
-        // for (int i = 0; i < x; i++) {}
-
-        // Example URL
         var url = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json";
 
-        HttpClient client = new();
+        using var transaction = context.Database.BeginTransaction();
         string SeriallizedInputJson = await client.GetStringAsync(url);
-
-
-        //context.GeothermalParameter.First().Srid = 9999;
-
+        var test = context.GeothermalParameter.OrderBy(p => p.Id).Last();
+        test.Id = 0;
+        test.Srid = Random.Shared.Next(1, int.MaxValue);
+        context.GeothermalParameter.Add(test);
+        context.SaveChanges();
         var hash = HashString(SeriallizedInputJson);
 
+        context.GeothermalParameter.First(a => a.Id == 1).Srid = 12345;
+        context.SaveChanges();
 
         //Check if data is up to date
         //Generate and Check for hash
-        string name1 = "Theodore Onyejiaku";
 
-        Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson);
+        Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
-        _databaseUpdater.updateDatabase(jsonData_Root);
-
+        databaseUpdater.updateDatabase(jsonData_Root);
+        transaction.Commit();
     }
 
     private int HashString(string text)
