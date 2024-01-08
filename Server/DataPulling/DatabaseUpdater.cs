@@ -19,9 +19,24 @@ namespace GERMAG.Server.DataPulling
             var espgString = epsgRegex().Replace(espgStringRaw!, "");
             var espgNumber = Int32.Parse(espgString);
 
+
+            using var transaction = context.Database.BeginTransaction();
+
+
             var x = context.GeothermalParameter.First(gp => gp.Id == 1);
+            //var testlist = context.GeothermalParameter.Where(gp => gp.Id == 1); <- Get list of all Paremeters
+
+            // <- Converting Chars to list to later execute them
+            //var test = context.GeothermalParameter.ToList().Where(gp => gp.Id == 1);
+            //var a = test.First().Srid;
+
+            //x.Id = 0;
+            //context.GeothermalParameter.Add(x);
+
+            context.GeothermalParameter.First(gp => gp.Id == 1).Srid = espgNumber;
 
             context.SaveChanges();
+            transaction.Commit();
 
         }
 
