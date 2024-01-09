@@ -4,7 +4,7 @@ namespace GERMAG.DataModel.Database;
 
 public partial class GeothermalParameter
 {
-    //public Geometry? Geometry { get; set; }
+    public Geometry? Geometry { get; set; }
     public GeothermalParameter(GeothermalParameterModel model)
     {
         Getrequest = model.Getrequest;
@@ -18,7 +18,7 @@ public partial class GeothermalParameter
         return new()
         {
             Srid = Srid,
-            //Geometry = Geom,
+            Geometry = Geometry,
             LastUpdate = LastUpdate,
             Getrequest = Getrequest,
             Id = Id,

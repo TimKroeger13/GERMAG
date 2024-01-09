@@ -35,6 +35,8 @@ namespace GERMAG.Server.DataPulling
 
             context.GeothermalParameter.First(gp => gp.Id == 1).Srid = espgNumber;
 
+            //context.GeothermalParameter.First().Geometry = //NetTopologySuite.Geometries.Geometry.DefaultFactory
+               
             context.SaveChanges();
             transaction.Commit();
 

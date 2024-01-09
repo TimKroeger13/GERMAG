@@ -28,12 +28,12 @@ public partial class DataContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ParameterKey).HasColumnName("parameter_key");
-/*
+
             entity.HasOne(d => d.ParameterKeyNavigation).WithMany(p => p.GeoData)
                 .HasForeignKey(d => d.ParameterKey)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("parameter_key");
-*/
+
         });
 
         modelBuilder.Entity<GeothermalParameter>(entity =>
