@@ -17,7 +17,14 @@ builder.Services.AddSingleton(configuration);
 builder.Services.AddTransient<HttpClient>();
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
-builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(configuration.DatabaseConnection, npg => npg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseNpgsql(configuration.DatabaseConnection, npg =>
+    {
+        npg.UseNetTopologySuite();
+        npg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+    });
+});
 
 var app = builder.Build();
 

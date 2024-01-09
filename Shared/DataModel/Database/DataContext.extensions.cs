@@ -14,7 +14,7 @@ public partial class DataContext : DbContext
     private static void Initialize()
     {
 #pragma warning disable CS0618
-        Npgsql.NpgsqlConnection.GlobalTypeMapper.UseNetTopologySuite();
+        //Npgsql.NpgsqlConnection.GlobalTypeMapper.UseNetTopologySuite();
         //Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<DeliveryType>("delivery_type");
 #pragma warning restore CS0618
     }
@@ -24,7 +24,7 @@ public partial class DataContext : DbContext
         
         modelBuilder.Entity<GeothermalParameter>(entity =>
         {
-            entity.Property(p => p.Geometry).HasColumnType("geometry").HasColumnName("geom");
+            //entity.Property(p => p.Geom).HasColumnType("geometry").HasColumnName("geom");
         });
         
     }
