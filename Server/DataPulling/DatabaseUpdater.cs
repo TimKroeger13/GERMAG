@@ -20,7 +20,7 @@ namespace GERMAG.Server.DataPulling
             var espgNumber = Int32.Parse(espgString);
 
 
-            using var transaction = context.Database.BeginTransaction();
+            //using var transaction = context.Database.BeginTransaction();
 
 
             var x = context.GeothermalParameter.First(gp => gp.Id == 1);
@@ -35,10 +35,10 @@ namespace GERMAG.Server.DataPulling
 
             context.GeothermalParameter.First(gp => gp.Id == 1).Srid = espgNumber;
 
-            //context.GeothermalParameter.First().Geometry = //NetTopologySuite.Geometries.Geometry.DefaultFactory
-               
+            //context.GeothermalParameter.First().Geometry = NetTopologySuite.Geometries.Geometry
+                
             context.SaveChanges();
-            transaction.Commit();
+            //transaction.Commit();
 
         }
 
