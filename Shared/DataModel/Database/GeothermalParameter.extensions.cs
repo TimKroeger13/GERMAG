@@ -9,6 +9,7 @@ public partial class GeothermalParameter
     {
         Getrequest = model.Getrequest;
         Srid = model.Srid;
+        Geom = model.Geometry;
         LastUpdate = model.LastUpdate;
         LastPing = model.LastPing;
     }
