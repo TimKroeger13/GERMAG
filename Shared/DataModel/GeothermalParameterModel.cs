@@ -13,8 +13,6 @@ public class GeothermalParameterModel
     [Range(0, int.MaxValue)]
     public int? Srid { get; set; }
 
-    public Geometry? Geometry { get; set; }
-
     public DateTime? LastUpdate { get; set; }
 
     public DateTime? LastPing { get; set; }

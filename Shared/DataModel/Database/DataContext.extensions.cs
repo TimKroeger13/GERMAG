@@ -22,10 +22,10 @@ public partial class DataContext : DbContext
     private partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
         
-        modelBuilder.Entity<GeothermalParameter>(entity =>
-        {
+        //modelBuilder.Entity<GeothermalParameter>(entity =>
+        //{
             //entity.Property(p => p.Geom).HasColumnType("geometry").HasColumnName("geom");
-        });
+        //});
         
     }
 }

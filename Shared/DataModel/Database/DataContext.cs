@@ -20,7 +20,6 @@ public partial class DataContext : DbContext
             .HasPostgresExtension("tiger", "postgis_tiger_geocoder")
             .HasPostgresExtension("topology", "postgis_topology");
 
-        
         modelBuilder.Entity<GeoDatum>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("geo_data_pkey");
@@ -36,7 +35,6 @@ public partial class DataContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("parameter_key");
         });
-        
 
         modelBuilder.Entity<GeothermalParameter>(entity =>
         {
@@ -45,7 +43,6 @@ public partial class DataContext : DbContext
             entity.ToTable("geothermal_parameter");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Geom).HasColumnName("geom");
             entity.Property(e => e.Getrequest).HasColumnName("getrequest");
             entity.Property(e => e.LastPing)
                 .HasColumnType("timestamp without time zone")
