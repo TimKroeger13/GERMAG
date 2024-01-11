@@ -62,7 +62,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
-            var getrequest = allGeothermalParameters[0].Getrequest;
+            var getrequest = allGeothermalParameters[i].Getrequest;
 
             string SeriallizedInputJson = await client.GetStringAsync(getrequest);
 
@@ -70,14 +70,14 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
             var hash = HashString(SeriallizedInputJson);
 
-            context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[0].Id).LastPing = DateTime.Now;
+            context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).LastPing = DateTime.Now;
             context.SaveChanges();
 
             //update Data when not up to date
 
             Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
-            databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[0].Id);
+            databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
 
         }
     }
