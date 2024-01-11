@@ -53,10 +53,14 @@ public class Root
 }
 #pragma warning restore IDE1006 // Naming Styles
 
-public class DataFetcher(IDatabaseUpdater databaseUpdater, HttpClient client) : IDataFetcher
+public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client) : IDataFetcher
 {
     public async Task FetchAllData()
     {
+
+
+
+
         // Example URL
         const string url = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json";
 
@@ -67,7 +71,7 @@ public class DataFetcher(IDatabaseUpdater databaseUpdater, HttpClient client) : 
 
         Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
-        databaseUpdater.UpdateDatabase(jsonData_Root);
+        databaseUpdater.UpdateDatabase(jsonData_Root, 1);
     }
 
     private static int HashString(string text)

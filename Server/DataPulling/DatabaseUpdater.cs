@@ -7,44 +7,59 @@ using NetTopologySuite;
 using NetTopologySuite.Algorithm;
 using GERMAG.DataModel;
 using NetTopologySuite.Operation.Overlay;
+using Microsoft.EntityFrameworkCore;
 
 namespace GERMAG.Server.DataPulling
 {
     public interface IDatabaseUpdater
     {
-        void UpdateDatabase(Root json);
+        void UpdateDatabase(Root json, int ForeignKey);
     }
 
     public partial class DatabaseUpdater(DataContext context) : IDatabaseUpdater
     {
-        public void UpdateDatabase(Root json)
+        public void UpdateDatabase(Root json, int ForeignKey)
         {
             var espgStringRaw = json.crs!.properties!.name;
             var espgString = epsgRegex().Replace(espgStringRaw!, "");
             var espgNumber = Int32.Parse(espgString);
 
-            context.GeothermalParameter.First(gp => gp.Id == 1).Srid = espgNumber;
 
-            for (var i = 0; i < 38; i++)
-            {
-                //foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
-                //{
-                i = 36;
+            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == ForeignKey);
+            context.GeoData.RemoveRange(entriesToRemove);
+            context.SaveChanges();
+            // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 
-                var coordinates = json.features?[i].geometry?.coordinates;
-                //var coordiantes = feature?.geometry?.coordinates;
+            context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
+
+                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+                {
+                var coordinates = feature?.geometry?.coordinates;
 
                 if (coordinates != null)
                 {
                     var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: espgNumber);
-                    var linearRing = geometryFactory.CreateLinearRing(coordinates.SelectMany(c => c).Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
-                    var polygon = geometryFactory.CreatePolygon(linearRing);
+                    var exteriorLinearRing = geometryFactory.CreateLinearRing(coordinates[0].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
+                    var polygon = geometryFactory.CreatePolygon(exteriorLinearRing);
+
+                    if (coordinates.Count > 1)
+                    {
+                        var holes = new List<LinearRing>();
+
+                        for (int k = 1; k < coordinates.Count; k++)
+                        {
+                            var holeLinearRing = geometryFactory.CreateLinearRing(coordinates[k].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
+                            holes.Add(holeLinearRing);
+                         }
+
+                        polygon = geometryFactory.CreatePolygon(exteriorLinearRing, holes.ToArray());
+                    }
 
                     var newGeoDatum = new DataModel.Database.GeoDatum
                     {
                         Id = 0,
                         Geom = polygon,
-                        ParameterKey = 1
+                        ParameterKey = ForeignKey
                     };
                     context.GeoData.Add(newGeoDatum);
                 }
@@ -53,20 +68,6 @@ namespace GERMAG.Server.DataPulling
 
 
 
-
-
-
-            /*
-            var coordinates = json?.features?.FirstOrDefault()?.geometry?.coordinates;
-
-            if (coordinates != null)
-            {
-                var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: espgNumber);
-                var linearRing = geometryFactory.CreateLinearRing(coordinates.SelectMany(c => c).Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
-                var polygon = geometryFactory.CreatePolygon(linearRing);
-                context.GeoData.First(gp => gp.Id == 2).Geom = polygon;
-            }
-            */
 
 
 
