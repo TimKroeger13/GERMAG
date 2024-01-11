@@ -33,7 +33,7 @@ namespace GERMAG.Server.DataPulling
 
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
 
-                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+            foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
                 {
                 var coordinates = feature?.geometry?.coordinates;
 

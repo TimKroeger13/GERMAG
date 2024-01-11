@@ -11,5 +11,6 @@ public partial class GeoDatum
     public int Id { get; set; }
     public int ParameterKey { get; set; }
     public Geometry? Geom { get; set; }
+    public string? Parameter { get; set; }
     public virtual GeothermalParameter ParameterKeyNavigation { get; set; } = null!;
 }

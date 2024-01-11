@@ -28,6 +28,9 @@ public partial class DataContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Geom).HasColumnName("geom");
+            entity.Property(e => e.Parameter)
+                .HasColumnType("json")
+                .HasColumnName("parameter");
             entity.Property(e => e.ParameterKey).HasColumnName("parameter_key");
 
             entity.HasOne(d => d.ParameterKeyNavigation).WithMany(p => p.GeoData)
