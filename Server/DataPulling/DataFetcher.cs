@@ -7,6 +7,7 @@ using System.Net;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using GERMAG.Client.Services;
 using GERMAG.DataModel;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GERMAG.Server.DataPulling;
 
@@ -65,25 +66,20 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
             string SeriallizedInputJson = await client.GetStringAsync(getrequest);
 
+            //Check if Data is up to date
+
             var hash = HashString(SeriallizedInputJson);
+
+            context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[0].Id).LastPing = DateTime.Now;
+            context.SaveChanges();
+
+            //update Data when not up to date
 
             Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
             databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[0].Id);
 
         }
-
-        // Example URL
-        //const string url = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json";
-
-        //string SeriallizedInputJson = await client.GetStringAsync(url);
-
-        //genreate Hash
-        //var hash = HashString(SeriallizedInputJson);
-
-        //Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
-
-        //databaseUpdater.UpdateDatabase(jsonData_Root, 1);
     }
 
     private static int HashString(string text)

@@ -8,6 +8,8 @@ using NetTopologySuite.Algorithm;
 using GERMAG.DataModel;
 using NetTopologySuite.Operation.Overlay;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
+using System.Text.Json;
 
 namespace GERMAG.Server.DataPulling
 {
@@ -60,9 +62,13 @@ namespace GERMAG.Server.DataPulling
                     {
                         Id = 0,
                         Geom = polygon,
-                        ParameterKey = ForeignKey
+                        ParameterKey = ForeignKey,
+                        Parameter = JsonSerializer.Serialize(feature?.properties)   
                     };
                     context.GeoData.Add(newGeoDatum);
+
+                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+
                 }
             }
 
