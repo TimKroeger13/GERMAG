@@ -57,21 +57,33 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 {
     public async Task FetchAllData()
     {
+        var allGeothermalParameters = context.GeothermalParameter.ToList();
 
+        for (int i = 0; i < allGeothermalParameters.Count; i++)
+        {
+            var getrequest = allGeothermalParameters[0].Getrequest;
 
+            string SeriallizedInputJson = await client.GetStringAsync(getrequest);
 
+            var hash = HashString(SeriallizedInputJson);
+
+            Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
+
+            databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[0].Id);
+
+        }
 
         // Example URL
-        const string url = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json";
+        //const string url = "https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json";
 
-        string SeriallizedInputJson = await client.GetStringAsync(url);
+        //string SeriallizedInputJson = await client.GetStringAsync(url);
 
         //genreate Hash
-        var hash = HashString(SeriallizedInputJson);
+        //var hash = HashString(SeriallizedInputJson);
 
-        Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
+        //Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
-        databaseUpdater.UpdateDatabase(jsonData_Root, 1);
+        //databaseUpdater.UpdateDatabase(jsonData_Root, 1);
     }
 
     private static int HashString(string text)

@@ -24,6 +24,7 @@ namespace GERMAG.Server.DataPulling
             var espgString = epsgRegex().Replace(espgStringRaw!, "");
             var espgNumber = Int32.Parse(espgString);
 
+            using var transaction = context.Database.BeginTransaction();
 
             var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == ForeignKey);
             context.GeoData.RemoveRange(entriesToRemove);
@@ -65,25 +66,8 @@ namespace GERMAG.Server.DataPulling
                 }
             }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             context.SaveChanges();
-
-
+            transaction.Commit();
         }
 
         [GeneratedRegex("EPSG:")]
