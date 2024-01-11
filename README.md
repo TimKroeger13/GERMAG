@@ -36,7 +36,6 @@ typeofdata typeofdata,
 area area,
 range range,
 getrequest TEXT,
-geom geometry,
 service service,
 srid INT,
 last_update TIMESTAMP,
@@ -44,8 +43,8 @@ last_ping TIMESTAMP
 );
 
 
-INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service, srid)
-    VALUES ('thermal_con_100','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json','restrictive','12345');
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('thermal_con_100','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json','restrictive');
 
 
 --
@@ -55,8 +54,10 @@ CREATE TABLE geo_data
     id SERIAL PRIMARY KEY NOT NULL,
     parameter_key integer NOT NULL,
     geom geometry,
+    parameter json,
     CONSTRAINT parameter_key FOREIGN KEY (parameter_key)
         REFERENCES public.geothermal_parameter (id)
 );
+
 
 ````
