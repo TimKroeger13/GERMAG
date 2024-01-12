@@ -10,6 +10,7 @@ using NetTopologySuite.Operation.Overlay;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using System.Text.Json;
+using System.Runtime.ExceptionServices;
 
 namespace GERMAG.Server.DataPulling
 {
@@ -68,12 +69,16 @@ namespace GERMAG.Server.DataPulling
                     context.GeoData.Add(newGeoDatum);
 
                     context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
-
+                    var firstDbEntry = context.GeoData.First(p => p.Id == 1);
+                    var geo1 = firstDbEntry.Geom;
+                    var geo2 = firstDbEntry.Geom;
+                    var result = geo1.Intersects(geo2);
                 }
             }
 
             context.SaveChanges();
             transaction.Commit();
+
         }
 
         [GeneratedRegex("EPSG:")]
@@ -96,3 +101,9 @@ namespace GERMAG.Server.DataPulling
 
 //x.Id = 0;
 //context.GeothermalParameter.Add(x);
+
+
+//var firstDbEntry = context.GeoData.First(p => p.Id == 1);
+//var geo1 = firstDbEntry.Geom;
+//var geo2 = firstDbEntry.Geom;
+//var result = geo1.Intersects(geo2);
