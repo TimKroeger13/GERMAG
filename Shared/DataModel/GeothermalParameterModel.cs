@@ -18,5 +18,7 @@ public class GeothermalParameterModel
 
     public DateTime? LastPing { get; set; }
     public TypeOfData Type { get; set; }
+    public Area Area { get; set; }
+    public Range Range { get; set; }
 
 }

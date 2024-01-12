@@ -39,3 +39,11 @@ public enum TypeOfData
     thermal_con_80,
     thermal_con_100
 }
+public enum Area
+{
+    berlin
+}
+public enum Range
+{
+    near_range
+}

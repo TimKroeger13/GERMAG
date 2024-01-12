@@ -15,6 +15,8 @@ public partial class DataContext : DbContext
     {
 #pragma warning disable CS0618
         NpgsqlConnection.GlobalTypeMapper.MapEnum<TypeOfData>("typeofdata");
+        NpgsqlConnection.GlobalTypeMapper.MapEnum<Area>("area");
+        NpgsqlConnection.GlobalTypeMapper.MapEnum<Range>("range");
         //Npgsql.NpgsqlConnection.GlobalTypeMapper.UseNetTopologySuite();
         //Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<DeliveryType>("delivery_type");
 #pragma warning restore CS0618
@@ -26,6 +28,8 @@ public partial class DataContext : DbContext
         modelBuilder.Entity<GeothermalParameter>(entity =>
         {
             entity.Property(p => p.Type).HasColumnName("typeofdata");
+            entity.Property(p => p.Area).HasColumnName("area");
+            entity.Property(p => p.Range).HasColumnName("range");
         });
         
     }

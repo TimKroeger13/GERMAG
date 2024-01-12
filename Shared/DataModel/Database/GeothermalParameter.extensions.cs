@@ -5,6 +5,8 @@ namespace GERMAG.DataModel.Database;
 public partial class GeothermalParameter
 {
     public TypeOfData Type { get; set; }
+    public Area Area { get; set; }
+    public Range Range { get; set; }
     public GeothermalParameter(GeothermalParameterModel model)
     {
         Getrequest = model.Getrequest;
@@ -18,11 +20,13 @@ public partial class GeothermalParameter
         return new()
         {
             Srid = Srid,
-            Type = Type,
             LastUpdate = LastUpdate,
             Getrequest = Getrequest,
             Id = Id,
-            LastPing = LastPing
+            LastPing = LastPing,
+            Type = Type,
+            Area = Area,
+            Range = Range
         };
     }
 }

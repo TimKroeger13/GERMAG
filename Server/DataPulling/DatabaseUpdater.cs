@@ -35,6 +35,7 @@ namespace GERMAG.Server.DataPulling
             // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
+            var x = context.GeothermalParameter.First(gp => gp.Id == ForeignKey);
 
             foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
                 {
@@ -69,10 +70,6 @@ namespace GERMAG.Server.DataPulling
                     context.GeoData.Add(newGeoDatum);
 
                     context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
-                    var firstDbEntry = context.GeoData.First(p => p.Id == 1);
-                    var geo1 = firstDbEntry.Geom;
-                    var geo2 = firstDbEntry.Geom;
-                    var result = geo1.Intersects(geo2);
                 }
             }
 
