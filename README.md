@@ -43,8 +43,17 @@ last_ping TIMESTAMP
 );
 
 
+--Flurstücke
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
-    VALUES ('thermal_con_100','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json','restrictive');
+    VALUES ('land_parcels','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_alkis?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_alkis&outputFormat=application/json','restrictive');
+
+--Entzugsleistung 100 m, für 2400 h/a
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('geo_poten_100m_with_2400ha','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot2400_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot2400_100&outputFormat=application/json','restrictive');
+
+--Entzugsleistung 100 m, für 1800 h/a
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('geo_poten_100m_with_1800ha','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot1800_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot1800_100&outputFormat=application/json','restrictive');
 
 
 --
