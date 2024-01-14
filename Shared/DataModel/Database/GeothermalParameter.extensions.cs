@@ -7,6 +7,7 @@ public partial class GeothermalParameter
     public TypeOfData Type { get; set; }
     public Area Area { get; set; }
     public Range Range { get; set; }
+    public Service Service { get; set; }
     public GeothermalParameter(GeothermalParameterModel model)
     {
         Getrequest = model.Getrequest;
@@ -26,7 +27,8 @@ public partial class GeothermalParameter
             LastPing = LastPing,
             Type = Type,
             Area = Area,
-            Range = Range
+            Range = Range,
+            Service = Service
         };
     }
 }

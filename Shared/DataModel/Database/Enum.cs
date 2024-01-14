@@ -45,5 +45,11 @@ public enum Area
 }
 public enum Range
 {
-    near_range
+    near_range,
+    far_range
+}
+public enum Service
+{
+    restrictive,
+    efficiency
 }
