@@ -55,6 +55,10 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('geo_poten_100m_with_1800ha','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot1800_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot1800_100&outputFormat=application/json','restrictive');
 
+--Geothermisches Potenzial - spezifische Wärmeleitfähigkeit bis 100 m
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('thermal_con_100','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_wleit_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_wleit_100&outputFormat=application/json','restrictive');
+
 
 --
 
