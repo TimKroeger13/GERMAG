@@ -16,7 +16,7 @@ public interface IDataFetcher
 {
     Task FetchAllData();
 }
-#pragma warning disable IDE1006 // Naming Styles
+//#pragma warning disable IDE1006 // Naming Styles
 /*
 public class Crs
 {
@@ -55,7 +55,7 @@ public class Root
     public Crs? crs { get; set; }
 }
 */
-#pragma warning restore IDE1006 // Naming Styles
+//#pragma warning restore IDE1006 // Naming Styles
 
 public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserializeSwitch jsonDeserializeSwitch) : IDataFetcher
 {
@@ -82,7 +82,6 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             //Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
             databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
-
         }
     }
 
