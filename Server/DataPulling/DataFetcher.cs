@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.Json;
 using GERMAG.Client.Services;
 using GERMAG.DataModel;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using GERMAG.Server.DataPulling.JsonDeserialize;
 
 namespace GERMAG.Server.DataPulling;
 
@@ -16,6 +17,7 @@ public interface IDataFetcher
     Task FetchAllData();
 }
 #pragma warning disable IDE1006 // Naming Styles
+/*
 public class Crs
 {
     public string? type { get; set; }
@@ -52,9 +54,10 @@ public class Root
     public List<Feature>? features { get; set; }
     public Crs? crs { get; set; }
 }
+*/
 #pragma warning restore IDE1006 // Naming Styles
 
-public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client) : IDataFetcher
+public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserializeSwitch jsonDeserializeSwitch) : IDataFetcher
 {
     public async Task FetchAllData()
     {
@@ -74,8 +77,10 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             context.SaveChanges();
 
             //update Data when not up to date
+    
 
-            Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
+            var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJson, allGeothermalParameters[i].Type);
+            //Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
             databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
 

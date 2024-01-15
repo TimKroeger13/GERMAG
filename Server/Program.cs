@@ -1,6 +1,7 @@
 using GERMAG.DataModel.Database;
 using GERMAG.Server.Core.Configurations;
 using GERMAG.Server.DataPulling;
+using GERMAG.Server.DataPulling.JsonDeserialize;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ builder.Services.AddSingleton(configuration);
 builder.Services.AddTransient<HttpClient>();
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
+builder.Services.AddTransient<IJsonDeserializeSwitch, JsonDeserializeSwitch>();
+builder.Services.AddTransient<IJsonGeoPotential,JsonGeoPotential>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(configuration.DatabaseConnection, npg =>
