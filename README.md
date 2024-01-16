@@ -6,7 +6,7 @@ Scaffold-DbContext "Host=192.168.1.25:5433;Database=postgres;Username=postgres;P
 <h2>Database creation sql:</h2>
 
 ````
-CREATE EXTENSION postgis_raster;
+-- CREATE EXTENSION postgis_raster;
 
 
 CREATE TYPE typeofdata AS ENUM ('land_parcels','dgm','geo_poten_restrict','veg_height',
