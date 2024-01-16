@@ -12,6 +12,7 @@ using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Runtime.ExceptionServices;
 using GERMAG.Server.DataPulling.JsonDeserialize;
+using System.Linq;
 
 namespace GERMAG.Server.DataPulling
 {
@@ -66,7 +67,7 @@ namespace GERMAG.Server.DataPulling
                         Id = 0,
                         Geom = polygon,
                         ParameterKey = ForeignKey,
-                        Parameter = JsonSerializer.Serialize(feature?.properties)   
+                        Parameter = JsonSerializer.Serialize(feature?.properties)
                     };
                     context.GeoData.Add(newGeoDatum);
 
@@ -76,15 +77,12 @@ namespace GERMAG.Server.DataPulling
 
             context.SaveChanges();
             transaction.Commit();
-
         }
 
         [GeneratedRegex("EPSG:")]
         private static partial Regex epsgRegex();
     }
 }
-
-
 
 //using var transaction = context.Database.BeginTransaction();
 //transaction.Commit();
@@ -99,7 +97,6 @@ namespace GERMAG.Server.DataPulling
 
 //x.Id = 0;
 //context.GeothermalParameter.Add(x);
-
 
 //var firstDbEntry = context.GeoData.First(p => p.Id == 1);
 //var geo1 = firstDbEntry.Geom;

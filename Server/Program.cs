@@ -18,8 +18,7 @@ builder.Services.AddSingleton(configuration);
 builder.Services.AddTransient<HttpClient>();
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
-builder.Services.AddTransient<IJsonDeserializeSwitch, JsonDeserializeSwitch>();
-builder.Services.AddTransient<IJsonGeoPotential,JsonGeoPotential>();
+builder.Services.AddTransient<IJsonDeserialize, JsonDeserialize>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(configuration.DatabaseConnection, npg =>

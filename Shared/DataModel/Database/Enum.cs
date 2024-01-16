@@ -33,7 +33,7 @@ public enum TypeOfData
     geo_poten_60m_with_2400ha,
     geo_poten_60m_with_1800ha,
     geo_poten_40m_with_2400ha,
-    geo_poten_40m_with_1800h,
+    geo_poten_40m_with_1800ha,
     thermal_con_40,
     thermal_con_60,
     thermal_con_80,

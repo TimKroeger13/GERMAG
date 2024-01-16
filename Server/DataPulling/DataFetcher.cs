@@ -16,48 +16,8 @@ public interface IDataFetcher
 {
     Task FetchAllData();
 }
-//#pragma warning disable IDE1006 // Naming Styles
-/*
-public class Crs
-{
-    public string? type { get; set; }
-    public Properties? properties { get; set; }
-}
 
-public class Feature
-{
-    public string? type { get; set; }
-    public string? id { get; set; }
-    public Geometry? geometry { get; set; }
-    public Properties? properties { get; set; }
-}
-
-public class Geometry
-{
-    public string? type { get; set; }
-    public List<List<List<double>>>? coordinates { get; set; }
-}
-
-public class Properties
-{
-    public string? gridcode { get; set; }
-    public string? la_100txt { get; set; }
-    public string? name { get; set; }
-}
-
-public class Root
-{
-    public string? type { get; set; }
-    public List<double>? bbox { get; set; }
-    public int totalFeatures { get; set; }
-
-    public List<Feature>? features { get; set; }
-    public Crs? crs { get; set; }
-}
-*/
-//#pragma warning restore IDE1006 // Naming Styles
-
-public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserializeSwitch jsonDeserializeSwitch) : IDataFetcher
+public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserialize jsonDeserializeSwitch) : IDataFetcher
 {
     public async Task FetchAllData()
     {
@@ -65,6 +25,8 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
+            i = 12;
+
             var getrequest = allGeothermalParameters[i].Getrequest;
 
             string SeriallizedInputJson = await client.GetStringAsync(getrequest);
