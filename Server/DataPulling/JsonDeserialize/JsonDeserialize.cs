@@ -25,7 +25,7 @@ public class Geometry
     public string? type { get; set; }
     public List<List<List<double>>>? coordinates { get; set; }
 
-    //land parcel
+    //public List<List<List<List<double>>>>? coordinatesLong { get; set; }
 }
 public class Properties
 {
@@ -44,54 +44,12 @@ public class Root
     public Crs? crs { get; set; }
 }
 
-//LongCoordinateFormat
-public class CrsLong
-{
-    public string? type { get; set; }
-    public PropertiesLong? properties { get; set; }
-}
-public class FeatureLong
-{
-    public string? type { get; set; }
-    public string? id { get; set; }
-    public GeometryLong? geometry { get; set; }
-    public PropertiesLong? properties { get; set; }
-}
-public class GeometryLong
-{
-    public string? type { get; set; }
-    public List<List<List<List<double>>>>? coordinates { get; set; }
-
-    //land parcel
-}
-public class PropertiesLong
-{
-    public string? gridcode { get; set; }
-    public string? la_100txt { get; set; }
-    public string? name { get; set; }
-    public string? la_100 { get; set; }
-    public string? text { get; set; }
-}
-public class RootLong
-{
-    public string? type { get; set; }
-    public List<double>? bbox { get; set; }
-    public int totalFeatures { get; set; }
-    public List<FeatureLong>? features { get; set; }
-    public CrsLong? crs { get; set; }
-}
-
 #pragma warning restore IDE1006 // Naming Styles
 
 public class JsonDeserialize() : IJsonDeserialize
 {
     public Root ChooseDeserializationJson(string SeriallizedInputJson, TypeOfData typeOfData)
     {
-        if (typeOfData == TypeOfData.geo_poten_restrict)
-        {
-            RootLong? x = JsonSerializer.Deserialize<RootLong>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
-        }
-
         Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
         return jsonData_Root;
     }

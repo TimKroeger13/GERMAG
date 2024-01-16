@@ -21,11 +21,11 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 {
     public async Task FetchAllData()
     {
-        var allGeothermalParameters = context.GeothermalParameter.ToList();
+        var allGeothermalParameters = context.GeothermalParameter.OrderBy(gp => gp.Id).ToList();
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
-            i = 12;
+            i = 10;
 
             var getrequest = allGeothermalParameters[i].Getrequest;
 
