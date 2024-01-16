@@ -44,9 +44,6 @@ public class Root
     public Crs? crs { get; set; }
 }
 
-
-
-
 //LongCoordinateFormat
 public class CrsLong
 {
@@ -84,7 +81,6 @@ public class RootLong
     public CrsLong? crs { get; set; }
 }
 
-
 #pragma warning restore IDE1006 // Naming Styles
 
 public class JsonDeserialize() : IJsonDeserialize
@@ -94,9 +90,6 @@ public class JsonDeserialize() : IJsonDeserialize
         if (typeOfData == TypeOfData.geo_poten_restrict)
         {
             RootLong? x = JsonSerializer.Deserialize<RootLong>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
-
-            
-
         }
 
         Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
