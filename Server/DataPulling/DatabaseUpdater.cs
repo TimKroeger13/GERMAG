@@ -25,7 +25,7 @@ namespace GERMAG.Server.DataPulling
     {
         public void UpdateDatabase(Root json, int ForeignKey)
         {
-           /* var espgStringRaw = json.crs!.properties!.name;
+            var espgStringRaw = json.crs!.properties!.name;
             var espgString = epsgRegex().Replace(espgStringRaw!, "");
             var espgNumber = Int32.Parse(espgString);
 
@@ -40,7 +40,7 @@ namespace GERMAG.Server.DataPulling
             var x = context.GeothermalParameter.First(gp => gp.Id == ForeignKey);
 
             foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
-                {
+            {
                 var coordinates = feature?.geometry?.coordinates;
 
                 if (coordinates != null)
@@ -57,7 +57,7 @@ namespace GERMAG.Server.DataPulling
                         {
                             var holeLinearRing = geometryFactory.CreateLinearRing(coordinates[k].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
                             holes.Add(holeLinearRing);
-                         }
+                        }
 
                         polygon = geometryFactory.CreatePolygon(exteriorLinearRing, holes.ToArray());
                     }
@@ -76,7 +76,7 @@ namespace GERMAG.Server.DataPulling
             }
 
             context.SaveChanges();
-            transaction.Commit();*/
+            transaction.Commit();
         }
 
         [GeneratedRegex("EPSG:")]

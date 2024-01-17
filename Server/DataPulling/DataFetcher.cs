@@ -45,7 +45,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             //update Data when not up to date
 
             var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJsonConverted, allGeothermalParameters[i].Type);
-            //Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
+            //var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJsonConverted, allGeothermalParameters[i].Type);
 
             databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
         }
