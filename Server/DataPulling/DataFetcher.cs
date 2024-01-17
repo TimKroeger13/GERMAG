@@ -25,7 +25,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
-            i = 10;
+            //i = 10;
 
             var getrequest = allGeothermalParameters[i].Getrequest;
 
