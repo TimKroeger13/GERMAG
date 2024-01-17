@@ -25,7 +25,7 @@ namespace GERMAG.Server.DataPulling
     {
         public void UpdateDatabase(Root json, int ForeignKey)
         {
-            var espgStringRaw = json.crs!.properties!.name;
+           /* var espgStringRaw = json.crs!.properties!.name;
             var espgString = epsgRegex().Replace(espgStringRaw!, "");
             var espgNumber = Int32.Parse(espgString);
 
@@ -76,7 +76,7 @@ namespace GERMAG.Server.DataPulling
             }
 
             context.SaveChanges();
-            transaction.Commit();
+            transaction.Commit();*/
         }
 
         [GeneratedRegex("EPSG:")]

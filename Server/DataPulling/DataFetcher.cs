@@ -9,6 +9,7 @@ using GERMAG.Client.Services;
 using GERMAG.DataModel;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using GERMAG.Server.DataPulling.JsonDeserialize;
+using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.DataPulling;
 
@@ -38,9 +39,12 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).LastPing = DateTime.Now;
             context.SaveChanges();
 
+
+            string SeriallizedInputJsonConverted = Regex.Replace(SeriallizedInputJson, "coordinate", "coordinateLong");
+
             //update Data when not up to date
 
-            var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJson, allGeothermalParameters[i].Type);
+            var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJsonConverted, allGeothermalParameters[i].Type);
             //Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
 
             databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);

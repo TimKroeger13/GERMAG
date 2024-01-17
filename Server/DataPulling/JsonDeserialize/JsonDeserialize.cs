@@ -24,8 +24,7 @@ public class Geometry
 {
     public string? type { get; set; }
     public List<List<List<double>>>? coordinates { get; set; }
-
-    //public List<List<List<List<double>>>>? coordinatesLong { get; set; }
+    public List<List<List<List<double>>>>? coordinateLongs { get; set; }
 }
 public class Properties
 {
@@ -48,9 +47,38 @@ public class Root
 
 public class JsonDeserialize() : IJsonDeserialize
 {
-    public Root ChooseDeserializationJson(string SeriallizedInputJson, TypeOfData typeOfData)
+    //public Root ChooseDeserializationJson(string SeriallizedInputJson, TypeOfData typeOfData)
+    //{
+    //Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
+    //return jsonData_Root;
+    //}
+
+    public Root ChooseDeserializationJson(string SerializedInputJson, TypeOfData typeOfData)
     {
-        Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SeriallizedInputJson) ?? throw new Exception("No wfs found (root)");
+        Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SerializedInputJson) ?? throw new Exception("No wfs found (root)");
+
+        if (jsonData_Root.features != null && jsonData_Root.features.Count > 0)
+        {
+            foreach (var feature in jsonData_Root.features)
+            {
+                if (feature.geometry != null)
+                {
+                    if (feature.geometry.coordinates == null && feature.geometry.coordinateLongs != null)
+                    {
+                        feature.geometry.coordinates = CopyCoordinateLongsToCoordinates(feature.geometry.coordinateLongs);
+                    }
+                }
+            }
+        }
         return jsonData_Root;
+    }
+
+
+
+    private List<List<List<double>>>? CopyCoordinateLongsToCoordinates(List<List<List<List<double>>>>? coordinateLongs)
+    {
+        if (coordinateLongs == null || coordinateLongs.Count == 0)
+            return null;
+        return coordinateLongs[0];
     }
 }
