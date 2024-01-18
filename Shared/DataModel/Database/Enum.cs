@@ -55,6 +55,7 @@ public enum Service
 }
 public enum JsonFormat
 {
+    normal,
     short_coordiantes,
     long_coordiantes
 }

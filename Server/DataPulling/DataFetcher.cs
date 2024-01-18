@@ -46,14 +46,22 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             {
                 //Differentiate between different coordiante formats
 
-                bool IsLongCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinates\\\":\\[\\[\\[\\[");
+                bool IsLongCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinate[s]?\\\":\\[\\[\\[\\[");
+                bool IsShortCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinate[s]?\\\":\\[\\[");
 
-                var Format = JsonFormat.short_coordiantes;
+                var Format = JsonFormat.normal;
 
                 if (IsLongCoordianteFormat)
                 {
-                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "coordinate", "coordinateLong");
+                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinates\"", "\"coordinateLong\"");
+                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinate\"", "\"oordinateLong\"");
                     Format = JsonFormat.long_coordiantes;
+                }
+                else if (IsShortCoordianteFormat)
+                {
+                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinates\"", "\"coordinateShort\"");
+                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinate\"", "\"coordinateShort\"");
+                    Format = JsonFormat.short_coordiantes;
                 }
 
                 //update Data when not up to date

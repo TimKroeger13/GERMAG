@@ -27,7 +27,10 @@ namespace GERMAG.Server.DataPulling
         public void UpdateDatabase(Root json, int ForeignKey)
         {
             var espgStringRaw = json.crs!.properties!.name;
-            var espgString = epsgRegex().Replace(espgStringRaw!, "");
+            var espgStringRegex = ESPGRegexNumber().Match(ESPGRegexShrink().Replace(espgStringRaw ?? "0", ":"));
+            //var espgString = epsgRegex().Replace(espgStringRegex.Value, "");
+            var espgString = espgStringRegex.Value;
+
             var espgNumber = Int32.Parse(espgString);
 
             using var transaction = context.Database.BeginTransaction();
@@ -38,7 +41,6 @@ namespace GERMAG.Server.DataPulling
             // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
-            var x = context.GeothermalParameter.First(gp => gp.Id == ForeignKey);
 
             Console.WriteLine("");
             var i = 0;
@@ -89,8 +91,11 @@ namespace GERMAG.Server.DataPulling
             Console.WriteLine("Database Updated!");
         }
 
-        [GeneratedRegex("EPSG:")]
-        private static partial Regex epsgRegex();
+        [GeneratedRegex("::")]
+        private static partial Regex ESPGRegexShrink();
+        [GeneratedRegex("(\\d+)")]
+        private static partial Regex ESPGRegexNumber();
+
     }
 }
 

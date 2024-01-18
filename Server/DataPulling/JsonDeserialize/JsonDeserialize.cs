@@ -1,4 +1,5 @@
 ﻿using GERMAG.DataModel.Database;
+using System.Linq;
 using System.Text.Json;
 
 namespace GERMAG.Server.DataPulling.JsonDeserialize;
@@ -19,12 +20,16 @@ public class Feature
     public string? id { get; set; }
     public Geometry? geometry { get; set; }
     public Properties? properties { get; set; }
+    public string? geometry_name { get; set; }
+    public List<double>? bbox { get; set; }
 }
 public class Geometry
 {
     public string? type { get; set; }
+    public List<List<double>>? coordinateShort { get; set; }
     public List<List<List<double>>>? coordinates { get; set; }
-    public List<List<List<List<double>>>>? coordinateLongs { get; set; }
+    public List<List<List<List<double>>>>? coordinatesLongs { get; set; }
+
 }
 public class Properties
 {
@@ -48,14 +53,19 @@ public class Properties
     public DateTime? beg { get; set; }
     public DateTime? statusdat { get; set; }
     public string? uuid { get; set; }
+    public int? importid { get; set; }
+    public string? hoehe { get; set; }
 }
 public class Root
 {
     public string? type { get; set; }
     public List<double>? bbox { get; set; }
-    public int totalFeatures { get; set; }
+    public int? totalFeatures { get; set; }
     public List<Feature>? features { get; set; }
     public Crs? crs { get; set; }
+    public int? numberMatched { get; set; }
+    public int? numberReturned { get; set; }
+    public DateTime? timeStamp { get; set; }
 }
 
 #pragma warning restore IDE1006 // Naming Styles
@@ -74,10 +84,27 @@ public class JsonDeserialize() : IJsonDeserialize
                 {
                     if (feature.geometry != null)
                     {
-                        if (feature.geometry.coordinates == null && feature.geometry.coordinateLongs != null)
+                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesLongs != null)
                         {
-                            feature.geometry.coordinates = CopyCoordinateLongsToCoordinates(feature.geometry.coordinateLongs);
-                            feature.geometry.coordinateLongs = null;
+                            feature.geometry.coordinates = CopyCoordinateLongsToCoordinates(feature.geometry.coordinatesLongs);
+                            feature.geometry.coordinatesLongs = null;
+                        }
+                    }
+                }
+            }
+        }
+        if (format == JsonFormat.short_coordiantes)
+        {
+            if (jsonData_Root.features != null && jsonData_Root.features.Count > 0)
+            {
+                foreach (var feature in jsonData_Root.features)
+                {
+                    if (feature.geometry != null)
+                    {
+                        if (feature.geometry.coordinates == null && feature.geometry.coordinateShort != null)
+                        {
+                            feature.geometry.coordinates = CopyCoordinateShortToCoordinates(feature.geometry.coordinateShort);
+                            feature.geometry.coordinateShort = null;
                         }
                     }
                 }
@@ -90,5 +117,9 @@ public class JsonDeserialize() : IJsonDeserialize
         if (coordinateLongs == null || coordinateLongs.Count == 0)
             return null;
         return coordinateLongs[0];
+    }
+    private List<List<List<double>>>? CopyCoordinateShortToCoordinates(List<List<double>>? coordinateShort)
+    {
+        return coordinateShort?.Select(point => new List<List<double>> { point }).ToList();
     }
 }
