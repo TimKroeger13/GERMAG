@@ -53,3 +53,8 @@ public enum Service
     restrictive,
     efficiency
 }
+public enum JsonFormat
+{
+    short_coordiantes,
+    long_coordiantes
+}

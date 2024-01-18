@@ -39,8 +39,13 @@ namespace GERMAG.Server.DataPulling
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
             var x = context.GeothermalParameter.First(gp => gp.Id == ForeignKey);
 
+            Console.WriteLine("");
+            var i = 0;
+            var totalLength = json?.features?.Count ?? 0;
+
             foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
             {
+                i++;
                 var coordinates = feature?.geometry?.coordinates;
 
                 if (coordinates != null)
@@ -70,11 +75,14 @@ namespace GERMAG.Server.DataPulling
                         Parameter = JsonSerializer.Serialize(feature?.properties)
                     };
                     context.GeoData.Add(newGeoDatum);
-
-                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+                }
+                if (i % 1000 == 0)
+                {
+                    Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
                 }
             }
 
+            context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
             context.SaveChanges();
             transaction.Commit();
         }

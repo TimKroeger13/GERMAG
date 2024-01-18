@@ -10,6 +10,7 @@ using GERMAG.DataModel;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using System.Text.RegularExpressions;
+using NetTopologySuite.Geometries;
 
 namespace GERMAG.Server.DataPulling;
 
@@ -20,17 +21,18 @@ public interface IDataFetcher
 
 public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserialize jsonDeserializeSwitch) : IDataFetcher
 {
+    private const string LongCoordiantesPatter = "coordinates\":[[[[";
+
     public async Task FetchAllData()
     {
         var allGeothermalParameters = context.GeothermalParameter.OrderBy(gp => gp.Id).ToList();
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
-            //i = 10;
+            Console.WriteLine("Pining data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
+            var Getrequest = allGeothermalParameters[i].Getrequest;
 
-            var getrequest = allGeothermalParameters[i].Getrequest;
-
-            string SeriallizedInputJson = await client.GetStringAsync(getrequest);
+            string SeriallizedInputJson = await client.GetStringAsync(Getrequest);
 
             //Check if Data is up to date
 
@@ -39,14 +41,24 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).LastPing = DateTime.Now;
             context.SaveChanges();
 
+            //Differentiate between different coordiante formats
 
-            string SeriallizedInputJsonConverted = Regex.Replace(SeriallizedInputJson, "coordinate", "coordinateLong");
+            bool IsLongCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinates\\\":\\[\\[\\[\\[");
+
+            var Format = JsonFormat.short_coordiantes;
+
+            if (IsLongCoordianteFormat)
+            {
+                SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "coordinate", "coordinateLong");
+                Format = JsonFormat.long_coordiantes;
+            }
 
             //update Data when not up to date
 
-            var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJsonConverted, allGeothermalParameters[i].Type);
-            //var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJsonConverted, allGeothermalParameters[i].Type);
+            Console.WriteLine("DeserializationJson: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
+            var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJson, allGeothermalParameters[i].Type, Format);
 
+            Console.WriteLine("Insert Data into Database: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
             databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
         }
     }
