@@ -116,7 +116,7 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 
 --Flächen Hauptgrundwasserleiter gespannt
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
-    VALUES ('ground_water_height_tension','berlin','near_range','https://gdi.berlin.de/services/wfs/ua_flurabstand_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=ua_flurabstand_2020:a_panketal&outputFormat=application/json','efficiency');
+    VALUES ('groundwater_surface_distance','berlin','near_range','https://gdi.berlin.de/services/wfs/ua_flurabstand_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=ua_flurabstand_2020:a_panketal&outputFormat=application/json','efficiency');
 
 ````
 ````
