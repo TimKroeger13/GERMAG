@@ -44,6 +44,11 @@ hash BIGINT
 );
 
 
+--Flurstücke
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('land_parcels','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_alkis?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_alkis&outputFormat=application/json','restrictive');
+
+
 --Entzugsleistung 40 m, für 1800 h/a
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('geo_poten_40m_with_1800ha','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot1800_40?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot1800_40&outputFormat=application/json','efficiency');
@@ -78,7 +83,6 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 
 
 
-
 --Geothermisches Potenzial - spezifische Wärmeleitfähigkeit bis 40 m
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('thermal_con_40','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_wleit_40?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_wleit_40&outputFormat=application/json','efficiency');
@@ -96,17 +100,10 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('thermal_con_100','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_wleit_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_wleit_100&outputFormat=application/json','efficiency');
 
 
-
 --Geothermisches Potenzial - Restriktionsflächen
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('geo_poten_restrict','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_02_18_restrict_2017?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_02_18_restrict_2017&outputFormat=application/json','restrictive');
 
-----
---Flurstücke
-INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
-    VALUES ('land_parcels','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_alkis?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_alkis&outputFormat=application/json','restrictive');
-
---
 
 CREATE TABLE geo_data
 (
