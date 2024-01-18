@@ -39,7 +39,8 @@ getrequest TEXT,
 service service,
 srid INT,
 last_update TIMESTAMP,
-last_ping TIMESTAMP
+last_ping TIMESTAMP,
+hash INT
 );
 
 
