@@ -11,5 +11,6 @@ public partial class GeothermalParameter
     public int? Srid { get; set; }
     public DateTime? LastUpdate { get; set; }
     public DateTime? LastPing { get; set; }
+    public long? Hash { get; set; }
     public virtual ICollection<GeoDatum> GeoData { get; init; } = new List<GeoDatum>();
 }

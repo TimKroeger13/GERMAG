@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Runtime.ExceptionServices;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using System.Linq;
+using System;
 
 namespace GERMAG.Server.DataPulling
 {
@@ -85,6 +86,7 @@ namespace GERMAG.Server.DataPulling
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
             context.SaveChanges();
             transaction.Commit();
+            Console.WriteLine("Database Updated!");
         }
 
         [GeneratedRegex("EPSG:")]

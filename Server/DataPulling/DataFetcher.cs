@@ -36,30 +36,44 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
             //Check if Data is up to date
 
+            var DataHash = allGeothermalParameters[i].Hash ?? -1;
             var hash = HashString(SeriallizedInputJson);
 
             context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).LastPing = DateTime.Now;
             context.SaveChanges();
 
-            //Differentiate between different coordiante formats
-
-            bool IsLongCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinates\\\":\\[\\[\\[\\[");
-
-            var Format = JsonFormat.short_coordiantes;
-
-            if (IsLongCoordianteFormat)
+            if (DataHash != hash)
             {
-                SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "coordinate", "coordinateLong");
-                Format = JsonFormat.long_coordiantes;
+                //Differentiate between different coordiante formats
+
+                bool IsLongCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinates\\\":\\[\\[\\[\\[");
+
+                var Format = JsonFormat.short_coordiantes;
+
+                if (IsLongCoordianteFormat)
+                {
+                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "coordinate", "coordinateLong");
+                    Format = JsonFormat.long_coordiantes;
+                }
+
+                //update Data when not up to date
+
+                Console.WriteLine("DeserializationJson: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
+                var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJson, allGeothermalParameters[i].Type, Format);
+
+                Console.WriteLine("Insert Data into Database: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
+                databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
+
+                context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).Hash = hash;
+                context.SaveChanges();
             }
-
-            //update Data when not up to date
-
-            Console.WriteLine("DeserializationJson: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
-            var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJson, allGeothermalParameters[i].Type, Format);
-
-            Console.WriteLine("Insert Data into Database: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
-            databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
+            else
+            {
+                if (i == allGeothermalParameters.Count-1)
+                {
+                    Console.WriteLine("Database Updated!");
+                }
+            }
         }
     }
 
