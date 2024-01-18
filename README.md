@@ -92,7 +92,6 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('geo_poten_100m_with_1800ha','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_entzugspot1800_100?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_entzugspot1800_100&outputFormat=application/json','efficiency');
 
 
-
 --Geothermisches Potenzial - spezifische Wärmeleitfähigkeit bis 40 m
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('thermal_con_40','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_poly_wleit_40?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_poly_wleit_40&outputFormat=application/json','efficiency');
@@ -114,6 +113,10 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('geo_poten_restrict','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_02_18_restrict_2017?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_02_18_restrict_2017&outputFormat=application/json','restrictive');
 
+
+--Flächen Hauptgrundwasserleiter gespannt
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('ground_water_height_tension','berlin','near_range','https://gdi.berlin.de/services/wfs/ua_flurabstand_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=ua_flurabstand_2020:a_panketal&outputFormat=application/json','efficiency');
 
 ````
 ````
