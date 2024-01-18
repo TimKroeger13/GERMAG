@@ -118,6 +118,13 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('groundwater_surface_distance','berlin','near_range','https://gdi.berlin.de/services/wfs/ua_flurabstand_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=ua_flurabstand_2020:a_panketal&outputFormat=application/json','efficiency');
 
+
+--Grundwassergleichen 2020 - Hauptgrundwasserleiter
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('ground_water_height_main','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_gwgleichen_haupt?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_gwgleichen_haupt&outputFormat=application/json','efficiency');
+
+
+
 ````
 ````
 DROP TABLE geo_data;
