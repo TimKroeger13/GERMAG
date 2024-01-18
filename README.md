@@ -40,7 +40,7 @@ service service,
 srid INT,
 last_update TIMESTAMP,
 last_ping TIMESTAMP,
-hash INT
+hash BIGINT
 );
 
 
