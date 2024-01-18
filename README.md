@@ -43,6 +43,16 @@ last_ping TIMESTAMP,
 hash BIGINT
 );
 
+CREATE TABLE geo_data
+(
+    id SERIAL PRIMARY KEY NOT NULL,
+    parameter_key integer NOT NULL,
+    geom geometry,
+    parameter json,
+    CONSTRAINT parameter_key FOREIGN KEY (parameter_key)
+        REFERENCES public.geothermal_parameter (id)
+);
+
 
 --Flurstücke
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
@@ -103,17 +113,6 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 --Geothermisches Potenzial - Restriktionsflächen
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('geo_poten_restrict','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_02_18_restrict_2017?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_02_18_restrict_2017&outputFormat=application/json','restrictive');
-
-
-CREATE TABLE geo_data
-(
-    id SERIAL PRIMARY KEY NOT NULL,
-    parameter_key integer NOT NULL,
-    geom geometry,
-    parameter json,
-    CONSTRAINT parameter_key FOREIGN KEY (parameter_key)
-        REFERENCES public.geothermal_parameter (id)
-);
 
 
 ````
