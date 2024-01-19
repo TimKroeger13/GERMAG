@@ -133,7 +133,7 @@ public class JsonDeserialize() : IJsonDeserialize
                         if (feature.geometry.coordinates == null && feature.geometry.coordinatesSingle != null)
                         {
                             var doubleList = feature.geometry.coordinatesSingle;
-                            feature.geometry.coordinates = new List<List<List<double>>> { new List<List<double>> { feature.geometry.coordinatesSingle! } };
+                            feature.geometry.coordinates = [[feature.geometry.coordinatesSingle!]];
                             feature.geometry.coordinatesSingle = null;
                         }
                     }
@@ -150,6 +150,6 @@ public class JsonDeserialize() : IJsonDeserialize
     }
     private List<List<List<double>>>? CopyCoordinateShortToCoordinates(List<List<double>>? coordinateShort)
     {
-        return new List<List<List<double>>> {coordinateShort!};
+        return [coordinateShort!];
     }
 }
