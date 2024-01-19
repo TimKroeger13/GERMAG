@@ -125,6 +125,9 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getreq
 INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
     VALUES ('ground_water_height_main','berlin','near_range','polyline','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_gwgleichen_haupt?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_gwgleichen_haupt&outputFormat=application/json','efficiency');
 
+--Grundwassergleichen 2020 - Panketalgrundwasserleiter
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('ground_water_height_tension','berlin','near_range','polyline','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_gwgleichen_panke?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_gwgleichen_panke&outputFormat=application/json','efficiency');
 
 
 ````
