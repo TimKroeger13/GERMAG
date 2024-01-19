@@ -130,6 +130,11 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getreq
     VALUES ('ground_water_height_tension','berlin','near_range','polyline','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_gwgleichen_panke?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_gwgleichen_panke&outputFormat=application/json','efficiency');
 
 
+-- Grundwassergüte Ammonium
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_ammonium','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_4amm?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_4amm&outputFormat=application/json','restrictive');
+
+
 ````
 ````
 DROP TABLE geo_data;
