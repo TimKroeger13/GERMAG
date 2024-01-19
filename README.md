@@ -154,6 +154,9 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getreq
 INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
     VALUES ('water_ortho_phosphat','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_7oph?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_7oph&outputFormat=application/json','restrictive');
 
+-- Grundwassergüte Sulfat
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_sulfat','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_3sul?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_3sul&outputFormat=application/json','restrictive');
 
 
 ````
