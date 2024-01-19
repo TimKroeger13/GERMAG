@@ -134,6 +134,12 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getreq
 INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
     VALUES ('water_ammonium','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_4amm?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_4amm&outputFormat=application/json','restrictive');
 
+-- Grundwassergüte Bor
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_bor','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_8bor?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_8bor&outputFormat=application/json','restrictive');
+
+
+
 
 ````
 ````
