@@ -44,18 +44,25 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             {
                 //Differentiate between different coordiante formats
 
+                bool isSingleCoordinateFormat = Regex.IsMatch(SeriallizedInputJson, "coordinate[s]?\\\":\\[\\d");
                 bool IsLongCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinate[s]?\\\":\\[\\[\\[\\[");
                 bool IsShortCoordianteFormat = Regex.IsMatch(SeriallizedInputJson, "coordinate[s]?\\\":\\[\\[\\d");
 
                 var Format = JsonFormat.normal;
 
+                if (isSingleCoordinateFormat)
+                {
+                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinates\"", "\"coordinatesSingle\"");
+                    SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinate\"", "\"coordinatesSingle\"");
+                    Format = JsonFormat.single_coordiantes;
+                }
                 if (IsLongCoordianteFormat)
                 {
                     SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinates\"", "\"coordinatesLong\"");
                     SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinate\"", "\"coordinatesLong\"");
                     Format = JsonFormat.long_coordiantes;
                 }
-                else if (IsShortCoordianteFormat)
+                if (IsShortCoordianteFormat)
                 {
                     SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinates\"", "\"coordinatesShort\"");
                     SeriallizedInputJson = Regex.Replace(SeriallizedInputJson, "\"coordinate\"", "\"coordinatesShort\"");

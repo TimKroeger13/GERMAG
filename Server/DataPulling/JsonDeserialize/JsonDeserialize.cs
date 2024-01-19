@@ -27,6 +27,7 @@ public class Feature
 public class Geometry
 {
     public string? type { get; set; }
+    public List<double>? coordinatesSingle { get; set; }
     public List<List<double>>? coordinatesShort { get; set; }
     public List<List<List<double>>>? coordinates { get; set; }
     public List<List<List<List<double>>>>? coordinatesLong { get; set; }
@@ -55,6 +56,18 @@ public class Properties
     public string? uuid { get; set; }
     public int? importid { get; set; }
     public string? hoehe { get; set; }
+    public string? herkunft { get; set; }
+    public string? name_karte { get; set; }
+    public string? nh4 { get; set; }
+    public string? lf { get; set; }
+    public string? cl { get; set; }
+    public string? po4 { get; set; }
+    public string? so4 { get; set; }
+    public string? k { get; set; }
+    public string? b { get; set; }
+    public string? csv { get; set; }
+    public string? point_x { get; set; }
+    public string? point_y { get; set; }
 }
 public class Root
 {
@@ -67,7 +80,6 @@ public class Root
     public int? numberReturned { get; set; }
     public DateTime? timeStamp { get; set; }
 }
-
 #pragma warning restore IDE1006 // Naming Styles
 
 public class JsonDeserialize() : IJsonDeserialize
@@ -105,6 +117,24 @@ public class JsonDeserialize() : IJsonDeserialize
                         {
                             feature.geometry.coordinates = CopyCoordinateShortToCoordinates(feature.geometry.coordinatesShort);
                             feature.geometry.coordinatesShort = null;
+                        }
+                    }
+                }
+            }
+        }
+        if (format == JsonFormat.single_coordiantes)
+        {
+            if (jsonData_Root.features?.Count > 0)
+            {
+                foreach (var feature in jsonData_Root.features)
+                {
+                    if (feature.geometry != null)
+                    {
+                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesSingle != null)
+                        {
+                            var doubleList = feature.geometry.coordinatesSingle;
+                            feature.geometry.coordinates = new List<List<List<double>>> { new List<List<double>> { feature.geometry.coordinatesSingle! } };
+                            feature.geometry.coordinatesSingle = null;
                         }
                     }
                 }

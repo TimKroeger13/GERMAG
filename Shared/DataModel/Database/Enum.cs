@@ -55,12 +55,14 @@ public enum Service
 }
 public enum JsonFormat
 {
+    single_coordiantes,
     normal,
     short_coordiantes,
     long_coordiantes
 }
 public enum Geometry_Type
 {
+    point,
     polygon,
     polyline,
     raster

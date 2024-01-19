@@ -118,10 +118,39 @@ namespace GERMAG.Server.DataPulling
                     context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
                     context.SaveChanges();
                     break;
+                case Geometry_Type.point:
+                    Console.WriteLine("Transfering data to database");
+                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+                    {
+                        i++;
+                        var coordinates = feature?.geometry?.coordinates;
+
+                        if (coordinates != null)
+                        {
+                            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: espgNumber);
+                            var point = geometryFactory.CreatePoint(new Coordinate(coordinates[0][0][0], coordinates[0][0][1]));
+
+                            var newGeoDatum = new DataModel.Database.GeoDatum
+                            {
+                                Id = 0,
+                                Geom = point,
+                                ParameterKey = ForeignKey,
+                                Parameter = JsonSerializer.Serialize(feature?.properties)
+                            };
+                            context.GeoData.Add(newGeoDatum);
+                        }
+                        if (i % 1000 == 0)
+                        {
+                            Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
+                        }
+                    }
+                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+                    context.SaveChanges();
+                    break;
                 case Geometry_Type.raster:
                     throw new Exception("Raster Data is currently not supportet");
                 default:
-                    throw new Exception ("Given Geometry_Type is NOT supportet!");
+                    throw new Exception("Given Geometry_Type is NOT supportet!");
             }
 
             transaction.Commit();
