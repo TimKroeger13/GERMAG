@@ -146,6 +146,11 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getreq
 INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
     VALUES ('electrical_con','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_1leit?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_1leit&outputFormat=application/json','restrictive');
 
+-- Grundwassergüte Kalium
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_kalium','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_6kal?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_6kal&outputFormat=application/json','restrictive');
+
+
 
 
 ````
