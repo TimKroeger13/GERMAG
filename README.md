@@ -29,7 +29,7 @@ CREATE TYPE range AS ENUM ('near_range','far_range');
 
 CREATE TYPE service AS ENUM ('restrictive','efficiency');
 
-CREATE TYPE geometry_type AS ENUM ('polygon','polyline','raster');
+CREATE TYPE geometry_type AS ENUM ('point','polygon','polyline','raster');
 
 CREATE TABLE geothermal_parameter (
 id SERIAL PRIMARY KEY NOT NULL,
