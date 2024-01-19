@@ -1,4 +1,5 @@
-﻿using GERMAG.DataModel.Database;
+﻿using AutoMapper.Features;
+using GERMAG.DataModel.Database;
 using System.Linq;
 using System.Text.Json;
 
@@ -26,10 +27,9 @@ public class Feature
 public class Geometry
 {
     public string? type { get; set; }
-    public List<List<double>>? coordinateShort { get; set; }
+    public List<List<double>>? coordinatesShort { get; set; }
     public List<List<List<double>>>? coordinates { get; set; }
-    public List<List<List<List<double>>>>? coordinatesLongs { get; set; }
-
+    public List<List<List<List<double>>>>? coordinatesLong { get; set; }
 }
 public class Properties
 {
@@ -84,10 +84,10 @@ public class JsonDeserialize() : IJsonDeserialize
                 {
                     if (feature.geometry != null)
                     {
-                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesLongs != null)
+                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesLong != null)
                         {
-                            feature.geometry.coordinates = CopyCoordinateLongsToCoordinates(feature.geometry.coordinatesLongs);
-                            feature.geometry.coordinatesLongs = null;
+                            feature.geometry.coordinates = CopyCoordinateLongsToCoordinates(feature.geometry.coordinatesLong);
+                            feature.geometry.coordinatesLong = null;
                         }
                     }
                 }
@@ -101,10 +101,10 @@ public class JsonDeserialize() : IJsonDeserialize
                 {
                     if (feature.geometry != null)
                     {
-                        if (feature.geometry.coordinates == null && feature.geometry.coordinateShort != null)
+                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesShort != null)
                         {
-                            feature.geometry.coordinates = CopyCoordinateShortToCoordinates(feature.geometry.coordinateShort);
-                            feature.geometry.coordinateShort = null;
+                            feature.geometry.coordinates = CopyCoordinateShortToCoordinates(feature.geometry.coordinatesShort);
+                            feature.geometry.coordinatesShort = null;
                         }
                     }
                 }
@@ -120,6 +120,6 @@ public class JsonDeserialize() : IJsonDeserialize
     }
     private List<List<List<double>>>? CopyCoordinateShortToCoordinates(List<List<double>>? coordinateShort)
     {
-        return coordinateShort?.Select(point => new List<List<double>> { point }).ToList();
+        return new List<List<List<double>>> {coordinateShort!};
     }
 }
