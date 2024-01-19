@@ -21,8 +21,6 @@ public interface IDataFetcher
 
 public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserialize jsonDeserializeSwitch) : IDataFetcher
 {
-    private const string LongCoordiantesPatter = "coordinates\":[[[[";
-
     public async Task FetchAllData()
     {
         var allGeothermalParameters = context.GeothermalParameter.OrderBy(gp => gp.Id).ToList();
@@ -70,7 +68,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
                 var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJson, allGeothermalParameters[i].Type, Format);
 
                 Console.WriteLine("Insert Data into Database: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
-                databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
+                databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id, allGeothermalParameters[i].Geometry_Type);
 
                 context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).Hash = hash;
                 context.SaveChanges();

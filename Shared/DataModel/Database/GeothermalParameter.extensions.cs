@@ -1,4 +1,5 @@
 ﻿using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 
 namespace GERMAG.DataModel.Database;
 
@@ -8,6 +9,7 @@ public partial class GeothermalParameter
     public Area Area { get; set; }
     public Range Range { get; set; }
     public Service Service { get; set; }
+    public Geometry_Type Geometry_Type { get; set; }
     public GeothermalParameter(GeothermalParameterModel model)
     {
         Getrequest = model.Getrequest;
@@ -28,6 +30,7 @@ public partial class GeothermalParameter
             Type = Type,
             Area = Area,
             Range = Range,
+            Geometry_Type = Geometry_Type,
             Service = Service
         };
     }

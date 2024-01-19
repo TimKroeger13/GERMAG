@@ -1,4 +1,5 @@
 ﻿using NetTopologySuite.Geometries;
+
 namespace GERMAG.DataModel.Database;
 
 public partial class GeoDatum

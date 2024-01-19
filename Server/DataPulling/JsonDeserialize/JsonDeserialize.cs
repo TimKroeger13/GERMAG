@@ -78,7 +78,7 @@ public class JsonDeserialize() : IJsonDeserialize
 
         if (format == JsonFormat.long_coordiantes)
         {
-            if (jsonData_Root.features != null && jsonData_Root.features.Count > 0)
+            if (jsonData_Root.features?.Count > 0)
             {
                 foreach (var feature in jsonData_Root.features)
                 {
@@ -95,7 +95,7 @@ public class JsonDeserialize() : IJsonDeserialize
         }
         if (format == JsonFormat.short_coordiantes)
         {
-            if (jsonData_Root.features != null && jsonData_Root.features.Count > 0)
+            if (jsonData_Root.features?.Count > 0)
             {
                 foreach (var feature in jsonData_Root.features)
                 {

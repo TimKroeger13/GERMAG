@@ -59,3 +59,9 @@ public enum JsonFormat
     short_coordiantes,
     long_coordiantes
 }
+public enum Geometry_Type
+{
+    polygon,
+    polyline,
+    raster
+}

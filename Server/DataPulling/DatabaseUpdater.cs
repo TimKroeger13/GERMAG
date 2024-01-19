@@ -14,26 +14,26 @@ using System.Runtime.ExceptionServices;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using System.Linq;
 using System;
+using NetTopologySuite.IO;
 
 namespace GERMAG.Server.DataPulling
 {
     public interface IDatabaseUpdater
     {
-        void UpdateDatabase(Root json, int ForeignKey);
+        void UpdateDatabase(Root json, int ForeignKey, Geometry_Type Geometry_Type);
     }
 
     public partial class DatabaseUpdater(DataContext context) : IDatabaseUpdater
     {
-        public void UpdateDatabase(Root json, int ForeignKey)
+        public void UpdateDatabase(Root json, int ForeignKey, Geometry_Type CurrentGeometryType)
         {
+            using var transaction = context.Database.BeginTransaction();
+
             var espgStringRaw = json.crs!.properties!.name;
             var espgStringRegex = ESPGRegexNumber().Match(ESPGRegexShrink().Replace(espgStringRaw ?? "0", ":"));
-            //var espgString = epsgRegex().Replace(espgStringRegex.Value, "");
             var espgString = espgStringRegex.Value;
 
             var espgNumber = Int32.Parse(espgString);
-
-            using var transaction = context.Database.BeginTransaction();
 
             var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == ForeignKey);
             context.GeoData.RemoveRange(entriesToRemove);
@@ -41,52 +41,89 @@ namespace GERMAG.Server.DataPulling
             // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
-
-            Console.WriteLine("");
             var i = 0;
-            var totalLength = json?.features?.Count ?? 0;
+            var totalLength = 0;
 
-            foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+            switch (CurrentGeometryType)
             {
-                i++;
-                var coordinates = feature?.geometry?.coordinates;
-
-                if (coordinates != null)
-                {
-                    var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: espgNumber);
-                    var exteriorLinearRing = geometryFactory.CreateLinearRing(coordinates[0].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
-                    var polygon = geometryFactory.CreatePolygon(exteriorLinearRing);
-
-                    if (coordinates.Count > 1)
+                case Geometry_Type.polygon:
+                    Console.WriteLine("Transfering data to database");
+                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
                     {
-                        var holes = new List<LinearRing>();
+                        i++;
+                        var coordinates = feature?.geometry?.coordinates;
 
-                        for (int k = 1; k < coordinates.Count; k++)
+                        if (coordinates != null)
                         {
-                            var holeLinearRing = geometryFactory.CreateLinearRing(coordinates[k].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
-                            holes.Add(holeLinearRing);
+                            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: espgNumber);
+                            var exteriorLinearRing = geometryFactory.CreateLinearRing(coordinates[0].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
+                            var polygon = geometryFactory.CreatePolygon(exteriorLinearRing);
+
+                            if (coordinates.Count > 1)
+                            {
+                                var holes = new List<LinearRing>();
+
+                                for (int k = 1; k < coordinates.Count; k++)
+                                {
+                                    var holeLinearRing = geometryFactory.CreateLinearRing(coordinates[k].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
+                                    holes.Add(holeLinearRing);
+                                }
+
+                                polygon = geometryFactory.CreatePolygon(exteriorLinearRing, holes.ToArray());
+                            }
+
+                            var newGeoDatum = new DataModel.Database.GeoDatum
+                            {
+                                Id = 0,
+                                Geom = polygon,
+                                ParameterKey = ForeignKey,
+                                Parameter = JsonSerializer.Serialize(feature?.properties)
+                            };
+                            context.GeoData.Add(newGeoDatum);
                         }
-
-                        polygon = geometryFactory.CreatePolygon(exteriorLinearRing, holes.ToArray());
+                        if (i % 1000 == 0)
+                        {
+                            Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
+                        }
                     }
-
-                    var newGeoDatum = new DataModel.Database.GeoDatum
+                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+                    context.SaveChanges();
+                    break;
+                case Geometry_Type.polyline:
+                    Console.WriteLine("Transfering data to database");
+                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
                     {
-                        Id = 0,
-                        Geom = polygon,
-                        ParameterKey = ForeignKey,
-                        Parameter = JsonSerializer.Serialize(feature?.properties)
-                    };
-                    context.GeoData.Add(newGeoDatum);
-                }
-                if (i % 1000 == 0)
-                {
-                    Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
-                }
+                        i++;
+                        var coordinates = feature?.geometry?.coordinates;
+
+                        if (coordinates != null)
+                        {
+                            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: espgNumber);
+                            var polyline = geometryFactory.CreateLineString(coordinates[0].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
+
+                            var newGeoDatum = new DataModel.Database.GeoDatum
+                            {
+                                Id = 0,
+                                Geom = polyline,
+                                ParameterKey = ForeignKey,
+                                Parameter = JsonSerializer.Serialize(feature?.properties)
+                            };
+                            context.GeoData.Add(newGeoDatum);
+                        }
+                        if (i % 1000 == 0)
+                        {
+                            Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
+                        }
+                    }
+                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+                    context.SaveChanges();
+                    break;
+                case Geometry_Type.raster:
+                    throw new Exception("Raster Data is currently not supportet");
+                default:
+                    throw new Exception ("Given Geometry_Type is NOT supportet!");
             }
 
-            context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
-            context.SaveChanges();
             transaction.Commit();
             Console.WriteLine("Database Updated!");
         }
@@ -95,7 +132,6 @@ namespace GERMAG.Server.DataPulling
         private static partial Regex ESPGRegexShrink();
         [GeneratedRegex("(\\d+)")]
         private static partial Regex ESPGRegexNumber();
-
     }
 }
 
