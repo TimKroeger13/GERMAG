@@ -29,7 +29,7 @@ CREATE TYPE range AS ENUM ('near_range','far_range');
 
 CREATE TYPE service AS ENUM ('restrictive','efficiency');
 
-CREATE TYPE geometry_type AS ENUM ('polygon','polyline','raster');
+CREATE TYPE geometry_type AS ENUM ('point','polygon','polyline','raster');
 
 CREATE TABLE geothermal_parameter (
 id SERIAL PRIMARY KEY NOT NULL,
@@ -130,6 +130,35 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getreq
     VALUES ('ground_water_height_tension','berlin','near_range','polyline','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_gwgleichen_panke?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_gwgleichen_panke&outputFormat=application/json','efficiency');
 
 
+-- Grundwassergüte Ammonium
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_ammonium','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_4amm?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_4amm&outputFormat=application/json','restrictive');
+
+-- Grundwassergüte Bor
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_bor','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_8bor?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_8bor&outputFormat=application/json','restrictive');
+
+-- Grundwassergüte Chlor
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_chlor','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_2chlo?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_2chlo&outputFormat=application/json','restrictive');
+
+-- Grundwassergüte Elektrische Leitfähigkeit
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('electrical_con','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_1leit?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_1leit&outputFormat=application/json','restrictive');
+
+-- Grundwassergüte Kalium
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_kalium','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_6kal?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_6kal&outputFormat=application/json','restrictive');
+
+-- Grundwassergüte Ortho-Phosphat
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_ortho_phosphat','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_7oph?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_7oph&outputFormat=application/json','restrictive');
+
+-- Grundwassergüte Sulfat
+INSERT INTO geothermal_parameter (typeofdata, area, range, geometry_type, getrequest, service)
+    VALUES ('water_sulfat','berlin','near_range','point','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_3sul?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_3sul&outputFormat=application/json','restrictive');
+
+
 ````
 ````
 DROP TABLE geo_data;
@@ -138,4 +167,5 @@ DROP TYPE typeofdata;
 DROP TYPE area;
 DROP TYPE range;
 DROP TYPE service;
+DROP TYPE geometry_type ;
 ````
