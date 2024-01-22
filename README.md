@@ -54,8 +54,8 @@ CREATE TABLE geo_data
     CONSTRAINT parameter_key FOREIGN KEY (parameter_key)
         REFERENCES public.geothermal_parameter (id)
 );
-
-
+````
+````
 --Flurstücke
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('land_parcels','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_alkis?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_alkis&outputFormat=application/json','restrictive');
