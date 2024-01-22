@@ -20,12 +20,12 @@ namespace GERMAG.Server.DataPulling
 {
     public interface IDatabaseUpdater
     {
-        void UpdateDatabase(Root json, int ForeignKey, Geometry_Type Geometry_Type);
+        void UpdateDatabase(Root json, int ForeignKey);
     }
 
     public partial class DatabaseUpdater(DataContext context) : IDatabaseUpdater
     {
-        public void UpdateDatabase(Root json, int ForeignKey, Geometry_Type CurrentGeometryType)
+        public void UpdateDatabase(Root json, int ForeignKey)
         {
             using var transaction = context.Database.BeginTransaction();
 
@@ -43,6 +43,33 @@ namespace GERMAG.Server.DataPulling
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
             var i = 0;
             var totalLength = 0;
+
+            //find GeometryType
+
+            Geometry_Type CurrentGeometryType = Geometry_Type.empty;
+
+            var GeometryTypeNameAsString = json?.features?[0]?.geometry?.type;
+
+            if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString == "Point")
+            {
+                if (GeometryTypeNameAsString == "Polygon")
+                {
+                    CurrentGeometryType = Geometry_Type.polygon;
+                }
+                if (GeometryTypeNameAsString == "LineString")
+                {
+                    CurrentGeometryType = Geometry_Type.polyline;
+                }
+                if (GeometryTypeNameAsString == "Point")
+                {
+                    CurrentGeometryType = Geometry_Type.point;
+                }
+                context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Geometry_Type = CurrentGeometryType;
+            }
+            else
+            {
+                throw new Exception("No Geometry Type in the webrequest found thats matches a known Type");
+            }
 
             switch (CurrentGeometryType)
             {
@@ -68,10 +95,8 @@ namespace GERMAG.Server.DataPulling
                                     var holeLinearRing = geometryFactory.CreateLinearRing(coordinates[k].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
                                     holes.Add(holeLinearRing);
                                 }
-
                                 polygon = geometryFactory.CreatePolygon(exteriorLinearRing, holes.ToArray());
                             }
-
                             var newGeoDatum = new DataModel.Database.GeoDatum
                             {
                                 Id = 0,

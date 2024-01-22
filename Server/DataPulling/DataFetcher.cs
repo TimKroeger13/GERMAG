@@ -75,7 +75,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
                 var jsonData_Root = jsonDeserializeSwitch.ChooseDeserializationJson(SeriallizedInputJson, allGeothermalParameters[i].Type, Format);
 
                 Console.WriteLine("Insert Data into Database: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
-                databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id, allGeothermalParameters[i].Geometry_Type);
+                databaseUpdater.UpdateDatabase(jsonData_Root, allGeothermalParameters[i].Id);
 
                 context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).Hash = hash;
                 context.SaveChanges();

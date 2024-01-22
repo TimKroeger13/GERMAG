@@ -19,5 +19,5 @@ public class GeothermalParameterModel
     public Area Area { get; set; }
     public Range Range { get; set; }
     public Service Service { get; set; }
-    public Geometry_Type Geometry_Type { get; set; }
+    public Geometry_Type? Geometry_Type { get; set; }
 }

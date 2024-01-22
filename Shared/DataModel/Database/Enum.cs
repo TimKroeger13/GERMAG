@@ -65,5 +65,6 @@ public enum Geometry_Type
     point,
     polygon,
     polyline,
-    raster
+    raster,
+    empty
 }
