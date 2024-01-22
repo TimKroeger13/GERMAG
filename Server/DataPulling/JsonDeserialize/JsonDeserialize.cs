@@ -7,120 +7,123 @@ namespace GERMAG.Server.DataPulling.JsonDeserialize;
 
 public interface IJsonDeserialize
 {
-    Root ChooseDeserializationJson(string SerializedInputJson, TypeOfData typeOfData, JsonFormat format);
+    Root DeserializeJson(string SerializedInputJson, TypeOfData typeOfData, JsonFormat format);
 }
-#pragma warning disable IDE1006 // Naming Styles
+//#pragma warning disable IDE1006 // Naming Styles
 public class Crs
 {
-    public string? type { get; set; }
-    public Properties? properties { get; set; }
+    public string? Type { get; set; }
+    public Properties? Properties { get; set; }
 }
 public class Feature
 {
-    public string? type { get; set; }
-    public string? id { get; set; }
-    public Geometry? geometry { get; set; }
-    public Properties? properties { get; set; }
-    public string? geometry_name { get; set; }
-    public List<double>? bbox { get; set; }
+    public string? Type { get; set; }
+    public string? Id { get; set; }
+    public Geometry? Geometry { get; set; }
+    public Properties? Properties { get; set; }
+    public string? Geometry_name { get; set; }
+    public List<double>? Bbox { get; set; }
 }
 public class Geometry
 {
-    public string? type { get; set; }
-    public List<double>? coordinatesSingle { get; set; }
-    public List<List<double>>? coordinatesShort { get; set; }
-    public List<List<List<double>>>? coordinates { get; set; }
-    public List<List<List<List<double>>>>? coordinatesLong { get; set; }
+    public string? Type { get; set; }
+    public List<double>? CoordinatesSingle { get; set; }
+    public List<List<double>>? CoordinatesShort { get; set; }
+    public List<List<List<double>>>? Coordinates { get; set; }
+    public List<List<List<List<double>>>>? CoordinatesLong { get; set; }
 }
 public class Properties
 {
-    public string? gridcode { get; set; }
-    public string? la_100txt { get; set; }
-    public string? name { get; set; }
-    public string? la_100 { get; set; }
-    public string? text { get; set; }
-    public string? bezeich { get; set; }
-    public string? afl { get; set; }
-    public string? fsko { get; set; }
-    public string? zae { get; set; }
-    public string? nen { get; set; }
-    public string? gmk { get; set; }
-    public string? namgmk { get; set; }
-    public string? fln { get; set; }
-    public string? gdz { get; set; }
-    public string? namgem { get; set; }
-    public string? zde { get; set; }
-    public string? dst { get; set; }
-    public DateTime? beg { get; set; }
-    public DateTime? statusdat { get; set; }
-    public string? uuid { get; set; }
-    public int? importid { get; set; }
-    public string? hoehe { get; set; }
-    public string? herkunft { get; set; }
-    public string? name_karte { get; set; }
-    public string? nh4 { get; set; }
-    public string? lf { get; set; }
-    public string? cl { get; set; }
-    public string? po4 { get; set; }
-    public string? so4 { get; set; }
-    public string? k { get; set; }
-    public string? b { get; set; }
-    public string? csv { get; set; }
-    public string? point_x { get; set; }
-    public string? point_y { get; set; }
-    public string? invhyas { get; set; }
-    public string? invname { get; set; }
-    public string? eigentuemer { get; set; }
-    public string? messnetz_klartext { get; set; }
-    public string? zcoordb { get; set; }
-    public string? invmbeg { get; set; }
-    public string? invzbeg { get; set; }
-    public string? invzend { get; set; }
-    public string? xcoord { get; set; }
-    public string? ycoord { get; set; }
-    public string? grwtemp_text { get; set; }
-    public string? wasserwerk { get; set; }
-    public string? gebietsnr { get; set; }
-    public string? zone { get; set; }
-    public string? verordnung { get; set; }
-    public string? datum { get; set; }
-    public string? gvbl { get; set; }
-    public string? veror_link { get; set; }
-    public string? ae_datum { get; set; }
-    public string? ae_gvbl { get; set; }
-    public string? zehgw_m_tx { get; set; }
+    public string? Gridcode { get; set; }
+    public string? La_100txt { get; set; }
+    public string? Name { get; set; }
+    public string? La_100 { get; set; }
+    public string? Text { get; set; }
+    public string? Bezeich { get; set; }
+    public string? Afl { get; set; }
+    public string? Fsko { get; set; }
+    public string? Zae { get; set; }
+    public string? Nen { get; set; }
+    public string? Gmk { get; set; }
+    public string? Namgmk { get; set; }
+    public string? Fln { get; set; }
+    public string? Gdz { get; set; }
+    public string? Namgem { get; set; }
+    public string? Zde { get; set; }
+    public string? Dst { get; set; }
+    public DateTime? Beg { get; set; }
+    public DateTime? Statusdat { get; set; }
+    public string? Uuid { get; set; }
+    public int? Importid { get; set; }
+    public string? Hoehe { get; set; }
+    public string? Herkunft { get; set; }
+    public string? Name_karte { get; set; }
+    public string? Nh4 { get; set; }
+    public string? Lf { get; set; }
+    public string? Cl { get; set; }
+    public string? Po4 { get; set; }
+    public string? So4 { get; set; }
+    public string? K { get; set; }
+    public string? B { get; set; }
+    public string? Csv { get; set; }
+    public string? Point_x { get; set; }
+    public string? Point_y { get; set; }
+    public string? Invhyas { get; set; }
+    public string? Invname { get; set; }
+    public string? Eigentuemer { get; set; }
+    public string? Messnetz_klartext { get; set; }
+    public string? Zcoordb { get; set; }
+    public string? Invmbeg { get; set; }
+    public string? Invzbeg { get; set; }
+    public string? Invzend { get; set; }
+    public string? Xcoord { get; set; }
+    public string? Ycoord { get; set; }
+    public string? Grwtemp_text { get; set; }
+    public string? Wasserwerk { get; set; }
+    public string? Gebietsnr { get; set; }
+    public string? Zone { get; set; }
+    public string? Verordnung { get; set; }
+    public string? Datum { get; set; }
+    public string? Gvbl { get; set; }
+    public string? Veror_link { get; set; }
+    public string? Ae_datum { get; set; }
+    public string? Ae_gvbl { get; set; }
+    public string? Zehgw_m_tx { get; set; }
 }
 public class Root
 {
-    public string? type { get; set; }
-    public List<double>? bbox { get; set; }
-    public int? totalFeatures { get; set; }
-    public List<Feature>? features { get; set; }
-    public Crs? crs { get; set; }
-    public int? numberMatched { get; set; }
-    public int? numberReturned { get; set; }
-    public DateTime? timeStamp { get; set; }
+    public string? Type { get; set; }
+    public List<double>? Bbox { get; set; }
+    public int? TotalFeatures { get; set; }
+    public List<Feature>? Features { get; set; }
+    public Crs? Crs { get; set; }
+    public int? NumberMatched { get; set; }
+    public int? NumberReturned { get; set; }
+    public DateTime? TimeStamp { get; set; }
 }
-#pragma warning restore IDE1006 // Naming Styles
+//#pragma warning restore IDE1006 // Naming Styles
 
 public class JsonDeserialize() : IJsonDeserialize
 {
-    public Root ChooseDeserializationJson(string SerializedInputJson, TypeOfData typeOfData, JsonFormat format)
+    public Root DeserializeJson(string SerializedInputJson, TypeOfData typeOfData, JsonFormat format)
     {
-        Root? jsonData_Root = JsonSerializer.Deserialize<Root>(SerializedInputJson) ?? throw new Exception("No wfs found (root)");
+        var jsonData_Root = JsonSerializer.Deserialize<Root>(SerializedInputJson, new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true,
+        }) ?? throw new Exception("No wfs found (root)");
 
         if (format == JsonFormat.long_coordiantes)
         {
-            if (jsonData_Root.features?.Count > 0)
+            if (jsonData_Root.Features?.Count > 0)
             {
-                foreach (var feature in jsonData_Root.features)
+                foreach (var feature in jsonData_Root.Features)
                 {
-                    if (feature.geometry != null)
+                    if (feature.Geometry != null)
                     {
-                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesLong != null)
+                        if (feature.Geometry.Coordinates == null && feature.Geometry.CoordinatesLong != null)
                         {
-                            feature.geometry.coordinates = CopyCoordinateLongsToCoordinates(feature.geometry.coordinatesLong);
-                            feature.geometry.coordinatesLong = null;
+                            feature.Geometry.Coordinates = CopyCoordinateLongsToCoordinates(feature.Geometry.CoordinatesLong);
+                            feature.Geometry.CoordinatesLong = null;
                         }
                     }
                 }
@@ -128,16 +131,16 @@ public class JsonDeserialize() : IJsonDeserialize
         }
         if (format == JsonFormat.short_coordiantes)
         {
-            if (jsonData_Root.features?.Count > 0)
+            if (jsonData_Root.Features?.Count > 0)
             {
-                foreach (var feature in jsonData_Root.features)
+                foreach (var feature in jsonData_Root.Features)
                 {
-                    if (feature.geometry != null)
+                    if (feature.Geometry != null)
                     {
-                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesShort != null)
+                        if (feature.Geometry.Coordinates == null && feature.Geometry.CoordinatesShort != null)
                         {
-                            feature.geometry.coordinates = CopyCoordinateShortToCoordinates(feature.geometry.coordinatesShort);
-                            feature.geometry.coordinatesShort = null;
+                            feature.Geometry.Coordinates = CopyCoordinateShortToCoordinates(feature.Geometry.CoordinatesShort);
+                            feature.Geometry.CoordinatesShort = null;
                         }
                     }
                 }
@@ -145,17 +148,17 @@ public class JsonDeserialize() : IJsonDeserialize
         }
         if (format == JsonFormat.single_coordiantes)
         {
-            if (jsonData_Root.features?.Count > 0)
+            if (jsonData_Root.Features?.Count > 0)
             {
-                foreach (var feature in jsonData_Root.features)
+                foreach (var feature in jsonData_Root.Features)
                 {
-                    if (feature.geometry != null)
+                    if (feature.Geometry != null)
                     {
-                        if (feature.geometry.coordinates == null && feature.geometry.coordinatesSingle != null)
+                        if (feature.Geometry.Coordinates == null && feature.Geometry.CoordinatesSingle != null)
                         {
-                            var doubleList = feature.geometry.coordinatesSingle;
-                            feature.geometry.coordinates = [[feature.geometry.coordinatesSingle!]];
-                            feature.geometry.coordinatesSingle = null;
+                            var doubleList = feature.Geometry.CoordinatesSingle;
+                            feature.Geometry.Coordinates = [[feature.Geometry.CoordinatesSingle!]];
+                            feature.Geometry.CoordinatesSingle = null;
                         }
                     }
                 }

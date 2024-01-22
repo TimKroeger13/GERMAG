@@ -25,46 +25,46 @@ namespace GERMAG.Server.DataPulling
 
     public partial class DatabaseUpdater(DataContext context) : IDatabaseUpdater
     {
-        public void UpdateDatabase(Root json, int ForeignKey)
+        public void UpdateDatabase(Root json, int foreignKey)
         {
             using var transaction = context.Database.BeginTransaction();
 
-            var espgStringRaw = json.crs!.properties!.name;
+            var espgStringRaw = json.Crs?.Properties?.Name ?? throw new Exception ("SRID not found");
             var espgStringRegex = ESPGRegexNumber().Match(ESPGRegexShrink().Replace(espgStringRaw ?? "0", ":"));
             var espgString = espgStringRegex.Value;
 
-            var espgNumber = Int32.Parse(espgString);
+            var espgNumber = int.Parse(espgString);
 
-            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == ForeignKey);
+            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey);
             context.GeoData.RemoveRange(entriesToRemove);
             context.SaveChanges();
             // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 
-            context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
+            context.GeothermalParameter.First(gp => gp.Id == foreignKey).Srid = espgNumber;
             var i = 0;
-            var totalLength = json?.features?.Count ?? 0;
+            var totalLength = json?.Features?.Count ?? 0;
 
             //find GeometryType
 
             Geometry_Type CurrentGeometryType = Geometry_Type.empty;
 
-            var GeometryTypeNameAsString = json?.features?[0]?.geometry?.type;
+            var geometryTypeNameAsString = json?.Features?[0]?.Geometry?.Type;
 
-            if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString ==  "MultiLineString" || GeometryTypeNameAsString == "Point" || GeometryTypeNameAsString == "MultiPolygon")
+            if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "LineString" || geometryTypeNameAsString ==  "MultiLineString" || geometryTypeNameAsString == "Point" || geometryTypeNameAsString == "MultiPolygon")
             {
-                if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "MultiPolygon")
+                if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "MultiPolygon")
                 {
                     CurrentGeometryType = Geometry_Type.polygon;
                 }
-                if (GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString == "MultiLineString")
+                if (geometryTypeNameAsString == "LineString" || geometryTypeNameAsString == "MultiLineString")
                 {
                     CurrentGeometryType = Geometry_Type.polyline;
                 }
-                if (GeometryTypeNameAsString == "Point")
+                if (geometryTypeNameAsString == "Point")
                 {
                     CurrentGeometryType = Geometry_Type.point;
                 }
-                context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Geometry_Type = CurrentGeometryType;
+                context.GeothermalParameter.First(gp => gp.Id == foreignKey).Geometry_Type = CurrentGeometryType;
             }
             else
             {
@@ -75,10 +75,10 @@ namespace GERMAG.Server.DataPulling
             {
                 case Geometry_Type.polygon:
                     Console.WriteLine("Transfering data to database");
-                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+                    foreach (var feature in json?.Features ?? throw new Exception("DatabaseUpdater: feature not found!"))
                     {
                         i++;
-                        var coordinates = feature?.geometry?.coordinates;
+                        var coordinates = feature?.Geometry?.Coordinates;
 
                         if (coordinates != null)
                         {
@@ -101,8 +101,8 @@ namespace GERMAG.Server.DataPulling
                             {
                                 Id = 0,
                                 Geom = polygon,
-                                ParameterKey = ForeignKey,
-                                Parameter = JsonSerializer.Serialize(feature?.properties)
+                                ParameterKey = foreignKey,
+                                Parameter = JsonSerializer.Serialize(feature?.Properties)
                             };
                             context.GeoData.Add(newGeoDatum);
                         }
@@ -111,15 +111,15 @@ namespace GERMAG.Server.DataPulling
                             Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
                         }
                     }
-                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+                    context.GeothermalParameter.First(gp => gp.Id == foreignKey).LastUpdate = DateTime.Now;
                     context.SaveChanges();
                     break;
                 case Geometry_Type.polyline:
                     Console.WriteLine("Transfering data to database");
-                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+                    foreach (var feature in json?.Features ?? throw new Exception("DatabaseUpdater: feature not found!"))
                     {
                         i++;
-                        var coordinates = feature?.geometry?.coordinates;
+                        var coordinates = feature?.Geometry?.Coordinates;
 
                         if (coordinates != null)
                         {
@@ -130,8 +130,8 @@ namespace GERMAG.Server.DataPulling
                             {
                                 Id = 0,
                                 Geom = polyline,
-                                ParameterKey = ForeignKey,
-                                Parameter = JsonSerializer.Serialize(feature?.properties)
+                                ParameterKey = foreignKey,
+                                Parameter = JsonSerializer.Serialize(feature?.Properties)
                             };
                             context.GeoData.Add(newGeoDatum);
                         }
@@ -140,15 +140,15 @@ namespace GERMAG.Server.DataPulling
                             Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
                         }
                     }
-                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+                    context.GeothermalParameter.First(gp => gp.Id == foreignKey).LastUpdate = DateTime.Now;
                     context.SaveChanges();
                     break;
                 case Geometry_Type.point:
                     Console.WriteLine("Transfering data to database");
-                    foreach (var feature in json?.features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+                    foreach (var feature in json?.Features ?? throw new Exception("DatabaseUpdater: feature not found!"))
                     {
                         i++;
-                        var coordinates = feature?.geometry?.coordinates;
+                        var coordinates = feature?.Geometry?.Coordinates;
 
                         if (coordinates != null)
                         {
@@ -159,8 +159,8 @@ namespace GERMAG.Server.DataPulling
                             {
                                 Id = 0,
                                 Geom = point,
-                                ParameterKey = ForeignKey,
-                                Parameter = JsonSerializer.Serialize(feature?.properties)
+                                ParameterKey = foreignKey,
+                                Parameter = JsonSerializer.Serialize(feature?.Properties)
                             };
                             context.GeoData.Add(newGeoDatum);
                         }
@@ -169,7 +169,7 @@ namespace GERMAG.Server.DataPulling
                             Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
                         }
                     }
-                    context.GeothermalParameter.First(gp => gp.Id == ForeignKey).LastUpdate = DateTime.Now;
+                    context.GeothermalParameter.First(gp => gp.Id == foreignKey).LastUpdate = DateTime.Now;
                     context.SaveChanges();
                     break;
                 case Geometry_Type.raster:
