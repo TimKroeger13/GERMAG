@@ -158,6 +158,11 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('water_sulfat','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_3sul?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_3sul&outputFormat=application/json','restrictive');
 
+-- Grundwassermessstellen
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('groundwater_measuring_points','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sp_gw_messstellen?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sp_gw_messstellen&outputFormat=application/json','restrictive');
+
+
 
 ````
 ````
