@@ -42,7 +42,7 @@ namespace GERMAG.Server.DataPulling
 
             context.GeothermalParameter.First(gp => gp.Id == ForeignKey).Srid = espgNumber;
             var i = 0;
-            var totalLength = 0;
+            var totalLength = json?.features?.Count ?? 0;
 
             //find GeometryType
 
@@ -50,13 +50,13 @@ namespace GERMAG.Server.DataPulling
 
             var GeometryTypeNameAsString = json?.features?[0]?.geometry?.type;
 
-            if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString == "Point" || GeometryTypeNameAsString == "MultiPolygon")
+            if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString ==  "MultiLineString" || GeometryTypeNameAsString == "Point" || GeometryTypeNameAsString == "MultiPolygon")
             {
                 if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "MultiPolygon")
                 {
                     CurrentGeometryType = Geometry_Type.polygon;
                 }
-                if (GeometryTypeNameAsString == "LineString")
+                if (GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString == "MultiLineString")
                 {
                     CurrentGeometryType = Geometry_Type.polyline;
                 }
