@@ -19,7 +19,7 @@ CREATE TYPE typeofdata AS ENUM ('land_parcels','dgm','geo_poten_restrict','veg_h
 								'geo_poten_100m_with_1800ha','geo_poten_80m_with_2400ha','geo_poten_80m_with_1800ha',
 								'geo_poten_60m_with_2400ha','geo_poten_60m_with_1800ha','geo_poten_40m_with_2400ha',
 								'geo_poten_40m_with_1800ha','thermal_con_40','thermal_con_60','thermal_con_80',
-								'thermal_con_100');
+								'thermal_con_100','groundwater_measuring_points');
 
 
 
