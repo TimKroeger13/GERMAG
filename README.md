@@ -19,7 +19,7 @@ CREATE TYPE typeofdata AS ENUM ('land_parcels','dgm','geo_poten_restrict','veg_h
 								'geo_poten_100m_with_1800ha','geo_poten_80m_with_2400ha','geo_poten_80m_with_1800ha',
 								'geo_poten_60m_with_2400ha','geo_poten_60m_with_1800ha','geo_poten_40m_with_2400ha',
 								'geo_poten_40m_with_1800ha','thermal_con_40','thermal_con_60','thermal_con_80',
-								'thermal_con_100');
+								'thermal_con_100','groundwater_measuring_points');
 
 
 
@@ -54,8 +54,8 @@ CREATE TABLE geo_data
     CONSTRAINT parameter_key FOREIGN KEY (parameter_key)
         REFERENCES public.geothermal_parameter (id)
 );
-
-
+````
+````
 --Flurstücke
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('land_parcels','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_alkis?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wfs_alkis&outputFormat=application/json','restrictive');
@@ -158,6 +158,36 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
 INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('water_sulfat','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sw02_04_3sul?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sw02_04_3sul&outputFormat=application/json','restrictive');
 
+-- Grundwassermessstellen
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('groundwater_measuring_points','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/sp_gw_messstellen?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:sp_gw_messstellen&outputFormat=application/json','restrictive');
+
+
+--Grundwassertemperatur - Durchschnittstemperatur des Grundwasser 20 - 100 m
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('mean_water_temp_20to100','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s02_14_06gwdtemp_20_100m_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s02_14_06gwdtemp_20_100m_2020&outputFormat=application/json','efficiency');
+
+--Grundwassertemperatur 20 m unter Geländeoberfläche
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('mean_water_temp_20','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s02_14_01gwtemp_20m_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s02_14_01gwtemp_20m_2020&outputFormat=application/json','efficiency');
+
+--Grundwassertemperatur 40 m unter Geländeoberfläche
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('mean_water_temp_40','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s02_14_02gwtemp_40m_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s02_14_02gwtemp_40m_2020&outputFormat=application/json','efficiency');
+
+--Grundwassertemperatur 60 m unter Geländeoberfläche
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('mean_water_temp_60','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s02_14_03gwtemp_60m_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s02_14_03gwtemp_60m_2020&outputFormat=application/json','efficiency');
+
+
+--Wasserschutzgebiete
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('water_protec_areas','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wsg?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wsg&outputFormat=application/json','restrictive');
+
+
+--Zu erwartender höchster Grundwasserstand (zeHGW)
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('expe_max_groundwater_hight','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/wfs02_19zeHGW2015?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:wfs02_19zeHGW2015&outputFormat=application/json','restrictive');
 
 ````
 ````
