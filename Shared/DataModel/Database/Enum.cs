@@ -37,7 +37,8 @@ public enum TypeOfData
     thermal_con_40,
     thermal_con_60,
     thermal_con_80,
-    thermal_con_100
+    thermal_con_100,
+    groundwater_measuring_points
 }
 public enum Area
 {

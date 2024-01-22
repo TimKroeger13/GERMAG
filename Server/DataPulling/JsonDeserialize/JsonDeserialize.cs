@@ -68,6 +68,27 @@ public class Properties
     public string? csv { get; set; }
     public string? point_x { get; set; }
     public string? point_y { get; set; }
+    public string? invhyas { get; set; }
+    public string? invname { get; set; }
+    public string? eigentuemer { get; set; }
+    public string? messnetz_klartext { get; set; }
+    public string? zcoordb { get; set; }
+    public string? invmbeg { get; set; }
+    public string? invzbeg { get; set; }
+    public string? invzend { get; set; }
+    public string? xcoord { get; set; }
+    public string? ycoord { get; set; }
+    public string? grwtemp_text { get; set; }
+    public string? wasserwerk { get; set; }
+    public string? gebietsnr { get; set; }
+    public string? zone { get; set; }
+    public string? verordnung { get; set; }
+    public string? datum { get; set; }
+    public string? gvbl { get; set; }
+    public string? veror_link { get; set; }
+    public string? ae_datum { get; set; }
+    public string? ae_gvbl { get; set; }
+    public string? zehgw_m_tx { get; set; }
 }
 public class Root
 {

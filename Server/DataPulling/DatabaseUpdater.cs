@@ -50,9 +50,9 @@ namespace GERMAG.Server.DataPulling
 
             var GeometryTypeNameAsString = json?.features?[0]?.geometry?.type;
 
-            if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString == "Point")
+            if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "LineString" || GeometryTypeNameAsString == "Point" || GeometryTypeNameAsString == "MultiPolygon")
             {
-                if (GeometryTypeNameAsString == "Polygon")
+                if (GeometryTypeNameAsString == "Polygon" || GeometryTypeNameAsString == "MultiPolygon")
                 {
                     CurrentGeometryType = Geometry_Type.polygon;
                 }
