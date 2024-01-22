@@ -185,6 +185,9 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('water_protec_areas','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wsg?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wsg&outputFormat=application/json','restrictive');
 
 
+--Zu erwartender höchster Grundwasserstand (zeHGW)
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('expe_max_groundwater_hight','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/wfs02_19zeHGW2015?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:wfs02_19zeHGW2015&outputFormat=application/json','restrictive');
 
 ````
 ````
