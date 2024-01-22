@@ -180,6 +180,11 @@ INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
     VALUES ('mean_water_temp_60','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s02_14_03gwtemp_60m_2020?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s02_14_03gwtemp_60m_2020&outputFormat=application/json','efficiency');
 
 
+--Wasserschutzgebiete
+INSERT INTO geothermal_parameter (typeofdata, area, range, getrequest, service)
+    VALUES ('water_protec_areas','berlin','near_range','https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wsg?service=wfs&version=2.0.0&request=GetFeature&typeNames=fis:s_wsg&outputFormat=application/json','restrictive');
+
+
 
 ````
 ````
