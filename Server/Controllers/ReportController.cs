@@ -18,7 +18,7 @@ public class ReportController(ILogger<ReportController> logger) : ControllerBase
     {
         return new[] { new Report
         {
-            Test = "testStringReturn"
+            Test = "Hier könnten ihre geothermischen Daten stehen!"
         }};
 
     }

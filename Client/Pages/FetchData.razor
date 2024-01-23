@@ -19,32 +19,32 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Temp. (F*Pi)</th>
-                <th>Summary</th>
+                <th>Id</th>
+                <th>Type of Data</th>
+                <th>Area</th>
+                <th>Range</th>
+                <th>Geometry Type</th>
+                <th>Service</th>
+                <th>EPSG</th>
+                <th>Last Ping</th>
+                <th>Last Update</th>
+                <th>Getrequest</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@(forecast.TemperatureF * Math.PI)</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
             @foreach (var model in _geoModels)
             {
                 <tr>
-                    <td>@model.LastPing?.ToShortDateString()</td>
-                    <td>@model.Getrequest</td>
-                    <td>@model.LastPing</td>
-                    <td>@model.Srid</td>
                     <td>@model.Id</td>
+                    <td>@model.Type</td>
+                    <td>@model.Area</td>
+                    <td>@model.Range</td>
+                    <td>@model.Geometry_Type</td>
+                    <td>@model.Service</td>
+                    <td>@model.Srid</td>
+                    <td>@model.LastPing?.ToShortDateString()</td>
+                    <td>@model.LastUpdate?.ToShortDateString()</td>
+                    <td>@model.Getrequest</td>
                 </tr>
             }
         </tbody>
