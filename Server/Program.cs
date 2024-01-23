@@ -3,6 +3,8 @@ using GERMAG.Server.Core.Configurations;
 using GERMAG.Server.DataPulling;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using GERMAG.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,10 @@ IEnviromentConfiguration configuration = builder.Environment.IsDevelopment() ?
     new DebugConfiguration(options) : new ReleaseConfiguration(options);
 builder.Services.AddSingleton(configuration);
 builder.Services.AddTransient<HttpClient>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsPolicies.GetAllowed,policy => policy.WithMethods("GET").AllowAnyHeader().AllowAnyOrigin());
+});
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
 builder.Services.AddTransient<IJsonDeserialize, JsonDeserialize>();
@@ -48,6 +54,7 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors(CorsPolicies.GetAllowed);
 
 app.MapRazorPages();
 app.MapControllers();

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using GERMAG.Shared;
+using Microsoft.AspNetCore.Cors;
 
 namespace GERMAG.Server.Controllers;
 
@@ -15,6 +16,7 @@ public class WeatherForecastController(ILogger<WeatherForecastController> logger
     private readonly ILogger<WeatherForecastController> _logger = logger;
 
     [HttpGet("sampledata")]
+    [EnableCors(CorsPolicies.GetAllowed)]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
