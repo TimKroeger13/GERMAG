@@ -6,6 +6,9 @@ namespace GERMAG.Server.ReportCreation;
 public class ParameterRoot
 {
     public string? Gridcode { get; set; }
+    public string? La_40txt { get; set; }
+    public string? La_60txt { get; set; }
+    public string? La_80txt { get; set; }
     public object? La_100txt { get; set; }
     public object? Name { get; set; }
     public object? La_100 { get; set; }
