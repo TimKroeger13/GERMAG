@@ -2,24 +2,29 @@
 using GERMAG.Shared;
 using Microsoft.AspNetCore.Cors;
 using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.InteropServices;
+using GERMAG.Server.ReportCreation;
 
 namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 
-public class ReportController(ILogger<ReportController> logger) : ControllerBase
+public class ReportController(ICreateReportAsync createReport) : ControllerBase
 {
-    private readonly ILogger<ReportController> _logger = logger;
-
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
-    public IEnumerable<Report> Get()
+    public async Task<IEnumerable<Report>> GetReport()
     {
-        return new[] { new Report
-        {
-            Test = "Hier könnten ihre geothermischen Daten stehen!"
-        }};
-
+        return await createReport.CreateGeothermalReportAsync();
     }
 }
+
+/*public IEnumerable<Report> Get()
+{
+    return new[] { new Report
+    {
+        Test = "Hier könnten ihre geothermischen Daten stehen!"
+    }};
+
+}*/

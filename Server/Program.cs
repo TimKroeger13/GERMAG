@@ -5,6 +5,7 @@ using GERMAG.Server.DataPulling.JsonDeserialize;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using GERMAG.Server;
+using GERMAG.Server.ReportCreation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
 builder.Services.AddTransient<IJsonDeserialize, JsonDeserialize>();
+builder.Services.AddTransient<ICreateReportAsync, CreateReport>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(configuration.DatabaseConnection, npg =>
