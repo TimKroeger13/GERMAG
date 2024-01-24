@@ -1,7 +1,9 @@
 ﻿using GERMAG.DataModel.Database;
+using GERMAG.Server.DataPulling.JsonDeserialize;
 using GERMAG.Shared;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
+using System.Text.Json;
 
 namespace GERMAG.Server.ReportCreation;
 
@@ -10,7 +12,7 @@ public interface ICreateReportAsync
     Task<IEnumerable<Report>> CreateGeothermalReportAsync();
 }
 
-public class CreateReport(DataContext context) : ICreateReportAsync
+public class CreateReport(DataContext context, IParameterDeserialator parameterDeserialator) : ICreateReportAsync
 {
     public async Task<IEnumerable<Report>> CreateGeothermalReportAsync()
     {
@@ -46,6 +48,10 @@ public class CreateReport(DataContext context) : ICreateReportAsync
              ig.ParameterKey,
              ig.Parameter,
          }).ToList();
+
+        var jsonData_Root = parameterDeserialator.DeserializeParameters(result[0].Parameter ?? "");
+
+        var b = 3;
 
     }
 

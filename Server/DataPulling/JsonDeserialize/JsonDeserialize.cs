@@ -35,6 +35,9 @@ public class Geometry
 public class Properties
 {
     public string? Gridcode { get; set; }
+    public string? La_40txt { get; set; }
+    public string? La_60txt { get; set; }
+    public string? La_80txt { get; set; }
     public string? La_100txt { get; set; }
     public string? Name { get; set; }
     public string? La_100 { get; set; }
