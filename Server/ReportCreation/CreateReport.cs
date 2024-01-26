@@ -12,49 +12,32 @@ public interface ICreateReportAsync
     Task<IEnumerable<Report>> CreateGeothermalReportAsync();
 }
 
-public class CreateReport(DataContext context, IParameterDeserialator parameterDeserialator) : ICreateReportAsync
+public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoordinate, IParameterDeserialator parameterDeserialator, ICreateReportStructure createReportStructure) : ICreateReportAsync
 {
     public async Task<IEnumerable<Report>> CreateGeothermalReportAsync()
     {
-        FindIntersections();
+        const double Xcor = 392692.7;
+        const double Ycor = 5824271.2;
+        const int Srid = 25833;
 
-        return new[] { new Report
-    {
-        Test = "Hier könnten ihre geothermischen Daten stehen!"
-    }};
-    }
+        var ParameterList = await Task.Run(() => findAllParameterForCoordinate.FindCoordianteParameters(Xcor, Ycor, Srid));
 
+        var jsonData_Parameter = await Task.Run(() => ParameterList.Select(p => parameterDeserialator.DeserializeParameters(p.Parameter ?? ""))
+                                          .ToList());
 
-    private void FindIntersections()
-    {
-        var Xcor = 392692.7;
-        var Ycor = 5824271.2;
-        var Srid = 25833;
+        var mergedList = ParameterList.Zip(jsonData_Parameter, (original, jsonData) =>
+        new CoordinateParameters
+        {
+            Type = original.Type,
+            ParameterKey = original.ParameterKey,
+            Parameter = original.Parameter,
+            JsonDataParameter = jsonData
+        })
+        .ToList();
 
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
-        var point = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
+        var CompleteReport = await Task.Run(() => createReportStructure.CreateReport(mergedList, Xcor, Ycor, Srid));
 
-        var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == 1 && gd.Geom!.Intersects(point)).Select(gd => gd.Geom);
-
-        var IntersectingGeometry = context.GeoData.Where(gd => gd.ParameterKey != 1 && landparcelIntersection.Any(lp => gd.Geom!.Intersects(lp))).Select(gd => new { gd.ParameterKey, gd.Parameter });
-
-        var result = IntersectingGeometry.Join(
-         context.GeothermalParameter,
-         ig => ig.ParameterKey,
-         gp => gp.Id,
-         (ig, gp) => new
-         {
-             gp.Type,
-             ig.ParameterKey,
-             ig.Parameter,
-         }).ToList();
-
-        var jsonData_Root = parameterDeserialator.DeserializeParameters(result[0].Parameter ?? "");
-
-        var b = 3;
+        return CompleteReport;
 
     }
-
-
-
 }

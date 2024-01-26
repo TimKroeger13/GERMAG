@@ -28,6 +28,8 @@ builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
 builder.Services.AddTransient<IJsonDeserialize, JsonDeserialize>();
 builder.Services.AddTransient<ICreateReportAsync, CreateReport>();
 builder.Services.AddTransient<IParameterDeserialator, ParameterDeserialator>();
+builder.Services.AddTransient<IFindAllParameterForCoordinate, FindAllParameterForCoordinate>();
+builder.Services.AddTransient<ICreateReportStructure, CreateReportStructure>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(configuration.DatabaseConnection, npg =>

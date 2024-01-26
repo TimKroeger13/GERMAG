@@ -39,6 +39,7 @@ public class Properties
     public string? La_60txt { get; set; }
     public string? La_80txt { get; set; }
     public string? La_100txt { get; set; }
+    public string? La_100xt { get; set; }
     public string? Name { get; set; }
     public string? La_100 { get; set; }
     public string? Text { get; set; }
