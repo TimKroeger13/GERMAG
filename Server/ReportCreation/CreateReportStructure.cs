@@ -44,12 +44,16 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.geo_poten_restrict:
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_20to100:
+                    _mean_water_temp_20to100 = AppendString(_mean_water_temp_20to100 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_60:
+                    _mean_water_temp_60 = AppendString(_mean_water_temp_60 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_40:
+                    _mean_water_temp_40 = AppendString(_mean_water_temp_40 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_20:
+                    _mean_water_temp_20 = AppendString(_mean_water_temp_20 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_100m_with_2400ha:
                     _geo_poten_100m_with_2400ha = AppendString(_geo_poten_100m_with_2400ha ?? "", CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
@@ -64,7 +68,7 @@ public class CreateReportStructure : ICreateReportStructure
                     _geo_poten_40m_with_2400ha = AppendString(_geo_poten_40m_with_2400ha ?? "", CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_100m_with_1800ha:
-                    _geo_poten_100m_with_1800ha = AppendString(_geo_poten_100m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
+                    _geo_poten_100m_with_1800ha = AppendString(_geo_poten_100m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_100xt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_80m_with_1800ha:
                     _geo_poten_80m_with_1800ha = AppendString(_geo_poten_80m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
