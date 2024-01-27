@@ -30,7 +30,6 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _water_protec_areas = "";
     private String? _land_parcels_bezeichnung = "";
     private String? _land_parcels_gemeinde = "";
-
     public Report[] CreateReport(List<CoordinateParameters> CoordinateParameters, double Xcor, double Ycor, int Srid)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -120,26 +119,26 @@ public class CreateReportStructure : ICreateReportStructure
 
         var report = new[] { new Report
         {
-            geo_poten_100m_with_2400ha = _geo_poten_100m_with_2400ha,
-            geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha,
-            geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha,
-            geo_poten_40m_with_2400ha = _geo_poten_40m_with_2400ha,
-            geo_poten_100m_with_1800ha = _geo_poten_100m_with_1800ha,
-            geo_poten_80m_with_1800ha = _geo_poten_80m_with_1800ha,
-            geo_poten_60m_with_1800ha = _geo_poten_60m_with_1800ha,
-            geo_poten_40m_with_1800ha = _geo_poten_40m_with_1800ha,
-            thermal_con_100 = _thermal_con_100,
-            thermal_con_80 = _thermal_con_80,
-            thermal_con_60 = _thermal_con_60,
-            thermal_con_40 = _thermal_con_40,
-            mean_water_temp_20to100 = _mean_water_temp_20to100,
-            mean_water_temp_60 = _mean_water_temp_60,
-            mean_water_temp_40 = _mean_water_temp_40,
-            mean_water_temp_20 = _mean_water_temp_20,
-            geo_poten_restrict = _geo_poten_restrict,
-            water_protec_areas = _water_protec_areas,
-            land_parcels_bezeichnung = _land_parcels_bezeichnung,
-            land_parcels_gemeinde = _land_parcels_gemeinde
+            Geo_poten_100m_with_2400ha = _geo_poten_100m_with_2400ha,
+            Geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha,
+            Geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha,
+            Geo_poten_40m_with_2400ha = _geo_poten_40m_with_2400ha,
+            Geo_poten_100m_with_1800ha = _geo_poten_100m_with_1800ha,
+            Geo_poten_80m_with_1800ha = _geo_poten_80m_with_1800ha,
+            Geo_poten_60m_with_1800ha = _geo_poten_60m_with_1800ha,
+            Geo_poten_40m_with_1800ha = _geo_poten_40m_with_1800ha,
+            Thermal_con_100 = _thermal_con_100,
+            Thermal_con_80 = _thermal_con_80,
+            Thermal_con_60 = _thermal_con_60,
+            Thermal_con_40 = _thermal_con_40,
+            Mean_water_temp_20to100 = _mean_water_temp_20to100,
+            Mean_water_temp_60 = _mean_water_temp_60,
+            Mean_water_temp_40 = _mean_water_temp_40,
+            Mean_water_temp_20 = _mean_water_temp_20,
+            Geo_poten_restrict = _geo_poten_restrict,
+            Water_protec_areas = _water_protec_areas,
+            Land_parcels_bezeichnung = _land_parcels_bezeichnung,
+            Land_parcels_gemeinde = _land_parcels_gemeinde
         }};
 
         return report;

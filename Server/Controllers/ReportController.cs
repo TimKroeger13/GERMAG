@@ -20,6 +20,20 @@ public class ReportController(ICreateReportAsync createReport) : ControllerBase
     }
 }
 
+
+
+/*public async Task<IEnumerable<Report>> GetReport()
+{
+    return await createReport.CreateGeothermalReportAsync();
+}*/
+
+
+/*public IEnumerable<Report> GetReport()
+{
+    return createReport.CreateGeothermalReportAsync();
+}*/
+
+
 /*public IEnumerable<Report> Get()
 {
     return new[] { new Report

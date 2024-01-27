@@ -37,6 +37,8 @@ public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoor
 
         var CompleteReport = await Task.Run(() => createReportStructure.CreateReport(mergedList, Xcor, Ycor, Srid));
 
+        // await Task.Run(() => 
+
         return CompleteReport;
 
     }
