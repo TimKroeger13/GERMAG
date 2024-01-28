@@ -18,9 +18,13 @@
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+	  <PackageReference Include="NetTopologySuite" Version="2.5.0" />
+	  <PackageReference Include="NetTopologySuite.CoordinateSystems" Version="1.15.3" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
 	  <PackageReference Include="Npgsql.NetTopologySuite" Version="8.0.1" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="8.0.0" />
+	  <PackageReference Include="ProjNet" Version="2.0.0" />
+	  <PackageReference Include="ProjNET4GeoAPI" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>

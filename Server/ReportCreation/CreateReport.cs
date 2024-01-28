@@ -9,17 +9,13 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface ICreateReportAsync
 {
-    Task<IEnumerable<Report>> CreateGeothermalReportAsync();
+    Task<IEnumerable<Report>> CreateGeothermalReportAsync(double Xcor, double Ycor, int Srid);
 }
 
 public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoordinate, IParameterDeserialator parameterDeserialator, ICreateReportStructure createReportStructure) : ICreateReportAsync
 {
-    public async Task<IEnumerable<Report>> CreateGeothermalReportAsync()
+    public async Task<IEnumerable<Report>> CreateGeothermalReportAsync(double Xcor, double Ycor, int Srid)
     {
-        const double Xcor = 392692.7;
-        const double Ycor = 5824271.2;
-        const int Srid = 25833;
-
         var ParameterList = await Task.Run(() => findAllParameterForCoordinate.FindCoordianteParameters(Xcor, Ycor, Srid));
 
         var jsonData_Parameter = await Task.Run(() => ParameterList.Select(p => parameterDeserialator.DeserializeParameters(p.Parameter ?? ""))

@@ -14,31 +14,8 @@ public class ReportController(ICreateReportAsync createReport) : ControllerBase
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
-    public async Task<IEnumerable<Report>> GetReport()
+    public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
     {
-        return await createReport.CreateGeothermalReportAsync();
+        return await createReport.CreateGeothermalReportAsync(Xcor, Ycor, Srid);
     }
 }
-
-
-
-/*public async Task<IEnumerable<Report>> GetReport()
-{
-    return await createReport.CreateGeothermalReportAsync();
-}*/
-
-
-/*public IEnumerable<Report> GetReport()
-{
-    return createReport.CreateGeothermalReportAsync();
-}*/
-
-
-/*public IEnumerable<Report> Get()
-{
-    return new[] { new Report
-    {
-        Test = "Hier könnten ihre geothermischen Daten stehen!"
-    }};
-
-}*/

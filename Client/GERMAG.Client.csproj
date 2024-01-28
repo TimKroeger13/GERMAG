@@ -8,7 +8,9 @@
 
   <ItemGroup>
 	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
-	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />  
+	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+	<PackageReference Include="NetTopologySuite.CoordinateSystems" Version="1.15.3" />
+	<PackageReference Include="ProjNET4GeoAPI" Version="1.4.1" />  
   </ItemGroup>
 
   <ItemGroup>
