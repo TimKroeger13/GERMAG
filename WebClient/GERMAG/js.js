@@ -1,17 +1,22 @@
+proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs");
+proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs");
+
 async function onMapClick(e) {
 
     var clickCoordinates = e.latlng;
 
-    var ReportRequest = await GetRequest(clickCoordinates.lng, clickCoordinates.lat);
+    var transformedCoordinates = proj4("EPSG:4326", "EPSG:25833", [clickCoordinates.lng, clickCoordinates.lat]);
+
+    var ReportRequest = await GetRequest(transformedCoordinates[0], transformedCoordinates[1]);
 
     await CreatPopUp(clickCoordinates,ReportRequest);
-
-    console.log(ReportRequest);
 }
 
 
 async function GetRequest(Xcor, Ycor) {
-    var Srid = 4326;
+    var Srid = 25833;
+
+
 
     const url = `https://localhost:9999/api/report/reportdata?xCor=${Xcor}&yCor=${Ycor}&srid=${Srid}`;
     const response = await fetch(url);

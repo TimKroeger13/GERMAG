@@ -23,21 +23,16 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
 {
     public List<CoordinateParameters> FindCoordianteParameters(double Xcor, double Ycor, int Srid)
     {
+
+
+
+
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
         var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
 
-
-        // Transform point here!
-        // Transform the point to the target SRID (25833)
-        //int targetSrid = 25833;
-        //var transformedPoint = GeometryTransform.TransformPoint(geometryFactory, originalPoint);
-
-
-
-
         var landParcelId = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
-        var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelId && gd.Geom!.Intersects(originalPoint)).Select(gd => new { gd.Geom, gd.Id}).ToList();
+        var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelId && gd.Geom!.Intersects(originalPoint)).Select(gd => new { gd.Geom, gd.Id});
 
         var IntersectingGeometry = context.GeoData.Where(gd => gd.ParameterKey != landParcelId && landparcelIntersection.Any(lp => gd.Geom!.Intersects(lp.Geom))).Select(gd => new { gd.ParameterKey, gd.Parameter });
 
