@@ -23,10 +23,6 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
 {
     public List<CoordinateParameters> FindCoordianteParameters(double Xcor, double Ycor, int Srid)
     {
-
-
-
-
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
         var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
 
