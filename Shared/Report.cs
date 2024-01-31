@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,5 +29,5 @@ public class Report
     public String? Water_protec_areas { get; set; }
     public String? Land_parcel_number { get; set; }
     public String? Land_parcels_gemeinde { get; set; }
-    public String? geometry { get; set; }
+    public String? Geometry { get; set; }
 }

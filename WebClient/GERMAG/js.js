@@ -10,6 +10,10 @@ async function onMapClick(e) {
     var ReportRequest = await GetRequest(transformedCoordinates[0], transformedCoordinates[1]);
 
     await CreatPopUp(clickCoordinates,ReportRequest);
+
+    var LandParvelGeometry = JSON.parse(ReportRequest[0].geometry)
+
+    //return LandParvelGeometry;
 }
 
 async function GetRequest(Xcor, Ycor) {

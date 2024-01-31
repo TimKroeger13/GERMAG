@@ -20,6 +20,7 @@
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
 	  <PackageReference Include="NetTopologySuite" Version="2.5.0" />
 	  <PackageReference Include="NetTopologySuite.CoordinateSystems" Version="1.15.3" />
+	  <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
 	  <PackageReference Include="Npgsql.NetTopologySuite" Version="8.0.1" />
 	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="8.0.0" />

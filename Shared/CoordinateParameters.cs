@@ -1,4 +1,5 @@
 ﻿using GERMAG.DataModel.Database;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,4 +14,5 @@ public class CoordinateParameters
     public int? ParameterKey { get; set; }
     public string? Parameter { get; set; }
     public ParameterRoot? JsonDataParameter { get; set; }
+    public String? Geometry { get; set; }
 }

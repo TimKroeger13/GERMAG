@@ -27,13 +27,13 @@ public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoor
             Type = original.Type,
             ParameterKey = original.ParameterKey,
             Parameter = original.Parameter,
+            Geometry = original.Geometry,
             JsonDataParameter = jsonData
         })
         .ToList();
 
         var CompleteReport = await Task.Run(() => createReportStructure.CreateReport(mergedList, Xcor, Ycor, Srid));
 
-        // await Task.Run(() => 
 
         return CompleteReport;
 

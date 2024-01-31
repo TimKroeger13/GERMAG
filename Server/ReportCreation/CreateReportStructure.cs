@@ -1,4 +1,5 @@
 ﻿using GERMAG.Shared;
+using NetTopologySuite.Geometries;
 using System.Text;
 
 namespace GERMAG.Server.ReportCreation;
@@ -30,6 +31,7 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _water_protec_areas = "";
     private String? _land_parcel_number = "";
     private String? _land_parcels_gemeinde = "";
+    private String? _geometry = null;
     public Report[] CreateReport(List<CoordinateParameters> CoordinateParameters, double Xcor, double Ycor, int Srid)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -39,6 +41,7 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.land_parcels:
                     _land_parcel_number = AppendString(_land_parcel_number ?? "", CoordinateParameter.JsonDataParameter?.Zae?.ToString() ?? "");
                     _land_parcels_gemeinde = AppendString(_land_parcels_gemeinde ?? "", CoordinateParameter.JsonDataParameter?.Namgem?.ToString() ?? "");
+                    _geometry = CoordinateParameter.Geometry;
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_restrict:
                     break;
@@ -138,7 +141,8 @@ public class CreateReportStructure : ICreateReportStructure
             Geo_poten_restrict = _geo_poten_restrict,
             Water_protec_areas = _water_protec_areas,
             Land_parcel_number = _land_parcel_number,
-            Land_parcels_gemeinde = _land_parcels_gemeinde
+            Land_parcels_gemeinde = _land_parcels_gemeinde,
+            Geometry = _geometry
         }};
 
         return report;
