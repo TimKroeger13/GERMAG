@@ -28,7 +28,7 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _mean_water_temp_20 = "";
     private String? _geo_poten_restrict = "";
     private String? _water_protec_areas = "";
-    private String? _land_parcels_bezeichnung = "";
+    private String? _land_parcel_number = "";
     private String? _land_parcels_gemeinde = "";
     public Report[] CreateReport(List<CoordinateParameters> CoordinateParameters, double Xcor, double Ycor, int Srid)
     {
@@ -37,7 +37,7 @@ public class CreateReportStructure : ICreateReportStructure
             switch (CoordinateParameter.Type)
             {
                 case DataModel.Database.TypeOfData.land_parcels:
-                    _land_parcels_bezeichnung = AppendString(_land_parcels_bezeichnung ?? "", CoordinateParameter.JsonDataParameter?.Bezeich?.ToString() ?? "");
+                    _land_parcel_number = AppendString(_land_parcel_number ?? "", CoordinateParameter.JsonDataParameter?.Zae?.ToString() ?? "");
                     _land_parcels_gemeinde = AppendString(_land_parcels_gemeinde ?? "", CoordinateParameter.JsonDataParameter?.Namgem?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_restrict:
@@ -137,7 +137,7 @@ public class CreateReportStructure : ICreateReportStructure
             Mean_water_temp_20 = _mean_water_temp_20,
             Geo_poten_restrict = _geo_poten_restrict,
             Water_protec_areas = _water_protec_areas,
-            Land_parcels_bezeichnung = _land_parcels_bezeichnung,
+            Land_parcel_number = _land_parcel_number,
             Land_parcels_gemeinde = _land_parcels_gemeinde
         }};
 

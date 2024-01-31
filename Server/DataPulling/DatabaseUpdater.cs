@@ -35,9 +35,12 @@ namespace GERMAG.Server.DataPulling
 
             var espgNumber = int.Parse(espgString);
 
-            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey);
-            context.GeoData.RemoveRange(entriesToRemove);
-            context.SaveChanges();
+            //var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey);
+            //context.GeoData.RemoveRange(entriesToRemove);
+            //context.SaveChanges();
+
+            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey).ToList();
+
             // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 
             context.GeothermalParameter.First(gp => gp.Id == foreignKey).Srid = espgNumber;

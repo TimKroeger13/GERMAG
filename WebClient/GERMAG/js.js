@@ -12,28 +12,47 @@ async function onMapClick(e) {
     await CreatPopUp(clickCoordinates,ReportRequest);
 }
 
-
 async function GetRequest(Xcor, Ycor) {
     var Srid = 25833;
 
-
-
     const url = `https://localhost:9999/api/report/reportdata?xCor=${Xcor}&yCor=${Ycor}&srid=${Srid}`;
-    const response = await fetch(url);
 
-    const GetJsonString = await response.text();
+    try {
+        const response = await fetch(url);
+      
+        if (!response.ok) {
+          console.error('Server error:', response.status);
 
-    return GetJsonString;
+          try {
+            const errorData = await response.json();
+            console.error('Error details:', errorData);
+            alert(`Server error: ${response.status} - ${errorData.message}`);
+          } catch (parseError) {
+            console.error('Error parsing JSON:', parseError);
+            alert(`Server error: ${response.status} - Error parsing response`);
+          }
+          
+          return null;
+        }
+
+        const GetJsonString = await response.json();
+        return GetJsonString;
+
+    } catch (error) {
+        console.error('Error:', error.message);
+        alert('Network error or failed request. Please try again.');
+        return null;
+    }
 }
 
 async function CreatPopUp(clickCoordinates,ReportRequest){
-    const reportData = JSON.parse(ReportRequest)[0];
+    const reportData = ReportRequest[0];
 
     const popupContent = `
     <div class="geothermal-report">
         <h3>Geothermal Report:</h3>
         <p><strong>Gemeinde:</strong> ${reportData.land_parcels_gemeinde}</p>
-        <p><strong>Flurstück:</strong> ${reportData.land_parcels_bezeichnung}</p>
+        <p><strong>Flurstück:</strong> ${reportData.land_parcel_number}</p>
         <p><strong>Entzugsleistungen 2400ha:</strong></p>
         <ul>
             <li><strong>100:</strong> ${reportData.geo_poten_100m_with_2400ha}</li>

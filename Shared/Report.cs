@@ -26,6 +26,7 @@ public class Report
     public String? Mean_water_temp_20 { get; set; }
     public String? Geo_poten_restrict { get; set; }
     public String? Water_protec_areas { get; set; }
-    public String? Land_parcels_bezeichnung { get; set; }
+    public String? Land_parcel_number { get; set; }
     public String? Land_parcels_gemeinde { get; set; }
+    public String? geometry { get; set; }
 }
