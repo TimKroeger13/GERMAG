@@ -22,7 +22,7 @@
     
 </head>
 
-<body>
+<body>5
     <div id="map"></div>
 
     <script>
@@ -34,7 +34,23 @@
         }).addTo(map);
         var popup = L.popup();
 
-        map.on('click', onMapClick);
+        map.on('click', function (e) {
+            onMapClick(e, handleMapClickResult);
+        });
+
+
+
+        function handleMapClickResult(landParcelGeometry) {
+            if (typeof geoJsonLayer !== 'undefined') {
+                map.removeLayer(geoJsonLayer);
+            }
+
+            geoJsonLayer = L.geoJSON(landParcelGeometry).addTo(map);
+
+            map.fitBounds(geoJsonLayer.getBounds());
+        }
+        
+
         
     </script>
 
