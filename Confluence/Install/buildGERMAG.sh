@@ -1,6 +1,7 @@
 #!/bin/bash
 sudo docker build -f Dockerfile --no-cache -t germag:live .
 read -r -p "Database Password: " dbPassword 
+sudo docker rm -f germag-live
 sudo docker run \
   -d -p 443:443 \
   --name germag-live \
