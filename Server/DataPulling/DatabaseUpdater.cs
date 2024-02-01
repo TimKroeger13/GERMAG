@@ -1,5 +1,6 @@
 ﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using System.Text.Json;
@@ -24,11 +25,8 @@ namespace GERMAG.Server.DataPulling
 
             var espgNumber = int.Parse(espgString);
 
-            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey);
-            context.GeoData.RemoveRange(entriesToRemove);
+            context.GeoData.Where(g => g.ParameterKey == foreignKey).ExecuteDelete();
             context.SaveChanges();
-
-            //var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey).ToList();
 
             // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 

@@ -29,6 +29,6 @@ public class DatabaseUpdaterTests
     {
         var sut = CreateDatabaseUpdater();
         int foreignKey = 1;
-        sut.UpdateDatabase(new(), foreignKey);
+        sut.UpdateDatabase(new() { Crs = new() { Properties = new() { Name = "25833" } } }, foreignKey);
     }
 }
