@@ -37,6 +37,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(dataSource, npg =>
     {
+        npg.CommandTimeout((int)TimeSpan.FromMinutes(5).TotalMinutes);
         npg.UseNetTopologySuite();
         npg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
     });

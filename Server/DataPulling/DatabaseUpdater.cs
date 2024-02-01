@@ -1,20 +1,9 @@
 ﻿using GERMAG.DataModel.Database;
-using NetTopologySuite.Geometries;
-using System.Runtime.InteropServices;
-using System.Xml.Linq;
-using System.Text.RegularExpressions;
-using NetTopologySuite;
-using NetTopologySuite.Algorithm;
-using GERMAG.DataModel;
-using NetTopologySuite.Operation.Overlay;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
-using System.Text.Json;
-using System.Runtime.ExceptionServices;
 using GERMAG.Server.DataPulling.JsonDeserialize;
-using System.Linq;
-using System;
-using NetTopologySuite.IO;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.DataPulling
 {
@@ -29,17 +18,17 @@ namespace GERMAG.Server.DataPulling
         {
             using var transaction = context.Database.BeginTransaction();
 
-            var espgStringRaw = json.Crs?.Properties?.Name ?? throw new Exception ("SRID not found");
+            var espgStringRaw = json.Crs?.Properties?.Name ?? throw new Exception("SRID not found");
             var espgStringRegex = ESPGRegexNumber().Match(ESPGRegexShrink().Replace(espgStringRaw ?? "0", ":"));
             var espgString = espgStringRegex.Value;
 
             var espgNumber = int.Parse(espgString);
 
-            //var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey);
-            //context.GeoData.RemoveRange(entriesToRemove);
-            //context.SaveChanges();
+            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey);
+            context.GeoData.RemoveRange(entriesToRemove);
+            context.SaveChanges();
 
-            var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey).ToList();
+            //var entriesToRemove = context.GeoData.Where(g => g.ParameterKey == foreignKey).ToList();
 
             // F_FEATURE - Implment reseeding so th id dosen't grow infintly
 
@@ -53,7 +42,7 @@ namespace GERMAG.Server.DataPulling
 
             var geometryTypeNameAsString = json?.Features?[0]?.Geometry?.Type;
 
-            if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "LineString" || geometryTypeNameAsString ==  "MultiLineString" || geometryTypeNameAsString == "Point" || geometryTypeNameAsString == "MultiPolygon")
+            if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "LineString" || geometryTypeNameAsString == "MultiLineString" || geometryTypeNameAsString == "Point" || geometryTypeNameAsString == "MultiPolygon")
             {
                 if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "MultiPolygon")
                 {
@@ -117,6 +106,7 @@ namespace GERMAG.Server.DataPulling
                     context.GeothermalParameter.First(gp => gp.Id == foreignKey).LastUpdate = DateTime.Now;
                     context.SaveChanges();
                     break;
+
                 case Geometry_Type.polyline:
                     Console.WriteLine("Transfering data to database");
                     foreach (var feature in json?.Features ?? throw new Exception("DatabaseUpdater: feature not found!"))
@@ -146,6 +136,7 @@ namespace GERMAG.Server.DataPulling
                     context.GeothermalParameter.First(gp => gp.Id == foreignKey).LastUpdate = DateTime.Now;
                     context.SaveChanges();
                     break;
+
                 case Geometry_Type.point:
                     Console.WriteLine("Transfering data to database");
                     foreach (var feature in json?.Features ?? throw new Exception("DatabaseUpdater: feature not found!"))
@@ -175,6 +166,7 @@ namespace GERMAG.Server.DataPulling
                     context.GeothermalParameter.First(gp => gp.Id == foreignKey).LastUpdate = DateTime.Now;
                     context.SaveChanges();
                     break;
+
                 case Geometry_Type.raster:
                     throw new Exception("Raster Data is currently not supportet");
                 default:
@@ -187,6 +179,7 @@ namespace GERMAG.Server.DataPulling
 
         [GeneratedRegex("::")]
         private static partial Regex ESPGRegexShrink();
+
         [GeneratedRegex("(\\d+)")]
         private static partial Regex ESPGRegexNumber();
     }
