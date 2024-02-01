@@ -9,10 +9,11 @@ public interface IDataFetcher
     Task FetchAllData();
 }
 
-public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserialize jsonDeserialize) : IDataFetcher
+public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, IHttpClientFactory httpFactory, IJsonDeserialize jsonDeserialize) : IDataFetcher
 {
     public async Task FetchAllData()
     {
+        using var client = httpFactory.CreateClient(HttpClients.LongTimeoutClient);
         var allGeothermalParameters = context.GeothermalParameter.OrderBy(gp => gp.Id).ToList();
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
@@ -20,7 +21,6 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             Console.WriteLine("Pining data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
             var getrequest = allGeothermalParameters[i].Getrequest;
 
-            client.Timeout = TimeSpan.FromMinutes(10);
             string seriallizedInputJson = await client.GetStringAsync(getrequest);
 
             //Check if Data is up to date
