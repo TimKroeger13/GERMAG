@@ -1,16 +1,6 @@
-﻿using System.Xml.Linq;
-using System;
-using GERMAG.DataModel.Database;
-using System.Text.Json;
-using GERMAG.Shared;
-using System.Net;
-using Microsoft.EntityFrameworkCore.Storage.Json;
-using GERMAG.Client.Services;
-using GERMAG.DataModel;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using System.Text.RegularExpressions;
-using NetTopologySuite.Geometries;
 
 namespace GERMAG.Server.DataPulling;
 
@@ -30,6 +20,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             Console.WriteLine("Pining data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
             var getrequest = allGeothermalParameters[i].Getrequest;
 
+            client.Timeout = TimeSpan.FromMinutes(10);
             string seriallizedInputJson = await client.GetStringAsync(getrequest);
 
             //Check if Data is up to date
@@ -82,7 +73,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             }
             else
             {
-                if (i == allGeothermalParameters.Count-1)
+                if (i == allGeothermalParameters.Count - 1)
                 {
                     Console.WriteLine("Database Updated!");
                 }
