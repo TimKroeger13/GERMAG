@@ -1,28 +1,51 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Npgsql;
-using System.Text;
 
 namespace GERMAG.DataModel.Database;
 
+public static class NpgsqlDataSourceBuilderExtensions
+{
+    public static NpgsqlDataSource ConfigureAndBuild(this NpgsqlDataSourceBuilder builder)
+    {
+        builder.EnableDynamicJson();
+        builder.EnableUnmappedTypes();
+        builder.MapEnum<TypeOfData>("typeofdata");
+        builder.MapEnum<Area>("area");
+        builder.MapEnum<Range>("range");
+        builder.MapEnum<Service>("service");
+        builder.MapEnum<Geometry_Type>("geometry_type");
+        //builder.UseNetTopologySuite();
+        //builder.MapEnum<DeliveryType>("delivery_type");
+        return builder.Build();
+    }
+}
+
 public partial class DataContext : DbContext
 {
-    public DataContext(DbContextOptions<DataContext> options) : base(options)
+    private readonly string? _databaseConnection;
+
+    public DataContext(string databaseConnection)
     {
-        Initialize();
+        _databaseConnection = databaseConnection;
     }
 
-    private static void Initialize()
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-#pragma warning disable CS0618
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<TypeOfData>("typeofdata");
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<Area>("area");
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<Range>("range");
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<Service>("service");
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<Geometry_Type>("geometry_type");
-        //Npgsql.NpgsqlConnection.GlobalTypeMapper.UseNetTopologySuite();
-        //Npgsql.NpgsqlConnection.GlobalTypeMapper.MapEnum<DeliveryType>("delivery_type");
-#pragma warning restore CS0618
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(_databaseConnection ?? throw new Exception("Databaseconnection was null"));
+            var dataSource = dataSourceBuilder.ConfigureAndBuild();
+            optionsBuilder.UseNpgsql(dataSource, o =>
+            {
+                o.UseNetTopologySuite();
+                o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            });
+        }
+        base.OnConfiguring(optionsBuilder);
     }
 
     private partial void OnModelCreatingPartial(ModelBuilder modelBuilder)

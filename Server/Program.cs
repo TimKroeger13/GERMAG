@@ -5,6 +5,7 @@ using GERMAG.Server.DataPulling;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using GERMAG.Server.ReportCreation;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,9 +31,11 @@ builder.Services.AddTransient<ICreateReportAsync, CreateReport>();
 builder.Services.AddTransient<IParameterDeserialator, ParameterDeserialator>();
 builder.Services.AddTransient<IFindAllParameterForCoordinate, FindAllParameterForCoordinate>();
 builder.Services.AddTransient<ICreateReportStructure, CreateReportStructure>();
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.DatabaseConnection);
+var dataSource = dataSourceBuilder.ConfigureAndBuild();
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseNpgsql(configuration.DatabaseConnection, npg =>
+    options.UseNpgsql(dataSource, npg =>
     {
         npg.UseNetTopologySuite();
         npg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
