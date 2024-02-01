@@ -1,5 +1,4 @@
-CREATE EXTENSION postgis_raster;
-
+--database gasag
 CREATE TYPE typeofdata AS ENUM ('land_parcels','dgm','geo_poten_restrict','veg_height',
 								'main_water_lines','groundwater_surface_distance','ground_water_height_main',
 								'ground_water_height_tension','water_ammonium','water_bor','water_chlor',
