@@ -42,7 +42,6 @@ public partial class DataContext : DbContext
             optionsBuilder.UseNpgsql(dataSource, o =>
             {
                 o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                o.CommandTimeout((int)TimeSpan.FromMinutes(5).TotalMinutes);
                 o.UseNetTopologySuite();
             });
         }
