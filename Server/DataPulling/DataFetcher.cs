@@ -1,16 +1,6 @@
-﻿using System.Xml.Linq;
-using System;
-using GERMAG.DataModel.Database;
-using System.Text.Json;
-using GERMAG.Shared;
-using System.Net;
-using Microsoft.EntityFrameworkCore.Storage.Json;
-using GERMAG.Client.Services;
-using GERMAG.DataModel;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using System.Text.RegularExpressions;
-using NetTopologySuite.Geometries;
 
 namespace GERMAG.Server.DataPulling;
 
@@ -19,10 +9,11 @@ public interface IDataFetcher
     Task FetchAllData();
 }
 
-public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, HttpClient client, IJsonDeserialize jsonDeserialize) : IDataFetcher
+public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, IHttpClientFactory httpFactory, IJsonDeserialize jsonDeserialize) : IDataFetcher
 {
     public async Task FetchAllData()
     {
+        using var client = httpFactory.CreateClient(HttpClients.LongTimeoutClient);
         var allGeothermalParameters = context.GeothermalParameter.OrderBy(gp => gp.Id).ToList();
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
@@ -82,7 +73,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             }
             else
             {
-                if (i == allGeothermalParameters.Count-1)
+                if (i == allGeothermalParameters.Count - 1)
                 {
                     Console.WriteLine("Database Updated!");
                 }

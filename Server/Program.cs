@@ -1,11 +1,11 @@
 using GERMAG.DataModel.Database;
+using GERMAG.Server;
 using GERMAG.Server.Core.Configurations;
 using GERMAG.Server.DataPulling;
 using GERMAG.Server.DataPulling.JsonDeserialize;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using GERMAG.Server;
 using GERMAG.Server.ReportCreation;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,10 +18,11 @@ var options = builder.Configuration.GetSection(ConfigurationOptions.Configuratio
 IEnviromentConfiguration configuration = builder.Environment.IsDevelopment() ?
     new DebugConfiguration(options) : new ReleaseConfiguration(options);
 builder.Services.AddSingleton(configuration);
-builder.Services.AddTransient<HttpClient>();
+builder.Services.AddHttpClient(HttpClients.LongTimeoutClient, o => o.Timeout = TimeSpan.FromMinutes(10));
+builder.Services.AddHttpClient(HttpClients.Default);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(CorsPolicies.GetAllowed,policy => policy.WithMethods("GET").AllowAnyHeader().AllowAnyOrigin());
+    options.AddPolicy(CorsPolicies.GetAllowed, policy => policy.WithMethods("GET").AllowAnyHeader().AllowAnyOrigin());
 });
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
@@ -30,9 +31,11 @@ builder.Services.AddTransient<ICreateReportAsync, CreateReport>();
 builder.Services.AddTransient<IParameterDeserialator, ParameterDeserialator>();
 builder.Services.AddTransient<IFindAllParameterForCoordinate, FindAllParameterForCoordinate>();
 builder.Services.AddTransient<ICreateReportStructure, CreateReportStructure>();
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.DatabaseConnection);
+var dataSource = dataSourceBuilder.ConfigureAndBuild();
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseNpgsql(configuration.DatabaseConnection, npg =>
+    options.UseNpgsql(dataSource, npg =>
     {
         npg.UseNetTopologySuite();
         npg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);

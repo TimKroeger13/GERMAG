@@ -40,7 +40,7 @@ function onMapClick(e, callback) {
 async function GetRequest(Xcor, Ycor) {
     var Srid = 25833;
 
-    const url = `https://localhost:9999/api/report/reportdata?xCor=${Xcor}&yCor=${Ycor}&srid=${Srid}`;
+    const url = `https://192.168.0.59/api/report/reportdata?xCor=${Xcor}&yCor=${Ycor}&srid=${Srid}`;
 
     try {
         const response = await fetch(url);
