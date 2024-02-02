@@ -67,4 +67,26 @@ public class ParameterRoot
     public object? Ae_datum { get; set; }
     public object? Ae_gvbl { get; set; }
     public object? Zehgw_m_tx { get; set; }
+    public string? Gfk { get; set; }
+    public string? Bezgfk { get; set; }
+    public string? Ofl { get; set; }
+    public string? Bezofl { get; set; }
+    public string? Aog { get; set; }
+    public string? Aug { get; set; }
+    public string? Hoh { get; set; }
+    public string? Bat { get; set; }
+    public string? Bezbat { get; set; }
+    public string? Nam { get; set; }
+    public string? Baw { get; set; }
+    public string? Bezbaw { get; set; }
+    public string? Zus { get; set; }
+    public string? Bezzus { get; set; }
+    public string? Gkn { get; set; }
+    public string? Des { get; set; }
+    public string? Bezdes { get; set; }
+    public string? Lag { get; set; }
+    public string? Namlag { get; set; }
+    public string? Hnr { get; set; }
+    public string? Pnr { get; set; }
+    public string? Lnr { get; set; }
 }

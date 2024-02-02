@@ -29,5 +29,6 @@ public class Report
     public String? Water_protec_areas { get; set; }
     public String? Land_parcel_number { get; set; }
     public String? Land_parcels_gemeinde { get; set; }
+    public String? Building_surfaces { get; set; }
     public String? Geometry { get; set; }
 }

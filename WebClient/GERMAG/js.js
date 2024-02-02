@@ -77,8 +77,8 @@ async function CreatPopUp(clickCoordinates,ReportRequest){
     const popupContent = `
     <div class="geothermal-report">
         <h3>Geothermal Report:</h3>
-        <p><strong>Gemeinde:</strong> ${reportData.land_parcels_gemeinde}</p>
         <p><strong>Flurstück:</strong> ${reportData.land_parcel_number}</p>
+        <p><strong>Gebäude_Typ:</strong> ${reportData.building_surfaces}</p>
         <p><strong>Entzugsleistungen 2400ha:</strong></p>
         <ul>
             <li><strong>100:</strong> ${reportData.geo_poten_100m_with_2400ha}</li>

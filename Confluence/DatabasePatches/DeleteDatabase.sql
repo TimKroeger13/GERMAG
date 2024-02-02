@@ -5,3 +5,10 @@ DROP TYPE area;
 DROP TYPE range;
 DROP TYPE service;
 DROP TYPE geometry_type ;
+
+-- Compelte Update
+
+DELETE FROM geo_data;
+
+UPDATE geothermal_parameter
+SET hash = 0;

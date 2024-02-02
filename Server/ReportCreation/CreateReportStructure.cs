@@ -32,6 +32,7 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _land_parcel_number = "";
     private String? _land_parcels_gemeinde = "";
     private String? _geometry = null;
+    private String? _building_surfaces = "";
     public Report[] CreateReport(List<CoordinateParameters> CoordinateParameters, double Xcor, double Ycor, int Srid)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -95,7 +96,10 @@ public class CreateReportStructure : ICreateReportStructure
                     break;
                 case DataModel.Database.TypeOfData.water_protec_areas:
                     break;
-                    //Cases Not relevant for the Report or right now not implemented
+                case DataModel.Database.TypeOfData.building_surfaces:
+                    _building_surfaces = AppendString(_building_surfaces ?? "", CoordinateParameter.JsonDataParameter?.Bezeich?.ToString() ?? "");
+                    break;
+                //Cases Not relevant for the Report or right now not implemented
                 case DataModel.Database.TypeOfData.groundwater_measuring_points:
                 case DataModel.Database.TypeOfData.dgm:
                 case DataModel.Database.TypeOfData.veg_height:
@@ -142,7 +146,8 @@ public class CreateReportStructure : ICreateReportStructure
             Water_protec_areas = _water_protec_areas,
             Land_parcel_number = _land_parcel_number,
             Land_parcels_gemeinde = _land_parcels_gemeinde,
-            Geometry = _geometry
+            Geometry = _geometry,
+            Building_surfaces = _building_surfaces
         }};
 
         return report;
