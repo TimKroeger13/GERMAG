@@ -28,8 +28,6 @@ namespace GERMAG.Server.DataPulling
             context.GeoData.Where(g => g.ParameterKey == foreignKey).ExecuteDelete();
             context.SaveChanges();
 
-            // F_FEATURE - Implment reseeding so th id dosen't grow infintly
-
             context.GeothermalParameter.First(gp => gp.Id == foreignKey).Srid = espgNumber;
             var i = 0;
             var totalLength = json?.Features?.Count ?? 0;

@@ -14,7 +14,7 @@ public static class NpgsqlDataSourceBuilderExtensions
         builder.MapEnum<Range>("range");
         builder.MapEnum<Service>("service");
         builder.MapEnum<Geometry_Type>("geometry_type");
-        //builder.UseNetTopologySuite();
+        builder.UseNetTopologySuite();
         //builder.MapEnum<DeliveryType>("delivery_type");
         return builder.Build();
     }

@@ -18,6 +18,7 @@ var options = builder.Configuration.GetSection(ConfigurationOptions.Configuratio
 IEnviromentConfiguration configuration = builder.Environment.IsDevelopment() ?
     new DebugConfiguration(options) : new ReleaseConfiguration(options);
 builder.Services.AddSingleton(configuration);
+builder.Services.AddTransient<HttpClient>();
 builder.Services.AddHttpClient(HttpClients.LongTimeoutClient, o => o.Timeout = TimeSpan.FromMinutes(10));
 builder.Services.AddHttpClient(HttpClients.Default);
 builder.Services.AddCors(options =>
