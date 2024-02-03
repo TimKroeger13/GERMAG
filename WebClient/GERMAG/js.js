@@ -1,44 +1,21 @@
 proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs");
 proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs");
 
-
-function onMapClick(e, callback) {
+async function onMapClick(e, callback) {
     var clickCoordinates = e.latlng;
-    var transformedCoordinates = proj4("EPSG:4326", "EPSG:25833", [clickCoordinates.lng, clickCoordinates.lat]);
 
-    GetRequest(transformedCoordinates[0], transformedCoordinates[1])
-        .then(async function (ReportRequest) {
-            await CreatPopUp(clickCoordinates, ReportRequest);
+    var ReportRequest_Json = await GetRequest(clickCoordinates.lng, clickCoordinates.lat);
 
-            var LandParvelGeometry = JSON.parse(ReportRequest[0].geometry);
+    var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
 
-            if (Array.isArray(LandParvelGeometry.coordinates) && LandParvelGeometry.coordinates.length > 0) {
-                var flattenedCoordinates = [];
-                for (var i = 0; i < LandParvelGeometry.coordinates[0].length; i++) {
-                    var pair = LandParvelGeometry.coordinates[0][i];
-                    if (Array.isArray(pair) && pair.length === 2) {
-                        flattenedCoordinates.push(proj4("EPSG:25833", "EPSG:4326", pair));
-                    } else {
-                        console.error("Error: Invalid pair format in LandParvelGeometry");
-                        return;
-                    }
-                }
+    await CreatPopUp(clickCoordinates, ReportRequest_Json);
 
-                LandParvelGeometry.coordinates[0] = flattenedCoordinates;
+    callback(LandParcelGeometry);
 
-                callback(LandParvelGeometry);
-            } else {
-                console.error("Error: Invalid coordinates format in LandParvelGeometry");
-            }
-        })
-        .catch(function (error) {
-            console.error("Error:", error);
-        });
 }
 
-
 async function GetRequest(Xcor, Ycor) {
-    var Srid = 25833;
+    var Srid = 4326;
 
     const url = `https://localhost:9999/api/report/reportdata?xCor=${Xcor}&yCor=${Ycor}&srid=${Srid}`;
 
@@ -69,7 +46,6 @@ async function GetRequest(Xcor, Ycor) {
         return null;
     }
 }
-
 
 async function CreatPopUp(clickCoordinates,ReportRequest){
     const reportData = ReportRequest[0];
@@ -115,4 +91,43 @@ async function CreatPopUp(clickCoordinates,ReportRequest){
         .setContent(popupContent)
         .openOn(map);
 
+}
+
+
+
+
+
+// Back transformation
+
+async function BackTransformationOfGeometry(ReportRequest) {
+
+    var LandParcelGeometry = JSON.parse(ReportRequest[0].geometry);
+
+    if (Array.isArray(LandParcelGeometry.coordinates) && LandParcelGeometry.coordinates.length > 0) {
+        var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[0]);
+
+        LandParcelGeometry.coordinates[0] = flattenedCoordinates;
+
+        return LandParcelGeometry;
+
+    } else {
+        console.error("Error: Invalid coordinates format in LandParcelGeometry");
+    }
+}
+
+function transformCoordinates(coordinates) {
+    var transformedCoordinates = [];
+
+    for (var i = 0; i < coordinates.length; i++) {
+        var pair = coordinates[i];
+
+        if (Array.isArray(pair) && pair.length === 2) {
+            transformedCoordinates.push(proj4("EPSG:25833", "EPSG:4326", pair));
+        } else {
+            console.error("Error: Invalid pair format in LandParcelGeometry");
+            return [];
+        }
+    }
+
+    return transformedCoordinates;
 }
