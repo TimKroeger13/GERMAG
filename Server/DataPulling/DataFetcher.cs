@@ -1,5 +1,6 @@
 ﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.DataPulling;
@@ -79,6 +80,25 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
                 }
             }
         }
+        // Create and update Indexing
+
+        context.Database.ExecuteSqlRaw(@"
+            DO $$ 
+            BEGIN 
+                IF EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'geometry_index') THEN 
+                    DROP INDEX geometry_index; 
+                END IF; 
+            END $$;
+
+            CREATE INDEX geometry_index
+                ON geo_data
+                USING GIST (geom);
+        ");
+
+        Console.WriteLine("Database Updated Complety and Spatial Indexing Refreshed!");
+
+
+
     }
 
     private static int HashString(string text)

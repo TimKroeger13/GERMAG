@@ -24,6 +24,7 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
 {
     public List<CoordinateParameters> FindCoordianteParameters(double Xcor, double Ycor, int Srid)
     {
+
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
         var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
 
@@ -47,7 +48,7 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
 
         var landPacelGeometry = context.GeoData.Where(gd => landparcelIntersection.Any(lp => lp.Id == gd.Id)).Select(gd => new { gd.ParameterKey, gd.Parameter, Geometry = geoJsonWriter.Write(gd.Geom)});
 
-        var combinedGeometry = landPacelGeometry.Concat(IntersectingGeometry);
+        //var combinedGeometry = landPacelGeometry.Concat(IntersectingGeometry);
 
 
         var landParcelResult = landPacelGeometry
