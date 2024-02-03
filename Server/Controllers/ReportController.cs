@@ -19,3 +19,14 @@ public class ReportController(ICreateReportAsync createReport) : ControllerBase
         return await createReport.CreateGeothermalReportAsync(Xcor, Ycor, Srid);
     }
 }
+
+public class ReportPDFController(ICreateReportAsync createReport) : ControllerBase
+{
+    [HttpGet("reportPDF")]
+    [EnableCors(CorsPolicies.GetAllowed)]
+    public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
+    {
+        return await createReport.CreateGeothermalReportAsync(Xcor, Ycor, Srid);
+
+    }
+}
