@@ -1,0 +1,6 @@
+#myModal {
+    overflow-y: hidden;
+  }
+  .modal-header {
+    cursor: move;
+  }
