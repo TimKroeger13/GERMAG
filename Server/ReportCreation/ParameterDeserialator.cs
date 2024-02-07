@@ -6,14 +6,14 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface IParameterDeserialator
 {
-    ParameterRoot DeserializeParameters(string SerializedInputJson);
+    Properties DeserializeParameters(string SerializedInputJson);
 }
 
 public class ParameterDeserialator : IParameterDeserialator
 {
-    public ParameterRoot DeserializeParameters(string SerializedInputJson)
+    public Properties DeserializeParameters(string SerializedInputJson)
     {
-        return JsonSerializer.Deserialize<ParameterRoot>(SerializedInputJson, new JsonSerializerOptions()
+        return JsonSerializer.Deserialize<Properties>(SerializedInputJson, new JsonSerializerOptions()
         {
             PropertyNameCaseInsensitive = true,
         }) ?? throw new Exception("No wfs found (ParameterRoot)");

@@ -82,6 +82,8 @@ function openModal(reportData) {
             <li><strong>40:</strong> ${reportData.mean_water_temp_40}</li>
             <li><strong>20:</strong> ${reportData.mean_water_temp_20}</li>
         </ul>
+        <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p>
+        <p><strong>Restriktionsflächen:</strong> ${reportData.geo_poten_restrict}</p>
     </div>
 `;
 

@@ -15,7 +15,7 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _geo_poten_80m_with_2400ha = "";
     private String? _geo_poten_60m_with_2400ha = "";
     private String? _geo_poten_40m_with_2400ha = "";
-    private String? _geo_poten_100m_with_1800ha = "";
+    private List<String>? _geo_poten_100m_with_1800ha = [];
     private String? _geo_poten_80m_with_1800ha = "";
     private String? _geo_poten_60m_with_1800ha = "";
     private String? _geo_poten_40m_with_1800ha = "";
@@ -32,7 +32,8 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _land_parcel_number = "";
     private String? _land_parcels_gemeinde = "";
     private String? _geometry = null;
-    private String? _building_surfaces = "";
+    private String? _building_begzgkt = "";
+    private String? _zeHGW = "";
     public Report[] CreateReport(List<CoordinateParameters> CoordinateParameters, double Xcor, double Ycor, int Srid)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -45,6 +46,7 @@ public class CreateReportStructure : ICreateReportStructure
                     _geometry = CoordinateParameter.Geometry;
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_restrict:
+                    _geo_poten_restrict = AppendString(_geo_poten_restrict ?? "", CoordinateParameter.JsonDataParameter?.Text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_20to100:
                     _mean_water_temp_20to100 = AppendString(_mean_water_temp_20to100 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
@@ -70,8 +72,9 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.geo_poten_40m_with_2400ha:
                     _geo_poten_40m_with_2400ha = AppendString(_geo_poten_40m_with_2400ha ?? "", CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
                     break;
-                case DataModel.Database.TypeOfData.geo_poten_100m_with_1800ha:
-                    _geo_poten_100m_with_1800ha = AppendString(_geo_poten_100m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_100xt?.ToString() ?? "");
+                case DataModel.Database.TypeOfData.geo_poten_100m_with_1800ha: //Lustgarten
+                    //_geo_poten_100m_with_1800ha = AppendString(_geo_poten_100m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_100xt?.ToString() ?? "");
+                    _geo_poten_100m_with_1800ha?.Add(CoordinateParameter.JsonDataParameter?.La_100xt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_80m_with_1800ha:
                     _geo_poten_80m_with_1800ha = AppendString(_geo_poten_80m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
@@ -97,27 +100,45 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.water_protec_areas:
                     break;
                 case DataModel.Database.TypeOfData.building_surfaces:
-                    _building_surfaces = AppendString(_building_surfaces ?? "", CoordinateParameter.JsonDataParameter?.Bezeich?.ToString() ?? "");
+                    //_building_begzgkt = AppendString(_building_begzgkt ?? "", CoordinateParameter.JsonDataParameter?.Bezgfk?.ToString() ?? "");
                     break;
                 //Cases Not relevant for the Report or right now not implemented
                 case DataModel.Database.TypeOfData.groundwater_measuring_points:
+                    break;
                 case DataModel.Database.TypeOfData.dgm:
+                    break;
                 case DataModel.Database.TypeOfData.veg_height:
+                    break;
                 case DataModel.Database.TypeOfData.main_water_lines:
+                    break;
                 case DataModel.Database.TypeOfData.groundwater_surface_distance:
+                    break;
                 case DataModel.Database.TypeOfData.ground_water_height_main:
+                    break;
                 case DataModel.Database.TypeOfData.ground_water_height_tension:
+                    break;
                 case DataModel.Database.TypeOfData.water_ammonium:
+                    break;
                 case DataModel.Database.TypeOfData.water_bor:
+                    break;
                 case DataModel.Database.TypeOfData.water_chlor:
+                    break;
                 case DataModel.Database.TypeOfData.water_kalium:
+                    break;
                 case DataModel.Database.TypeOfData.water_sulfat:
+                    break;
                 case DataModel.Database.TypeOfData.water_ortho_phosphat:
+                    break;
                 case DataModel.Database.TypeOfData.electrical_con:
+                    break;
                 case DataModel.Database.TypeOfData.geodrilling_data:
+                    break;
                 case DataModel.Database.TypeOfData.geological_sections:
+                    break;
                 case DataModel.Database.TypeOfData.geo_drawing:
+                    break;
                 case DataModel.Database.TypeOfData.expe_max_groundwater_hight:
+                    _zeHGW = AppendString(_zeHGW ?? "", CoordinateParameter.JsonDataParameter?.Zehgw_m_tx?.ToString() ?? "");
                     break;
                 case null:
                     break;
@@ -130,7 +151,7 @@ public class CreateReportStructure : ICreateReportStructure
             Geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha,
             Geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha,
             Geo_poten_40m_with_2400ha = _geo_poten_40m_with_2400ha,
-            Geo_poten_100m_with_1800ha = _geo_poten_100m_with_1800ha,
+            Geo_poten_100m_with_1800ha = "On hold",  //_geo_poten_100m_with_1800ha,  // Lustgarten Test
             Geo_poten_80m_with_1800ha = _geo_poten_80m_with_1800ha,
             Geo_poten_60m_with_1800ha = _geo_poten_60m_with_1800ha,
             Geo_poten_40m_with_1800ha = _geo_poten_40m_with_1800ha,
@@ -147,7 +168,9 @@ public class CreateReportStructure : ICreateReportStructure
             Land_parcel_number = _land_parcel_number,
             Land_parcels_gemeinde = _land_parcels_gemeinde,
             Geometry = _geometry,
-            Building_surfaces = _building_surfaces
+            Building_begzgkt = _building_begzgkt,
+            ZeHGW = _zeHGW
+
         }};
 
         return report;

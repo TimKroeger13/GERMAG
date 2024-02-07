@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace GERMAG.Shared;
 
+/*
 public class ParameterRoot
 {
     public string? Gridcode { get; set; }
@@ -90,3 +91,4 @@ public class ParameterRoot
     public string? Pnr { get; set; }
     public string? Lnr { get; set; }
 }
+*/

@@ -13,6 +13,6 @@ public class CoordinateParameters
     public TypeOfData? Type { get; set; }
     public int? ParameterKey { get; set; }
     public string? Parameter { get; set; }
-    public ParameterRoot? JsonDataParameter { get; set; }
+    public Properties? JsonDataParameter { get; set; }
     public String? Geometry { get; set; }
 }
