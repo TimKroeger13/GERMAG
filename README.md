@@ -38,5 +38,6 @@ Referencen:
 | Grundwassertemperatur 60 m unter Geländeoberfläche |  mean_water_temp_60 |     X    |
 | Wasserschutzgebiete |  water_protec_areas |      X   |
 | Zu erwartender höchster Grundwasserstand (zeHGW) |  expe_max_groundwater_hight |  X       |
+| Gebäudeflaechen |  building_surfaces |  X       |
 
 
