@@ -18,11 +18,19 @@ p {
   margin: 0 !important;
 }
 
-
-
-
 .geothermal-report {
   max-width: 100%;
   width: 600px; /* Adjust as needed */
   margin: 0 auto; /* Center the content */
+}
+
+#myModal {
+  overflow-y: hidden;
+}
+
+.modal-header {
+  cursor: move;
+}
+.custom-modal-title {
+  margin-right: auto;
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,9 @@
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+
   <style>
     #myModal {
       overflow-y: hidden;
@@ -15,48 +19,77 @@
     .modal-header {
       cursor: move;
     }
+
+    .custom-modal-title {
+      margin-right: auto;
+    }
+
+    #myModal .modal-dialog {
+      left: 2vw;
+      margin-left: 0;
+    }
   </style>
 </head>
+
 <body>
 
-    <div class="container-fluid" style="padding-top: 40px;">
-        <div class="text-center">
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-            Test Button
-          </button>
-        </div>
-      
-        <!-- Modal -->
-        <div class="modal fade" data-backdrop="false" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Report Test Architecture</h4>
-              </div>
-              <div class="modal-body">
-              </div>
-            </div>
+
+  <div class="text-center">
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+      Test Button
+    </button>
+  </div>
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" data-backdrop="false" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header" style="display: flex; align-items: center;">
+          <div class="col-xs-6 custom-modal-title">
+            <h4 class="modal-title" id="myModalLabel">Geothermal Report</h4>
           </div>
+          <div class="col-xs-6 text-right">
+            <button type="button" class="btn btn-default print-btn">Print</button>
+          </div>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p>Report is loading...</p>
         </div>
       </div>
+    </div>
+  </div>
 
-   <script>
+
+
+
+
+  <script>
+    // Ensure jsPDF is loaded and initiated
     var heat = 30;
 
-    $(".modal").draggable({
-    handle: ".modal-header"
+    var modalDialog = $(".modal-dialog");
+
+    modalDialog.draggable({
+      handle: ".modal-header"
     });
 
     $(".modal").on('shown.bs.modal', function (e) {
-    $(".modal-body").html("<p>It Works!!! " + heat + "</p>");
+      $(".modal-body").html("<p>New Test Text: " + heat + "</p>");
     });
 
     $(".modal").on('hide.bs.modal', function (e) {
-    $(".modal iframe").attr('src'," "); 
+      $(".modal iframe").attr('src', "");
     });
+
+
   </script>
 
+
 </body>
+
 </html>
