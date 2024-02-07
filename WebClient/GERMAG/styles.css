@@ -31,6 +31,12 @@ p {
 .modal-header {
   cursor: move;
 }
+
 .custom-modal-title {
   margin-right: auto;
+}
+
+#myModal .modal-dialog {
+  left: 5vw;
+  margin-left: 0;
 }

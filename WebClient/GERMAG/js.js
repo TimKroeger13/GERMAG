@@ -12,15 +12,41 @@ async function onMapClick(e, callback) {
 
     //Creates PDF
     //generatePDF(ReportRequest_Json[0])
-    generateReport(ReportRequest_Json[0])
+    //generateReport(ReportRequest_Json[0])
 
     //Creates Pop up data of object
-    await CreatPopUp(clickCoordinates, ReportRequest_Json);
+    //await CreatPopUp(clickCoordinates, ReportRequest_Json);
+
+
+    openModal()
 
     //Plots geometry on map
     callback(LandParcelGeometry);
 
 }
+
+
+function openModal() {
+    $('#myModal').modal('show');
+
+    // Additional code for modal functionality
+    var heat = 30;
+
+    var modalDialog = $(".modal-dialog");
+
+    modalDialog.draggable({
+      handle: ".modal-header"
+    });
+
+    $(".modal").on('shown.bs.modal', function (e) {
+      $(".modal-body").html("<p>New Test Text: " + heat + "</p>");
+    });
+
+    $(".modal").on('hide.bs.modal', function (e) {
+      $(".modal iframe").attr('src', "");
+    });
+  }
+
 
 async function GetRequest(Xcor, Ycor) {
     var Srid = 4326;
@@ -55,6 +81,7 @@ async function GetRequest(Xcor, Ycor) {
     }
 }
 
+/*
 async function CreatPopUp(clickCoordinates,ReportRequest){
     const reportData = ReportRequest[0];
 
@@ -100,6 +127,7 @@ async function CreatPopUp(clickCoordinates,ReportRequest){
         .openOn(map);
 
 }
+/*
 
 /*
 async function generatePDF(data) {
@@ -132,6 +160,7 @@ async function generatePDF(data) {
 }
 */
 
+/*
 function generateReport(reportData) {
 
 const reportContent = `
@@ -202,6 +231,7 @@ const reportContent = `
     // Close the document stream (important for IE compatibility)
     popupWindow.document.close();
 }
+*/
 
 
 
