@@ -1,5 +1,6 @@
 ﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
+using GERMAG.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
