@@ -39,4 +39,17 @@ p {
 #myModal .modal-dialog {
   left: 5vw;
   margin-left: 0;
+  pointer-events: auto; 
+}
+
+.modal {
+  pointer-events: none; /* Allow interactions with elements behind the modal */
+}
+
+.modal.show {
+  pointer-events: auto; /* Enable interactions when the modal is shown */
+}
+
+.modal-backdrop {
+  display: auto !important; /*none*/
 }

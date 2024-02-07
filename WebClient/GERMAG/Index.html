@@ -29,28 +29,27 @@
 
 <body>
 
-
     <!-- Modal -->
-    <div class="modal fade" data-backdrop="false" id="myModal" tabindex="-1" role="dialog"
-        aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="display: flex; align-items: center;">
-                    <div class="col-xs-6 custom-modal-title">
-                        <h4 class="modal-title" id="myModalLabel">Geothermal Report</h4>
-                    </div>
-                    <div class="col-xs-6 text-right">
-                        <button type="button" class="btn btn-default print-btn">Print</button>
-                    </div>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <p>Report is loading...</p>
-                </div>
+    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 1050;">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+          <div class="modal-content">
+            <div class="modal-header" style="display: flex; align-items: center;">
+              <div class="col-xs-6 custom-modal-title">
+                <h4 class="modal-title ms-0 me-auto" id="myModalLabel">Geothermal Report</h4>
+              </div>
+              <div class="col-xs-6 text-right">
+                <button type="button" class="btn btn-default print-btn">Print</button>
+              </div>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                  aria-hidden="true">&times;</span></button>
             </div>
+            <div class="modal-body">
+              <!-- Add your content here -->
+              <p>Report is loading...</p>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
 
     <div id="map"></div>
 
