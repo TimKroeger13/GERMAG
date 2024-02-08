@@ -48,7 +48,15 @@ function openModal(reportData) {
 
   function CreateReportHTML(reportData){
 
-    //var html = "<p>Super new Text written by CreateReportHTML: " + x + "</p>"
+    if(reportData.geo_poten_restrict != ""){
+        var String_geo_poten_restrict = `<p><strong>Restriktionsflächen:</strong> ${reportData.geo_poten_restrict}</p>`
+    }else{
+        var String_geo_poten_restrict = ""
+    }
+
+    
+
+
 
     const html = `
     <div class="geothermal-report">
@@ -82,8 +90,9 @@ function openModal(reportData) {
             <li><strong>40:</strong> ${reportData.mean_water_temp_40}</li>
             <li><strong>20:</strong> ${reportData.mean_water_temp_20}</li>
         </ul>
-        <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p>
-        <p><strong>Restriktionsflächen:</strong> ${reportData.geo_poten_restrict}</p>
+        <!-- <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p> -->
+        ${String_geo_poten_restrict}
+        
     </div>
 `;
 

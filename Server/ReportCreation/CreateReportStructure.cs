@@ -1,4 +1,5 @@
-﻿using GERMAG.Shared;
+﻿using GERMAG.Server.ExtensionMethods;
+using GERMAG.Shared;
 using NetTopologySuite.Geometries;
 using System.Text;
 
@@ -11,18 +12,18 @@ public interface ICreateReportStructure
 
 public class CreateReportStructure : ICreateReportStructure
 {
-    private String? _geo_poten_100m_with_2400ha = "";
-    private String? _geo_poten_80m_with_2400ha = "";
-    private String? _geo_poten_60m_with_2400ha = "";
-    private String? _geo_poten_40m_with_2400ha = "";
+    private List<String>? _geo_poten_100m_with_2400ha = [];
+    private List<String>? _geo_poten_80m_with_2400ha = [];
+    private List<String>? _geo_poten_60m_with_2400ha = [];
+    private List<String>? _geo_poten_40m_with_2400ha = [];
     private List<String>? _geo_poten_100m_with_1800ha = [];
-    private String? _geo_poten_80m_with_1800ha = "";
-    private String? _geo_poten_60m_with_1800ha = "";
-    private String? _geo_poten_40m_with_1800ha = "";
-    private String? _thermal_con_100 = "";
-    private String? _thermal_con_80 = "";
-    private String? _thermal_con_60 = "";
-    private String? _thermal_con_40 = "";
+    private List<String>? _geo_poten_80m_with_1800ha = [];
+    private List<String>? _geo_poten_60m_with_1800ha = [];
+    private List<String>? _geo_poten_40m_with_1800ha = [];
+    private List<String>? _thermal_con_100 = [];
+    private List<String>? _thermal_con_80 = [];
+    private List<String>? _thermal_con_60 = [];
+    private List<String>? _thermal_con_40 = [];
     private String? _mean_water_temp_20to100 = "";
     private String? _mean_water_temp_60 = "";
     private String? _mean_water_temp_40 = "";
@@ -34,6 +35,8 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _geometry = null;
     private String? _building_begzgkt = "";
     private String? _zeHGW = "";
+    private String? _verordnung = "";
+    private String? _veror_link = "";
     public Report[] CreateReport(List<CoordinateParameters> CoordinateParameters, double Xcor, double Ycor, int Srid)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -61,47 +64,47 @@ public class CreateReportStructure : ICreateReportStructure
                     _mean_water_temp_20 = AppendString(_mean_water_temp_20 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_100m_with_2400ha:
-                    _geo_poten_100m_with_2400ha = AppendString(_geo_poten_100m_with_2400ha ?? "", CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
+                    _geo_poten_100m_with_2400ha?.Add(CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_80m_with_2400ha:
-                    _geo_poten_80m_with_2400ha = AppendString(_geo_poten_80m_with_2400ha ?? "", CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
+                    _geo_poten_80m_with_2400ha?.Add(CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_60m_with_2400ha:
-                    _geo_poten_60m_with_2400ha = AppendString(_geo_poten_60m_with_2400ha ?? "", CoordinateParameter.JsonDataParameter?.La_60txt?.ToString() ?? "");
+                    _geo_poten_60m_with_2400ha?.Add(CoordinateParameter.JsonDataParameter?.La_60txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_40m_with_2400ha:
-                    _geo_poten_40m_with_2400ha = AppendString(_geo_poten_40m_with_2400ha ?? "", CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
+                    _geo_poten_40m_with_2400ha?.Add(CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_100m_with_1800ha: //Lustgarten
-                    //_geo_poten_100m_with_1800ha = AppendString(_geo_poten_100m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_100xt?.ToString() ?? "");
                     _geo_poten_100m_with_1800ha?.Add(CoordinateParameter.JsonDataParameter?.La_100xt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_80m_with_1800ha:
-                    _geo_poten_80m_with_1800ha = AppendString(_geo_poten_80m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
+                    _geo_poten_80m_with_1800ha?.Add(CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_60m_with_1800ha:
-                    _geo_poten_60m_with_1800ha = AppendString(_geo_poten_60m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_60txt?.ToString() ?? "");
+                    _geo_poten_60m_with_1800ha?.Add(CoordinateParameter.JsonDataParameter?.La_60txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_40m_with_1800ha:
-                    _geo_poten_40m_with_1800ha = AppendString(_geo_poten_40m_with_1800ha ?? "", CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
+                    _geo_poten_40m_with_1800ha?.Add(CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.thermal_con_40:
-                    _thermal_con_40 = AppendString(_thermal_con_40 ?? "", CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
+                    _thermal_con_40?.Add(CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.thermal_con_60:
-                    _thermal_con_60 = AppendString(_thermal_con_60 ?? "", CoordinateParameter.JsonDataParameter?.La_60txt?.ToString() ?? "");
+                    _thermal_con_60?.Add(CoordinateParameter.JsonDataParameter?.La_60txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.thermal_con_80:
-                    _thermal_con_80 = AppendString(_thermal_con_80 ?? "", CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
+                    _thermal_con_80?.Add(CoordinateParameter.JsonDataParameter?.La_80txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.thermal_con_100:
-                    _thermal_con_100 = AppendString(_thermal_con_100 ?? "", CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
+                    _thermal_con_100?.Add(CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.water_protec_areas:
                     break;
                 case DataModel.Database.TypeOfData.building_surfaces:
                     //_building_begzgkt = AppendString(_building_begzgkt ?? "", CoordinateParameter.JsonDataParameter?.Bezgfk?.ToString() ?? "");
                     break;
+
                 //Cases Not relevant for the Report or right now not implemented
                 case DataModel.Database.TypeOfData.groundwater_measuring_points:
                     break;
@@ -147,18 +150,18 @@ public class CreateReportStructure : ICreateReportStructure
 
         var report = new[] { new Report
         {
-            Geo_poten_100m_with_2400ha = _geo_poten_100m_with_2400ha,
-            Geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha,
-            Geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha,
-            Geo_poten_40m_with_2400ha = _geo_poten_40m_with_2400ha,
-            Geo_poten_100m_with_1800ha = "On hold",  //_geo_poten_100m_with_1800ha,  // Lustgarten Test
-            Geo_poten_80m_with_1800ha = _geo_poten_80m_with_1800ha,
-            Geo_poten_60m_with_1800ha = _geo_poten_60m_with_1800ha,
-            Geo_poten_40m_with_1800ha = _geo_poten_40m_with_1800ha,
-            Thermal_con_100 = _thermal_con_100,
-            Thermal_con_80 = _thermal_con_80,
-            Thermal_con_60 = _thermal_con_60,
-            Thermal_con_40 = _thermal_con_40,
+            Geo_poten_100m_with_2400ha = _geo_poten_100m_with_2400ha?.ConvertDokumentationString(),
+            Geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha?.ConvertDokumentationString(),
+            Geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha?.ConvertDokumentationString(),
+            Geo_poten_40m_with_2400ha = _geo_poten_40m_with_2400ha?.ConvertDokumentationString(),
+            Geo_poten_100m_with_1800ha = _geo_poten_100m_with_1800ha?.ConvertDokumentationString(),
+            Geo_poten_80m_with_1800ha = _geo_poten_80m_with_1800ha?.ConvertDokumentationString(),
+            Geo_poten_60m_with_1800ha = _geo_poten_60m_with_1800ha?.ConvertDokumentationString(),
+            Geo_poten_40m_with_1800ha = _geo_poten_40m_with_1800ha?.ConvertDokumentationString(),
+            Thermal_con_100 = _thermal_con_100?.ConvertDokumentationString(),
+            Thermal_con_80 = _thermal_con_80?.ConvertDokumentationString(),
+            Thermal_con_60 = _thermal_con_60?.ConvertDokumentationString(),
+            Thermal_con_40 = _thermal_con_40?.ConvertDokumentationString(),
             Mean_water_temp_20to100 = _mean_water_temp_20to100,
             Mean_water_temp_60 = _mean_water_temp_60,
             Mean_water_temp_40 = _mean_water_temp_40,
@@ -169,7 +172,7 @@ public class CreateReportStructure : ICreateReportStructure
             Land_parcels_gemeinde = _land_parcels_gemeinde,
             Geometry = _geometry,
             Building_begzgkt = _building_begzgkt,
-            ZeHGW = _zeHGW
+            //ZeHGW = _zeHGW <- polylines
 
         }};
 
