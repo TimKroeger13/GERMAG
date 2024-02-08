@@ -28,15 +28,14 @@ public class CreateReportStructure : ICreateReportStructure
     private List<String>? _mean_water_temp_60 = [];
     private List<String>? _mean_water_temp_40 = [];
     private List<String>? _mean_water_temp_20 = [];
-    private String? _geo_poten_restrict = "";
-    private String? _water_protec_areas = "";
+    private List<String>? _geo_poten_restrict = [];
     private String? _land_parcel_number = "";
     private String? _land_parcels_gemeinde = "";
     private String? _geometry = null;
     private String? _building_begzgkt = "";
     private String? _zeHGW = "";
-    private String? _verordnung = "";
-    private String? _veror_link = "";
+    private List<String>? _verordnung = [];
+    private List<String>? _veror_link = [];
     public Report[] CreateReport(List<CoordinateParameters> CoordinateParameters, double Xcor, double Ycor, int Srid)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -49,7 +48,7 @@ public class CreateReportStructure : ICreateReportStructure
                     _geometry = CoordinateParameter.Geometry;
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_restrict:
-                    _geo_poten_restrict = AppendString(_geo_poten_restrict ?? "", CoordinateParameter.JsonDataParameter?.Text?.ToString() ?? "");
+                    _geo_poten_restrict?.Add(CoordinateParameter.JsonDataParameter?.Text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_20to100:
                     _mean_water_temp_20to100?.Add(CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
@@ -100,6 +99,8 @@ public class CreateReportStructure : ICreateReportStructure
                     _thermal_con_100?.Add(CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.water_protec_areas:
+                    _verordnung?.Add(CoordinateParameter.JsonDataParameter?.Verordnung?.ToString() ?? "");
+                    _veror_link?.Add(CoordinateParameter.JsonDataParameter?.Veror_link?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.building_surfaces:
                     //_building_begzgkt = AppendString(_building_begzgkt ?? "", CoordinateParameter.JsonDataParameter?.Bezgfk?.ToString() ?? "");
@@ -167,7 +168,8 @@ public class CreateReportStructure : ICreateReportStructure
             Mean_water_temp_40 = _mean_water_temp_40?.ConvertDokumentationString(),
             Mean_water_temp_20 = _mean_water_temp_20?.ConvertDokumentationString(),
             Geo_poten_restrict = _geo_poten_restrict,
-            Water_protec_areas = _water_protec_areas,
+            Verordnung = _verordnung,
+            Veror_link = _veror_link,
             Land_parcel_number = _land_parcel_number,
             Land_parcels_gemeinde = _land_parcels_gemeinde,
             Geometry = _geometry,

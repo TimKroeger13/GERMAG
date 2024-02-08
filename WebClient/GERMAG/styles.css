@@ -3,10 +3,13 @@ body {
   margin: 0;
 }
 
-html,
-body,
-#map {
+body, html {
   height: 100%;
+  margin: 0;
+}
+
+#map {
+  height: 95vh;
   width: 100vw;
 }
 

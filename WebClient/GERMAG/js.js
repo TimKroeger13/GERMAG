@@ -11,52 +11,87 @@ async function onMapClick(e, callback) {
     var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
 
     //opens modal window
-    openModal(ReportRequest_Json[0])
+    await openModal(ReportRequest_Json[0])
+
+    //Test
+    await getGeojsonFromAddress('Silbersteinstraße 80 Berlin')
 
     //Plots geometry on map
     callback(LandParcelGeometry);
 
 }
 
-
-function openModal(reportData) {
+async function openModal(reportData) {
 
     var html = CreateReportHTML(reportData)
 
-    $("#myModal").modal({backdrop: false});
+    $("#myModal").modal({ backdrop: false });
     $('.modal').modal('hide');
 
     $(".modal-dialog").draggable({
-      handle: ".modal-header"
+        handle: ".modal-header"
     });
 
     $(".modal").on('shown.bs.modal', function (e) {
-      $(".modal-body").html(html);
+        $(".modal-body").html(html);
     });
 
     $(".modal").on('hide.bs.modal', function (e) {
         $(".modal iframe").attr('src', "");
-      });
+    });
 
-    $("#myModal").modal({backdrop: false});
+    $("#myModal").modal({ backdrop: false });
     // Show overlay
     $('.modal-overlay').show();
-    
+
     $('#myModal').modal('show');
-  }
+}
 
 
-  function CreateReportHTML(reportData){
 
-    if(reportData.geo_poten_restrict != ""){
-        var String_geo_poten_restrict = `<p><strong>Restriktionsflächen:</strong> ${reportData.geo_poten_restrict}</p>`
-    }else{
-        var String_geo_poten_restrict = ""
+async function getGeojsonFromAddress(addres) {
+
+    var geoJsonRequest = await httpGet("https://nominatim.openstreetmap.org/search?q=" + addres + "&format=geojson");
+
+    var parsedGeoJson = JSON.parse(geoJsonRequest);
+
+    x = parsedGeoJson.features[0].geometry.coordinates[1];
+    y = parsedGeoJson.features[0].geometry.coordinates[0];
+
+    console.log("X = ", x, "\n", "Y = ", y, "\n\n");
+
+}
+
+async function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+
+
+
+function CreateReportHTML(reportData) {
+
+    String_geo_poten_restrict = ``;
+    if (reportData.geo_poten_restrict.length > 0) {
+        for (let i = 0; i < reportData.geo_poten_restrict.length; i++) {
+            String_geo_poten_restrict = String_geo_poten_restrict + `<p><strong>Restriktionsflächen:</strong> ${reportData.geo_poten_restrict[i]}</p>`
+        }
     }
 
-    
+    //Get Unique Elemets
+    reportData.verordnung = [...new Set(reportData.verordnung)]
+    reportData.veror_link = [...new Set(reportData.veror_link)]
 
-
+    String_Water_protec_areas = ``;
+    if (reportData.verordnung.length > 0) {
+        for (let i = 0; i < reportData.verordnung.length; i++) {
+            String_Water_protec_areas = String_Water_protec_areas + `<p><strong>Wasserschutzgebiet:</strong><a href="${reportData.veror_link[i]}">${reportData.verordnung[i]}</a></p>`
+        }
+    }
 
     const html = `
     <div class="geothermal-report">
@@ -92,13 +127,14 @@ function openModal(reportData) {
         </ul>
         <!-- <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p> -->
         ${String_geo_poten_restrict}
+        ${String_Water_protec_areas}
         
     </div>
 `;
 
     return html
 
-  }
+}
 
 
 async function GetRequest(Xcor, Ycor) {
@@ -108,20 +144,20 @@ async function GetRequest(Xcor, Ycor) {
 
     try {
         const response = await fetch(url);
-      
-        if (!response.ok) {
-          console.error('Server error:', response.status);
 
-          try {
-            const errorData = await response.json();
-            console.error('Error details:', errorData);
-            alert(`Server error: ${response.status} - ${errorData.message}`);
-          } catch (parseError) {
-            console.error('Error parsing JSON:', parseError);
-            alert(`Server error: ${response.status} - Error parsing response`);
-          }
-          
-          return null;
+        if (!response.ok) {
+            console.error('Server error:', response.status);
+
+            try {
+                const errorData = await response.json();
+                console.error('Error details:', errorData);
+                alert(`Server error: ${response.status} - ${errorData.message}`);
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
+                alert(`Server error: ${response.status} - Error parsing response`);
+            }
+
+            return null;
         }
 
         const GetJsonString = await response.json();

@@ -33,8 +33,6 @@ public static class GetDocumentationString
                 DecreasedValues = "<";
             }
 
-            //MatchCollection matches = Regex.Matches(str, @"[+-]?(\d+(\.\d*)?|\.\d+)");
-
             MatchCollection matches = Regex.Matches(TrimmedString, @"[+-]?\s*\d+(\.\d*)?(?:\s*-\s*[+-]?\s*\d+(\.\d*)?)?");
 
             foreach (Match match in matches)
@@ -49,17 +47,7 @@ public static class GetDocumentationString
                 }
             }
 
-            /*
-            foreach (Match match in matches)
-            {
-                if (double.TryParse(match.Value, out double number))
-                {
-                    numbers.Add(number);
-                }
-            }
-            */
         }
-
 
         if (numbers.Min() == numbers.Max())
         {
