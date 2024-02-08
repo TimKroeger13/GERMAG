@@ -24,10 +24,10 @@ public class CreateReportStructure : ICreateReportStructure
     private List<String>? _thermal_con_80 = [];
     private List<String>? _thermal_con_60 = [];
     private List<String>? _thermal_con_40 = [];
-    private String? _mean_water_temp_20to100 = "";
-    private String? _mean_water_temp_60 = "";
-    private String? _mean_water_temp_40 = "";
-    private String? _mean_water_temp_20 = "";
+    private List<String>? _mean_water_temp_20to100 = [];
+    private List<String>? _mean_water_temp_60 = [];
+    private List<String>? _mean_water_temp_40 = [];
+    private List<String>? _mean_water_temp_20 = [];
     private String? _geo_poten_restrict = "";
     private String? _water_protec_areas = "";
     private String? _land_parcel_number = "";
@@ -52,16 +52,16 @@ public class CreateReportStructure : ICreateReportStructure
                     _geo_poten_restrict = AppendString(_geo_poten_restrict ?? "", CoordinateParameter.JsonDataParameter?.Text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_20to100:
-                    _mean_water_temp_20to100 = AppendString(_mean_water_temp_20to100 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
+                    _mean_water_temp_20to100?.Add(CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_60:
-                    _mean_water_temp_60 = AppendString(_mean_water_temp_60 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
+                    _mean_water_temp_60?.Add(CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_40:
-                    _mean_water_temp_40 = AppendString(_mean_water_temp_40 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
+                    _mean_water_temp_40?.Add(CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_20:
-                    _mean_water_temp_20 = AppendString(_mean_water_temp_20 ?? "", CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
+                    _mean_water_temp_20?.Add(CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_100m_with_2400ha:
                     _geo_poten_100m_with_2400ha?.Add(CoordinateParameter.JsonDataParameter?.La_100txt?.ToString() ?? "");
@@ -75,7 +75,7 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.geo_poten_40m_with_2400ha:
                     _geo_poten_40m_with_2400ha?.Add(CoordinateParameter.JsonDataParameter?.La_40txt?.ToString() ?? "");
                     break;
-                case DataModel.Database.TypeOfData.geo_poten_100m_with_1800ha: //Lustgarten
+                case DataModel.Database.TypeOfData.geo_poten_100m_with_1800ha:
                     _geo_poten_100m_with_1800ha?.Add(CoordinateParameter.JsonDataParameter?.La_100xt?.ToString() ?? "");
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_80m_with_1800ha:
@@ -162,10 +162,10 @@ public class CreateReportStructure : ICreateReportStructure
             Thermal_con_80 = _thermal_con_80?.ConvertDokumentationString(),
             Thermal_con_60 = _thermal_con_60?.ConvertDokumentationString(),
             Thermal_con_40 = _thermal_con_40?.ConvertDokumentationString(),
-            Mean_water_temp_20to100 = _mean_water_temp_20to100,
-            Mean_water_temp_60 = _mean_water_temp_60,
-            Mean_water_temp_40 = _mean_water_temp_40,
-            Mean_water_temp_20 = _mean_water_temp_20,
+            Mean_water_temp_20to100 = _mean_water_temp_20to100?.ConvertDokumentationString(),
+            Mean_water_temp_60 = _mean_water_temp_60?.ConvertDokumentationString(),
+            Mean_water_temp_40 = _mean_water_temp_40?.ConvertDokumentationString(),
+            Mean_water_temp_20 = _mean_water_temp_20?.ConvertDokumentationString(),
             Geo_poten_restrict = _geo_poten_restrict,
             Water_protec_areas = _water_protec_areas,
             Land_parcel_number = _land_parcel_number,
