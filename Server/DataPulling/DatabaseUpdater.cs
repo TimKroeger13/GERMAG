@@ -1,5 +1,6 @@
 ﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
+using GERMAG.Server.ExtensionMethods;
 using GERMAG.Shared;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
@@ -21,10 +22,8 @@ namespace GERMAG.Server.DataPulling
             using var transaction = context.Database.BeginTransaction();
 
             var espgStringRaw = json.Crs?.Properties?.Name ?? throw new Exception("SRID not found");
-            var espgStringRegex = ESPGRegexNumber().Match(ESPGRegexShrink().Replace(espgStringRaw ?? "0", ":"));
-            var espgString = espgStringRegex.Value;
-
-            var espgNumber = int.Parse(espgString);
+ 
+            var espgNumber = espgStringRaw.EPSGToInt();
 
             context.GeoData.Where(g => g.ParameterKey == foreignKey).ExecuteDelete();
             context.SaveChanges();
@@ -174,11 +173,6 @@ namespace GERMAG.Server.DataPulling
             Console.WriteLine("Database Updated!");
         }
 
-        [GeneratedRegex("::")]
-        private static partial Regex ESPGRegexShrink();
-
-        [GeneratedRegex("(\\d+)")]
-        private static partial Regex ESPGRegexNumber();
     }
 }
 
