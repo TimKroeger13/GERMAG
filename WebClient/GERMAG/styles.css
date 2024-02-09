@@ -40,7 +40,8 @@ p {
 }
 
 #myModal .modal-dialog {
-  left: 5vw;
+  left: 2.5vw;
+  top: 3.5vh;
   margin-left: 0;
   pointer-events: auto; 
 }

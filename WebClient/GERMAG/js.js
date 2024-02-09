@@ -2,6 +2,7 @@ proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs");
 proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs");
 
 async function onMapClick(e, callback) {
+
     var clickCoordinates = e.latlng;
 
     //Get Json from Server
@@ -14,7 +15,7 @@ async function onMapClick(e, callback) {
     await openModal(ReportRequest_Json[0])
 
     //Test
-    await getGeojsonFromAddress('Silbersteinstraße 80 Berlin')
+    //await getGeojsonFromAddress('Silbersteinstraße 80 Berlin')
 
     //Plots geometry on map
     callback(LandParcelGeometry);
@@ -47,11 +48,9 @@ async function openModal(reportData) {
     $('#myModal').modal('show');
 }
 
+async function getGeojsonFromAddress(address) {
 
-
-async function getGeojsonFromAddress(addres) {
-
-    var geoJsonRequest = await httpGet("https://nominatim.openstreetmap.org/search?q=" + addres + "&format=geojson");
+    var geoJsonRequest = await httpGet("https://nominatim.openstreetmap.org/search?q=" + address + "&format=geojson");
 
     var parsedGeoJson = JSON.parse(geoJsonRequest);
 
@@ -62,15 +61,26 @@ async function getGeojsonFromAddress(addres) {
 
 }
 
-async function httpGet(theUrl)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
-}
-
-
+function httpGet(theUrl) {
+    return new Promise(function(resolve, reject) {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("GET", theUrl, true); // true for asynchronous request
+  
+      xmlHttp.onload = function() {
+        if (xmlHttp.status >= 200 && xmlHttp.status < 300) {
+          resolve(xmlHttp.responseText);
+        } else {
+          reject(new Error(`HTTP request failed with status ${xmlHttp.status}`));
+        }
+      };
+  
+      xmlHttp.onerror = function() {
+        reject(new Error('HTTP request failed'));
+      };
+  
+      xmlHttp.send();
+    });
+  }
 
 
 function CreateReportHTML(reportData) {
