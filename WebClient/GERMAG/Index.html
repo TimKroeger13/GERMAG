@@ -64,8 +64,15 @@
       </div>-->
 
       <div class="container">
-      <div id="map"></div>
-    </div>
+        <div id="address-bar">
+          <div id="branding">
+            <span id="branding-text">GERMAG</span>
+          </div>
+          <input type="text" id="address-input" placeholder="Type an address...">
+          <button onclick="searchAddress()">Search</button>
+        </div>
+        <div id="map"></div>
+      </div>
 
     <script>
         var map = L.map('map').setView([52.52, 13.40], 12);
