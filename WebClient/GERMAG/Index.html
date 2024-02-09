@@ -2,103 +2,116 @@
 <html lang="en">
 
 <head>
-    <base target="_top">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Adress Testsite</title>
-    <meta charset="UTF-8">
+  <title>Adress Testsite</title>
+  <meta charset="UTF-8">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 
-    <script src="js.js"></script>
+
+
+  <script src="js.js"></script>
 
 </head>
 
 <body>
 
-    <!-- Modal -->
-    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 1050;">
-        <div class="modal-dialog modal-dialog-scrollable" role="document">
-          <div class="modal-content">
-            <div class="modal-header" style="display: flex; align-items: center;">
-              <div class="col-xs-6 custom-modal-title">
-                <h4 class="modal-title ms-0 me-auto" id="myModalLabel">Geothermal Report</h4>
-              </div>
-              <div class="col-xs-6 text-right">
-                <button type="button" class="btn btn-default print-btn">Print</button>
-              </div>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                  aria-hidden="true">&times;</span></button>
-            </div>
-            <div class="modal-body">
-              <p>Report is loading...</p>
-            </div>
-          </div>
+  <!-- Modal -->
+<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 1050;">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="display: flex; align-items: center;">
+        <div class="col-xs-6 custom-modal-title">
+          <h4 class="modal-title ms-0 me-auto" id="myModalLabel">Geothermal Report</h4>
         </div>
-      </div>
-
-      <div class="container">
-        <div id="address-bar">
-          <div id="branding">
-            <span id="branding-text">GERMAG</span>
-          </div>
-          <input type="text" id="address-input" placeholder="Type an address...">
-          <button onclick="searchAddress()">Search</button>
+        <div class="col-xs-6 text-right">
+          <button type="button" class="btn btn-default print-btn">Print</button>
         </div>
-        <div id="map"></div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
       </div>
+      <div class="modal-body">
+        <p>Report is loading...</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <script>
-        var map = L.map('map').setView([52.52, 13.40], 12);
+  <div class="container">
+    <div id="address-bar">
+      <div id="branding">
+        <span id="branding-text">GERMAG</span>
+      </div>
+      <input type="text" id="address-input" placeholder="Type an address..." onkeypress="handleKeyPress(event)">
+      <button onclick="searchAddress()">Search</button>
+    </div>
+    <div id="map"></div>
+  </div>
 
-        const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
-        var popup = L.popup();
+  <script>
+    var map = L.map('map').setView([52.52, 13.40], 12);
 
-        map.on('click', function (e) {
-            onMapClick(e, handleMapClickResult);
-        });
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    var popup = L.popup();
 
-        function handleMapClickResult(landParcelGeometry) {
-            if (typeof geoJsonLayer !== 'undefined') {
-                map.removeLayer(geoJsonLayer);
-            }
+    map.on('click', function (e) {
+      onMapClick(e);
+    });
 
-            geoJsonLayer = L.geoJSON(landParcelGeometry).addTo(map);
+    //Geometry Postion
+    async function handleMapClickResult(landParcelGeometry) {
+      if (typeof geoJsonLayer !== 'undefined') {
+        map.removeLayer(geoJsonLayer);
+      }
 
-            //map.fitBounds(geoJsonLayer.getBounds());
-        }
+      geoJsonLayer = L.geoJSON(landParcelGeometry).addTo(map);
 
-        //position
+    }
 
-        async function searchAddress() {
-          var addressInput = document.getElementById('address-input');
-          var addressValue = addressInput.value;
+    //Address Postion
+    async function flyToPoint(x,y){
+      var targetLatLng = L.latLng(x, y);
 
-          var x = await getGeojsonFromAddress(addressValue)
-        }
-
+      map.flyTo(targetLatLng, 18);
+    }
 
 
 
-    </script>
+    //Search address
+    async function searchAddress() {
+      var addressInput = document.getElementById('address-input');
+      var addressValue = addressInput.value;
+
+      if (addressValue != "") {
+        var x = await getGeojsonFromAddress(addressValue)
+      }
+    }
+
+
+
+
+
+
+
+  </script>
 
 </body>

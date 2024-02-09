@@ -5,21 +5,52 @@ async function onMapClick(e, callback) {
 
     var clickCoordinates = e.latlng;
 
-    //Get Json from Server
-    var ReportRequest_Json = await GetRequest(clickCoordinates.lng, clickCoordinates.lat);
+    await InitalPointQuery(clickCoordinates.lng, clickCoordinates.lat)
 
-    //Transform Geometry Back
-    var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
+    
 
-    //opens modal window
-    await openModal(ReportRequest_Json[0])
+}
 
-    //Test
-    //await getGeojsonFromAddress('Silbersteinstraße 80 Berlin')
+async function InitalPointQuery(lng, lat){
 
-    //Plots geometry on map
-    callback(LandParcelGeometry);
+        //Get Json from Server
+        var ReportRequest_Json = await GetRequest(lng, lat);
 
+        if(ReportRequest_Json[0].geometry == null){
+            return false
+        }
+
+        //Transform Geometry Back
+        var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
+    
+        //opens modal window
+        await openModal(ReportRequest_Json[0])
+    
+        //Plots geometry on map
+        await handleMapClickResult(LandParcelGeometry);
+
+        return true
+
+}
+
+async function getGeojsonFromAddress(address) {
+
+    var geoJsonRequest = await httpGet("https://nominatim.openstreetmap.org/search?q=" + address + "&format=geojson");
+
+    var parsedGeoJson = JSON.parse(geoJsonRequest);
+
+    if(parsedGeoJson.features.length == 0){
+        return;
+    }
+
+    x = parsedGeoJson.features[0].geometry.coordinates[1];
+    y = parsedGeoJson.features[0].geometry.coordinates[0];
+
+    var geometryFound = await InitalPointQuery(y, x)
+
+    if(geometryFound){
+        await flyToPoint(x,y)
+    }
 }
 
 async function openModal(reportData) {
@@ -46,19 +77,6 @@ async function openModal(reportData) {
     $('.modal-overlay').show();
 
     $('#myModal').modal('show');
-}
-
-async function getGeojsonFromAddress(address) {
-
-    var geoJsonRequest = await httpGet("https://nominatim.openstreetmap.org/search?q=" + address + "&format=geojson");
-
-    var parsedGeoJson = JSON.parse(geoJsonRequest);
-
-    x = parsedGeoJson.features[0].geometry.coordinates[1];
-    y = parsedGeoJson.features[0].geometry.coordinates[0];
-
-    console.log("X = ", x, "\n", "Y = ", y, "\n\n");
-
 }
 
 function httpGet(theUrl) {
@@ -179,6 +197,16 @@ async function GetRequest(Xcor, Ycor) {
         return null;
     }
 }
+
+
+
+
+//Quick search by hitting enter
+function handleKeyPress(event) {
+    if (event.keyCode === 13) {
+      searchAddress();
+    }
+  }
 
 // Back transformation
 
