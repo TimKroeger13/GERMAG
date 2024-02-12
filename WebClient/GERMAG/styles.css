@@ -48,6 +48,31 @@ p {
   pointer-events: auto; 
 }
 
+.modal {
+  pointer-events: none;
+  animation: fadeIn 0.5s ease-out;
+}
+
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+
+
+.modal.show {
+  pointer-events: auto; 
+}
+
+.modal-backdrop {
+  display: auto !important; 
+}
+
 .container {
   margin: 0 !important;
   padding: 0 !important;
@@ -55,21 +80,9 @@ p {
   box-sizing: border-box;
 }
 
-.modal {
-  pointer-events: none;
-}
-
-.modal.show {
-  pointer-events: auto; /* Enable interactions when the modal is shown */
-}
-
-.modal-backdrop {
-  display: auto !important; /*none*/
-}
-
 #address-bar {
   display: flex;
-  height: 5vh; /* Set height to 10vh */
+  height: 5vh; 
   background-color: #2D2D2D;
   padding-left: 1vw;
   padding-right: 1vw;

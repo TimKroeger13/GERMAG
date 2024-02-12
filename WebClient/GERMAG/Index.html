@@ -23,9 +23,6 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-
-
-
   <script src="js.js"></script>
 
 </head>
@@ -94,20 +91,22 @@
       map.flyTo(targetLatLng, 18);
     }
 
-
-
     //Search address
     async function searchAddress() {
       var addressInput = document.getElementById('address-input');
       var addressValue = addressInput.value;
 
       if (addressValue != "") {
-        var x = await getGeojsonFromAddress(addressValue)
+        await getGeojsonFromAddress(addressValue)
       }
     }
 
-
-
+    //Close all geometry
+    async function closeAllGeometry(){
+      if (typeof geoJsonLayer !== 'undefined') {
+        map.removeLayer(geoJsonLayer);
+      }
+    }
 
 
 

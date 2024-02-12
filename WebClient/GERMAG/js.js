@@ -7,29 +7,27 @@ async function onMapClick(e, callback) {
 
     await InitalPointQuery(clickCoordinates.lng, clickCoordinates.lat)
 
-    
-
 }
 
-async function InitalPointQuery(lng, lat){
+async function InitalPointQuery(lng, lat) {
 
-        //Get Json from Server
-        var ReportRequest_Json = await GetRequest(lng, lat);
+    //Get Json from Server
+    var ReportRequest_Json = await GetRequest(lng, lat);
 
-        if(ReportRequest_Json[0].geometry == null){
-            return false
-        }
+    if (ReportRequest_Json[0].geometry == null) {
+        return false
+    }
 
-        //Transform Geometry Back
-        var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
-    
-        //opens modal window
-        await openModal(ReportRequest_Json[0])
-    
-        //Plots geometry on map
-        await handleMapClickResult(LandParcelGeometry);
+    //Transform Geometry Back
+    var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
 
-        return true
+    //opens modal window
+    await openModal(ReportRequest_Json[0])
+
+    //Plots geometry on map
+    await handleMapClickResult(LandParcelGeometry);
+
+    return true
 
 }
 
@@ -39,17 +37,20 @@ async function getGeojsonFromAddress(address) {
 
     var parsedGeoJson = JSON.parse(geoJsonRequest);
 
-    if(parsedGeoJson.features.length == 0){
+    if (parsedGeoJson.features.length == 0) {
         return;
     }
 
     x = parsedGeoJson.features[0].geometry.coordinates[1];
     y = parsedGeoJson.features[0].geometry.coordinates[0];
 
+    var mapFocus = document.getElementById('map');
+    mapFocus.focus();
+
     var geometryFound = await InitalPointQuery(y, x)
 
-    if(geometryFound){
-        await flyToPoint(x,y)
+    if (geometryFound) {
+        await flyToPoint(x, y)
     }
 }
 
@@ -58,47 +59,69 @@ async function openModal(reportData) {
     var html = CreateReportHTML(reportData)
 
     $("#myModal").modal({ backdrop: false });
+
     $('.modal').modal('hide');
 
     $(".modal-dialog").draggable({
         handle: ".modal-header"
     });
 
-    $(".modal").on('shown.bs.modal', function (e) {
+
+    $("#myModal").on('shown.bs.modal', function (e) {
         $(".modal-body").html(html);
     });
-
-    $(".modal").on('hide.bs.modal', function (e) {
+    
+    $("#myModal").on('hide.bs.modal', function (e) {
         $(".modal iframe").attr('src', "");
     });
-
+    
+    
     $("#myModal").modal({ backdrop: false });
-    // Show overlay
-    $('.modal-overlay').show();
 
-    $('#myModal').modal('show');
 }
 
+
+
+
+
+
+
+//Close Modal, when adress bar ist clicked
+document.addEventListener('DOMContentLoaded', function () {
+    var addressInput = document.getElementById('address-input');
+    if (addressInput) {
+        addressInput.addEventListener('focus', function () {
+            if ($('#myModal').hasClass('in')) {
+                $('.modal').modal('hide');
+            }
+            addressInput.focus();
+            closeAllGeometry()
+        });
+    }
+});
+
+
+
 function httpGet(theUrl) {
-    return new Promise(function(resolve, reject) {
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.open("GET", theUrl, true); // true for asynchronous request
-  
-      xmlHttp.onload = function() {
-        if (xmlHttp.status >= 200 && xmlHttp.status < 300) {
-          resolve(xmlHttp.responseText);
-        } else {
-          reject(new Error(`HTTP request failed with status ${xmlHttp.status}`));
-        }
-      };
-  
-      xmlHttp.onerror = function() {
-        reject(new Error('HTTP request failed'));
-      };
-  
-      xmlHttp.send();
+    return new Promise(function (resolve, reject) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous request
+
+        xmlHttp.onload = function () {
+            if (xmlHttp.status >= 200 && xmlHttp.status < 300) {
+                resolve(xmlHttp.responseText);
+            } else {
+                reject(new Error(`HTTP request failed with status ${xmlHttp.status}`));
+            }
+        };
+
+        xmlHttp.onerror = function () {
+            reject(new Error('HTTP request failed'));
+        };
+
+        xmlHttp.send();
     });
-  }
+}
 
 
 function CreateReportHTML(reportData) {
@@ -199,14 +222,12 @@ async function GetRequest(Xcor, Ycor) {
 }
 
 
-
-
 //Quick search by hitting enter
 function handleKeyPress(event) {
     if (event.keyCode === 13) {
-      searchAddress();
+        searchAddress();
     }
-  }
+}
 
 // Back transformation
 
