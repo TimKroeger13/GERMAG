@@ -59,13 +59,11 @@ async function openModal(reportData) {
     var html = CreateReportHTML(reportData)
 
     $("#myModal").modal({ backdrop: false });
-
     $('.modal').modal('hide');
 
     $(".modal-dialog").draggable({
         handle: ".modal-header"
     });
-
 
     $("#myModal").on('shown.bs.modal', function (e) {
         $(".modal-body").html(html);
