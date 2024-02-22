@@ -5,7 +5,7 @@ namespace GERMAG.Server.ExtensionMethods;
 
 public static class GetDocumentationString
 {
-    public static String ConvertDokumentationString (this List<string> dokumentationString)
+    public static String ConvertDocumentationString (this List<string> dokumentationString)
     {
         if (dokumentationString.Count() == 0)
         {

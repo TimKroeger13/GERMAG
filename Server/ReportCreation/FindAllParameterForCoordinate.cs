@@ -48,7 +48,6 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
                 Geometry = geoJsonWriter.Write(gd.Geom)
             });
 
-
         var landPacelGeometry = context.GeoData.Where(gd => landparcelIntersection.Any(lp => lp.Id == gd.Id)).Select(gd => new { gd.ParameterKey, gd.Parameter, Geometry = geoJsonWriter.Write(gd.Geom)});
 
         var landParcelResult = landPacelGeometry
