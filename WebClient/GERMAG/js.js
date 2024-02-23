@@ -21,8 +21,12 @@ async function InitalPointQuery(lng, lat) {
     //Transform Geometry Back
     var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
 
+    //Create Gethermalreport
+    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0]);
+    await SetReport(GeothermalReport);
+
     //opens modal window
-    await openModal(ReportRequest_Json[0])
+    await openModal(GeothermalReport);
 
     //Plots geometry on map
     await handleMapClickResult(LandParcelGeometry);
@@ -54,9 +58,7 @@ async function getGeojsonFromAddress(address) {
     }
 }
 
-async function openModal(reportData) {
-
-    var html = CreateReportHTML(reportData)
+async function openModal(html) {
 
     $("#myModal").modal({ backdrop: false });
     $('.modal').modal('hide');
@@ -73,13 +75,47 @@ async function openModal(reportData) {
         $(".modal iframe").attr('src', "");
     });
     
-    
     $("#myModal").modal({ backdrop: false });
 
 }
 
 
+async function PrintPDF() {
+    var pdf = new jsPDF('p', 'pt', 'letter');
+    var MainReportsource = await GetReport();
 
+    var Title = '<h1 style="margin-bottom: 30px;">Geothermal Report - Gasag Solution Plus</h1>';
+
+    var source = '<div style="font-size: 14px;">' + Title + '<br>' + MainReportsource + '</div>';
+
+    specialElementHandlers = {
+        '#bypassme': function (element, renderer) {
+            return true;
+        }
+    };
+
+    margins = {
+        top: 40,
+        bottom: 60,
+        left: 40,
+        width: 522
+    };
+
+    pdf.fromHTML(
+        source,
+        margins.left,
+        margins.top, {
+            'width': margins.width,
+            'elementHandlers': specialElementHandlers
+        },
+        function (dispose) {
+            var pdfDataUri = pdf.output('datauristring');
+            var newWindow = window.open();
+            newWindow.document.write('<style>body, html { margin: 0; padding: 0; }</style>');
+            newWindow.document.write('<iframe width="100%" height="100%" style="margin: 0; padding: 0; border: none;" src="' + pdfDataUri + '"></iframe>');
+            newWindow.document.title = 'Geothermal-Report';
+        }, margins);
+}
 
 
 
@@ -122,7 +158,7 @@ function httpGet(theUrl) {
 }
 
 
-function CreateReportHTML(reportData) {
+async function CreateReportHTML(reportData) {
 
     String_geo_poten_restrict = ``;
     if (reportData.geo_poten_restrict.length > 0) {
