@@ -1,19 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML to PDF Converter</title>
-    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <meta charset="utf-8">
+    <title>HTML to PDF test</title>
+
+    <script src="HtmlToPdf/es6-promise.min.js"></script>
+
+    <script src="HtmlToPdf/jspdf.umd.min.js"></script>
+
+    <!-- Include html2canvas from the "HtmlToPdf" directory -->
+    <script src="HtmlToPdf/html2canvas.min.js"></script>
+
+    <!-- Include jsPDF from the "HtmlToPdf" directory -->
+    <script src="HtmlToPdf/jspdf.umd.min.js"></script>
+
+    <!-- Include html2pdf from the "HtmlToPdf" directory -->
+    <script src="HtmlToPdf/html2pdf.min.js"></script>
+</head>
 </head>
 <body>
-
-    <button onclick="convertToPDF()">Convert</button>
-    
-    <div id="randomText">
-        <p>This is some random text. You can add more content here.</p>
+    <div id="printText">
+        <h4>Some Title</h4>
+        <p>Some Text</p>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Ensure that jsPDF and html2pdf are defined
+        if (typeof jsPDF !== 'undefined' && typeof html2pdf !== 'undefined') {
+            // Get the element you want to convert to PDF
+            var element = document.getElementById('printText');
+
+            // Use html2pdf plugin to convert HTML to PDF
+            html2pdf(element, function(pdf) {
+                // Save the PDF to a file or display it
+                pdf.save('output.pdf');
+            });
+        } else {
+            console.error('jsPDF or html2pdf is not defined. Make sure they are loaded correctly.');
+        }
+    </script>
+
 </body>
 </html>
