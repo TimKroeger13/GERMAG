@@ -14,10 +14,6 @@ async function InitalPointQuery(lng, lat) {
     //Get Json from Server
     var ReportRequest_Json = await GetRequest(lng, lat);
 
-    if (ReportRequest_Json[0].geometry == null) {
-        return false
-    }
-
     //Transform Geometry Back
     var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
 

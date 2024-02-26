@@ -22,7 +22,7 @@ public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoor
                                           .ToList());
 
         var mergedList = ParameterList.Zip(jsonData_Parameter, (original, jsonData) =>
-        new CoordinateParameters
+        new GeometryElementParameter
         {
             Type = original.Type,
             ParameterKey = original.ParameterKey,

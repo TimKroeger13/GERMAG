@@ -16,8 +16,6 @@ public class ReportController(ICreateReportAsync createReport) : ControllerBase
     [EnableCors(CorsPolicies.GetAllowed)]
     public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
     {
-        throw new Exception("New version");
-
         return await createReport.CreateGeothermalReportAsync(Xcor, Ycor, Srid);
     }
 }

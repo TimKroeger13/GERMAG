@@ -17,12 +17,12 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface IFindAllParameterForCoordinate
 {
-    List<CoordinateParameters> FindCoordianteParameters(double Xcor, double Ycor, int Srid);
+    List<GeometryElementParameter> FindCoordianteParameters(double Xcor, double Ycor, int Srid);
 }
 
 public class FindAllParameterForCoordinate(DataContext context) : IFindAllParameterForCoordinate
 {
-    public List<CoordinateParameters> FindCoordianteParameters(double Xcor, double Ycor, int Srid)
+    public List<GeometryElementParameter> FindCoordianteParameters(double Xcor, double Ycor, int Srid)
     {
 
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
@@ -37,30 +37,30 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
 
         var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelId && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id});
 
-        var geoJsonWriter = new GeoJsonWriter();
+        //var geoJsonWriter = new GeoJsonWriter();
 
         var IntersectingGeometry = context.GeoData
             .Where(gd => gd.ParameterKey != landParcelId && landparcelIntersection.Any(lp => gd.Geom!.Intersects(lp.Geom)))
             .Select(gd => new
             {
                 gd.ParameterKey,
-                gd.Parameter,
-                Geometry = geoJsonWriter.Write(gd.Geom)
+                gd.Parameter
+                //Geometry = geoJsonWriter.Write(gd.Geom)
             });
 
-        var landPacelGeometry = context.GeoData.Where(gd => landparcelIntersection.Any(lp => lp.Id == gd.Id)).Select(gd => new { gd.ParameterKey, gd.Parameter, Geometry = geoJsonWriter.Write(gd.Geom)});
+        var landPacelGeometry = context.GeoData.Where(gd => landparcelIntersection.Any(lp => lp.Id == gd.Id)).Select(gd => new { gd.ParameterKey, gd.Parameter}); //Geometry = geoJsonWriter.Write(gd.Geom)
 
         var landParcelResult = landPacelGeometry
             .Join(
                 context.GeothermalParameter,
                 ig => ig.ParameterKey,
                 gp => gp.Id,
-                (ig, gp) => new CoordinateParameters
+                (ig, gp) => new GeometryElementParameter
                 {
                     Type = gp.Type,
                     ParameterKey = ig.ParameterKey,
-                    Parameter = ig.Parameter,
-                    Geometry = gp.Type == TypeOfData.land_parcels ? ig.Geometry : null
+                    Parameter = ig.Parameter
+                    //Geometry = gp.Type == TypeOfData.land_parcels ? ig.Geometry : null
                 })
             .ToList();
 
@@ -69,12 +69,12 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
                 context.GeothermalParameter,
                 ig => ig.ParameterKey,
                 gp => gp.Id,
-                (ig, gp) => new CoordinateParameters
+                (ig, gp) => new GeometryElementParameter
                 {
                     Type = gp.Type,
                     ParameterKey = ig.ParameterKey,
-                    Parameter = ig.Parameter,
-                    Geometry = gp.Type == TypeOfData.land_parcels ? ig.Geometry : null
+                    Parameter = ig.Parameter
+                    //Geometry = gp.Type == TypeOfData.land_parcels ? ig.Geometry : null
                 })
             .ToList();
 
