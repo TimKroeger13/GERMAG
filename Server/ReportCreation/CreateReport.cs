@@ -27,7 +27,7 @@ public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoor
             Type = original.Type,
             ParameterKey = original.ParameterKey,
             Parameter = original.Parameter,
-            Geometry = original.Geometry,
+            //Geometry = original.Geometry
             JsonDataParameter = jsonData
         })
         .ToList();
