@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text.RegularExpressions;
+using Npgsql;
+using Microsoft.AspNetCore.Http;
+using System.Data.SqlClient;
 
 namespace GERMAG.Server.GeometryCalculations;
 
@@ -32,6 +37,7 @@ public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
 
             var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelId && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id }).ToList();
 
+
             //var transformedPointGeoJson = context.GeoData.FromSql($"ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON('{{\"type\":\"Point\",\"coordinates\":[392411.44600000046,5821172.262]}}'), 25833), 3857))").First();
 
            
@@ -47,15 +53,23 @@ public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
                 GeometryJson = geoJsonWriter.Write(landparcelIntersection[0].Geom),
             };
 
+            var GeoJsonString =  "{\"type\":\"Point\",\"coordinates\":[392411.44600000046,5821172.262]}";
 
-            //var GeoJsonString = "{\"type\":\"Point\",\"coordinates\":[392411.44600000046,5821172.262]}";
 
-            var GeoJsonString = returnValue.GeometryJson;
+            var queryString = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(@geoJson), 25833), 3857)) AS transformed_geojson";
+            var geoJsonString = "{\"type\":\"Point\",\"coordinates\":[392411.44600000046,5821172.262]}";
 
-            var transformedPointGeoJson2 = context.GeoData  //Database
-            .FromSql($"SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON('{GeoJsonString}'), 25833), 3857)) AS geom")
-            .Select(gd => gd.Geom)
-            .FirstOrDefault();
+            var transformedGeoJson = context.GeoData
+                .FromSqlRaw(queryString, new Npgsql.NpgsqlParameter("geoJson", geoJsonString))
+                .AsEnumerable()
+                .FirstOrDefault();
+
+
+            var transformedPointGeoJson3 = context.GeoData
+                .FromSql($"SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON('{GeoJsonString}'), 25833), 3857)) AS geom")
+                .Select(gd => gd.Geom)
+                .FirstOrDefault();
+
 
 
             return returnValue;
