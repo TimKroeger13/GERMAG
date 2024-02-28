@@ -35,7 +35,7 @@ public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
 
             var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
-            var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelID && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id, gd.ParameterKey, gd.Parameter }).ToList();
+            var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelID && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id, gd.ParameterKey, gd.Parameter }).Take(1).ToList();
 
             var returnValue = new LandParcel
             {
