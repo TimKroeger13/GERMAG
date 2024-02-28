@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.ExtensionMethods;
@@ -40,7 +41,7 @@ public static class GetDocumentationString
                 string[] rangeValues = match.Value.Split('-');
                 foreach (string value in rangeValues)
                 {
-                    if (double.TryParse(value.Trim(), out double number))
+                    if (double.TryParse(value.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double number))
                     {
                         numbers.Add(number);
                     }
