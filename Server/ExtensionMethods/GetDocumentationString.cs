@@ -4,26 +4,25 @@ using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.ExtensionMethods;
 
-public static class GetDocumentationString
+public static partial class GetDocumentationString
 {
     public static String ConvertDocumentationString (this List<string> dokumentationString)
     {
-        if (dokumentationString.Count() == 0)
+        if (dokumentationString.Count == 0)
         {
             return "";
         }
 
         var IncreasedValue = "";
         var DecreasedValues = "";
-        List<double> numbers = new List<double>();
+        List<double> numbers = [];
 
         foreach (string str in dokumentationString)
         {
-            string TrimmedString = Regex.Replace(Regex.Replace(str, "bis", "-"), ",", ".");
+            string TrimmedString = CutRegex().Replace(bisRegex().Replace(str, "-"), ".");
 
-
-            Regex IsSmallerRegex = new Regex(@"^[^<>-]*<[^<>-]*$");
-            Regex IsLargerRegex = new Regex(@"^[^<>-]*>[^<>-]*$");
+            Regex IsSmallerRegex = samlerRegex();
+            Regex IsLargerRegex = largerRegex();
 
             if (IsLargerRegex.IsMatch(TrimmedString)){
                 IncreasedValue = ">";
@@ -34,9 +33,9 @@ public static class GetDocumentationString
                 DecreasedValues = "<";
             }
 
-            MatchCollection matches = Regex.Matches(TrimmedString, @"[+-]?\s*\d+(\.\d*)?(?:\s*-\s*[+-]?\s*\d+(\.\d*)?)?");
+            MatchCollection matches = TimmRegex().Matches(TrimmedString);
 
-            foreach (Match match in matches)
+            foreach (Match match in matches.Cast<Match>())
             {
                 string[] rangeValues = match.Value.Split('-');
                 foreach (string value in rangeValues)
@@ -47,7 +46,6 @@ public static class GetDocumentationString
                     }
                 }
             }
-
         }
 
         if (numbers.Min() == numbers.Max())
@@ -59,4 +57,15 @@ public static class GetDocumentationString
             return DecreasedValues + numbers.Min() + " - " + IncreasedValue + numbers.Max();
         }
     }
+
+    [GeneratedRegex(",")]
+    private static partial Regex CutRegex();
+    [GeneratedRegex("bis")]
+    private static partial Regex bisRegex();
+    [GeneratedRegex(@"^[^<>-]*<[^<>-]*$")]
+    private static partial Regex samlerRegex();
+    [GeneratedRegex(@"^[^<>-]*>[^<>-]*$")]
+    private static partial Regex largerRegex();
+    [GeneratedRegex(@"[+-]?\s*\d+(\.\d*)?(?:\s*-\s*[+-]?\s*\d+(\.\d*)?)?")]
+    private static partial Regex TimmRegex();
 }
