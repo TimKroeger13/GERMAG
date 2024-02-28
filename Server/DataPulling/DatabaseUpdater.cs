@@ -22,7 +22,7 @@ namespace GERMAG.Server.DataPulling
             using var transaction = context.Database.BeginTransaction();
 
             var espgStringRaw = json.Crs?.Properties?.Name ?? throw new Exception("SRID not found");
- 
+
             var espgNumber = espgStringRaw.EPSGToInt();
 
             context.GeoData.Where(g => g.ParameterKey == foreignKey).ExecuteDelete();
@@ -172,7 +172,6 @@ namespace GERMAG.Server.DataPulling
             transaction.Commit();
             Console.WriteLine("Database Updated!");
         }
-
     }
 }
 

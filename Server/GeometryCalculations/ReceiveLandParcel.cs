@@ -37,6 +37,11 @@ public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
 
             var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelID && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id, gd.ParameterKey, gd.Parameter }).Take(1).ToList();
 
+            if (landparcelIntersection.Count == 0)
+            {
+                throw new Exception("Area not coverd by GERMAG\n Area Covered: {Berlin}");
+            }
+
             var returnValue = new LandParcel
             {
                 GeoDataID = landparcelIntersection[0].Id,

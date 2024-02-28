@@ -15,7 +15,7 @@ public class JsonDeserialize() : IJsonDeserialize
 {
     public Root DeserializeJson(string SerializedInputJson, TypeOfData typeOfData, JsonFormat format)
     {
-        var jsonData_Root = JsonSerializer.Deserialize<Root>(SerializedInputJson, new JsonSerializerOptions()
+        Root jsonData_Root = JsonSerializer.Deserialize<Root>(SerializedInputJson, new JsonSerializerOptions()
         {
             PropertyNameCaseInsensitive = true,
         }) ?? throw new Exception("No wfs found (root)");
@@ -74,7 +74,7 @@ public class JsonDeserialize() : IJsonDeserialize
         }
         return jsonData_Root;
     }
-    private List<List<List<double>>>? CopyCoordinateLongsToCoordinates(List<List<List<List<double>>>>? coordinateLongs)
+    private static List<List<List<double>>>? CopyCoordinateLongsToCoordinates(List<List<List<List<double>>>>? coordinateLongs)
     {
         if (coordinateLongs == null || coordinateLongs.Count == 0)
             return null;
