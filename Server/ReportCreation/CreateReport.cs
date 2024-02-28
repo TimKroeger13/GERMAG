@@ -9,14 +9,14 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface ICreateReportAsync
 {
-    Task<IEnumerable<Report>> CreateGeothermalReportAsync(double Xcor, double Ycor, int Srid);
+    Task<IEnumerable<Report>> CreateGeothermalReportAsync(LandParcel landParcelElement);
 }
 
 public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoordinate, IParameterDeserialator parameterDeserialator, ICreateReportStructure createReportStructure) : ICreateReportAsync
 {
-    public async Task<IEnumerable<Report>> CreateGeothermalReportAsync(double Xcor, double Ycor, int Srid)
+    public async Task<IEnumerable<Report>> CreateGeothermalReportAsync(LandParcel landParcelElement)
     {
-        var ParameterList = await Task.Run(() => findAllParameterForCoordinate.FindCoordianteParameters(Xcor, Ycor, Srid));
+        var ParameterList = await Task.Run(() => findAllParameterForCoordinate.FindCoordianteParameters(landParcelElement));
 
         var jsonData_Parameter = await Task.Run(() => ParameterList.Select(p => parameterDeserialator.DeserializeParameters(p.Parameter ?? ""))
                                           .ToList());
@@ -32,7 +32,7 @@ public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoor
         })
         .ToList();
 
-        var CompleteReport = await Task.Run(() => createReportStructure.CreateReport(mergedList, Xcor, Ycor, Srid));
+        var CompleteReport = await Task.Run(() => createReportStructure.CreateReport(mergedList));
 
 
         return CompleteReport;

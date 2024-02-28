@@ -17,30 +17,36 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface IFindAllParameterForCoordinate
 {
-    List<GeometryElementParameter> FindCoordianteParameters(double Xcor, double Ycor, int Srid);
+    List<GeometryElementParameter> FindCoordianteParameters(LandParcel landParcelElement);
 }
 
 public class FindAllParameterForCoordinate(DataContext context) : IFindAllParameterForCoordinate
 {
-    public List<GeometryElementParameter> FindCoordianteParameters(double Xcor, double Ycor, int Srid)
+    public List<GeometryElementParameter> FindCoordianteParameters(LandParcel landParcelElement)
     {
+        /*        var geoJsonWriter = new GeoJsonWriter();
 
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
-        var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
+                var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
+                var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
 
-        var transformedPoint = context.GeoData
-            .FromSql($"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({originalPoint.X}, {originalPoint.Y}), {Srid}), 25833) AS geom")
-            .Select(gd => gd.Geom)
-            .FirstOrDefault();
+                var transformedPoint = context.GeoData  //Database
+                    .FromSql($"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({originalPoint.X}, {originalPoint.Y}), {Srid}), 25833) AS geom")
+                    .Select(gd => gd.Geom)
+                    .FirstOrDefault();
 
-        var landParcelId = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
+                var landParcelId = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
-        var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelId && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id});
+                var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelId && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id }).ToList();
 
-        //var geoJsonWriter = new GeoJsonWriter();
+                var returnValue = new LandParcel
+                {
+                    ParameterKey = landparcelIntersection[0].Id,
+                    Geometry = landparcelIntersection[0].Geom,
+                    GeometryJson = geoJsonWriter.Write(landparcelIntersection[0].Geom),
+                };*/
 
         var IntersectingGeometry = context.GeoData
-            .Where(gd => gd.ParameterKey != landParcelId && landparcelIntersection.Any(lp => gd.Geom!.Intersects(lp.Geom)))
+            .Where(gd => gd.ParameterKey != landParcelElement.ParameterKey && gd.Geom!.Intersects(landParcelElement.Geometry))
             .Select(gd => new
             {
                 gd.ParameterKey,
@@ -48,9 +54,9 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
                 //Geometry = geoJsonWriter.Write(gd.Geom)
             });
 
-        var landPacelGeometry = context.GeoData.Where(gd => landparcelIntersection.Any(lp => lp.Id == gd.Id)).Select(gd => new { gd.ParameterKey, gd.Parameter}); //Geometry = geoJsonWriter.Write(gd.Geom)
+        //var landPacelGeometry = context.GeoData.Where(gd => landparcelIntersection.Any(lp => lp.Id == gd.Id)).Select(gd => new { gd.ParameterKey, gd.Parameter}); //Geometry = geoJsonWriter.Write(gd.Geom)
 
-        var landParcelResult = landPacelGeometry
+        /*var landParcelResult = landPacelGeometry
             .Join(
                 context.GeothermalParameter,
                 ig => ig.ParameterKey,
@@ -62,7 +68,14 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
                     Parameter = ig.Parameter
                     //Geometry = gp.Type == TypeOfData.land_parcels ? ig.Geometry : null
                 })
-            .ToList();
+            .ToList();*/
+
+        var landParcelResult = new GeometryElementParameter
+        {
+            Type = TypeOfData.land_parcels,
+            ParameterKey = landParcelElement.ParameterKey,
+            Parameter = landParcelElement.Parameter
+        };
 
         var intersectingResult = IntersectingGeometry
             .Join(
@@ -78,7 +91,9 @@ public class FindAllParameterForCoordinate(DataContext context) : IFindAllParame
                 })
             .ToList();
 
-        var result = landParcelResult.Concat(intersectingResult).ToList();
+        var result = intersectingResult.Append(landParcelResult).ToList();
+
+        //var result = intersectingResult.ToList();
 
         return result;
     }

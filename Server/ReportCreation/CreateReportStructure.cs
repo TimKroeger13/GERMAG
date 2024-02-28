@@ -7,7 +7,7 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface ICreateReportStructure
 {
-    Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters, double Xcor, double Ycor, int Srid);
+    Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters);
 }
 
 public class CreateReportStructure : ICreateReportStructure
@@ -36,7 +36,7 @@ public class CreateReportStructure : ICreateReportStructure
     private String? _zeHGW = "";
     private List<String>? _verordnung = [];
     private List<String>? _veror_link = [];
-    public Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters, double Xcor, double Ycor, int Srid)
+    public Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
         {

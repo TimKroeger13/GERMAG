@@ -17,7 +17,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
     [EnableCors(CorsPolicies.GetAllowed)]
     public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
     {
-        var a = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
-        return await createReport.CreateGeothermalReportAsync(Xcor, Ycor, Srid);
+        LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
+        return await createReport.CreateGeothermalReportAsync(landParcelElement);
     }
 }
