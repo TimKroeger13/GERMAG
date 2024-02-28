@@ -18,8 +18,7 @@ public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoor
     {
         var ParameterList = await Task.Run(() => findAllParameterForCoordinate.FindCoordianteParameters(landParcelElement));
 
-        var jsonData_Parameter = await Task.Run(() => ParameterList.Select(p => parameterDeserialator.DeserializeParameters(p.Parameter ?? ""))
-                                          .ToList());
+        var jsonData_Parameter = await Task.Run(() => ParameterList.ConvertAll(p => parameterDeserialator.DeserializeParameters(p.Parameter ?? "")));
 
         var mergedList = ParameterList.Zip(jsonData_Parameter, (original, jsonData) =>
         new GeometryElementParameter
@@ -27,15 +26,12 @@ public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoor
             Type = original.Type,
             ParameterKey = original.ParameterKey,
             Parameter = original.Parameter,
-            //Geometry = original.Geometry
             JsonDataParameter = jsonData
         })
         .ToList();
 
         var CompleteReport = await Task.Run(() => createReportStructure.CreateReport(mergedList));
 
-
         return CompleteReport;
-
     }
 }

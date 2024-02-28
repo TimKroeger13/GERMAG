@@ -14,5 +14,4 @@ public class GeometryElementParameter
     public int? ParameterKey { get; set; }
     public string? Parameter { get; set; }
     public Properties? JsonDataParameter { get; set; }
-    //public String? Geometry { get; set; }
 }

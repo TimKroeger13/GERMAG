@@ -12,30 +12,30 @@ public interface ICreateReportStructure
 
 public class CreateReportStructure : ICreateReportStructure
 {
-    private List<String>? _geo_poten_100m_with_2400ha = [];
-    private List<String>? _geo_poten_80m_with_2400ha = [];
-    private List<String>? _geo_poten_60m_with_2400ha = [];
-    private List<String>? _geo_poten_40m_with_2400ha = [];
-    private List<String>? _geo_poten_100m_with_1800ha = [];
-    private List<String>? _geo_poten_80m_with_1800ha = [];
-    private List<String>? _geo_poten_60m_with_1800ha = [];
-    private List<String>? _geo_poten_40m_with_1800ha = [];
-    private List<String>? _thermal_con_100 = [];
-    private List<String>? _thermal_con_80 = [];
-    private List<String>? _thermal_con_60 = [];
-    private List<String>? _thermal_con_40 = [];
-    private List<String>? _mean_water_temp_20to100 = [];
-    private List<String>? _mean_water_temp_60 = [];
-    private List<String>? _mean_water_temp_40 = [];
-    private List<String>? _mean_water_temp_20 = [];
-    private List<String>? _geo_poten_restrict = [];
-    private String? _land_parcel_number = "";
-    private String? _land_parcels_gemeinde = "";
+    private readonly List<String>? _geo_poten_100m_with_2400ha = [];
+    private readonly List<String>? _geo_poten_80m_with_2400ha = [];
+    private readonly List<String>? _geo_poten_60m_with_2400ha = [];
+    private readonly List<String>? _geo_poten_40m_with_2400ha = [];
+    private readonly List<String>? _geo_poten_100m_with_1800ha = [];
+    private readonly List<String>? _geo_poten_80m_with_1800ha = [];
+    private readonly List<String>? _geo_poten_60m_with_1800ha = [];
+    private readonly List<String>? _geo_poten_40m_with_1800ha = [];
+    private readonly List<String>? _thermal_con_100 = [];
+    private readonly List<String>? _thermal_con_80 = [];
+    private readonly List<String>? _thermal_con_60 = [];
+    private readonly List<String>? _thermal_con_40 = [];
+    private readonly List<String>? _mean_water_temp_20to100 = [];
+    private readonly List<String>? _mean_water_temp_60 = [];
+    private readonly List<String>? _mean_water_temp_40 = [];
+    private readonly List<String>? _mean_water_temp_20 = [];
+    private readonly List<String>? _geo_poten_restrict = [];
+    private string? _land_parcel_number = "";
+    private string? _land_parcels_gemeinde = "";
     //private String? _geometry = null;
-    private String? _building_begzgkt = "";
-    private String? _zeHGW = "";
-    private List<String>? _verordnung = [];
-    private List<String>? _veror_link = [];
+    private readonly String? _building_begzgkt = "";
+    private string? _zeHGW = "";
+    private readonly List<String>? _verordnung = [];
+    private readonly List<String>? _veror_link = [];
     public Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -45,7 +45,6 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.land_parcels:
                     _land_parcel_number = AppendString(_land_parcel_number ?? "", CoordinateParameter.JsonDataParameter?.Zae?.ToString() ?? "");
                     _land_parcels_gemeinde = AppendString(_land_parcels_gemeinde ?? "", CoordinateParameter.JsonDataParameter?.Namgem?.ToString() ?? "");
-                    //_geometry = CoordinateParameter.Geometry;
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_restrict:
                     _geo_poten_restrict?.Add(CoordinateParameter.JsonDataParameter?.Text?.ToString() ?? "");
@@ -172,7 +171,6 @@ public class CreateReportStructure : ICreateReportStructure
             Veror_link = _veror_link,
             Land_parcel_number = _land_parcel_number,
             Land_parcels_gemeinde = _land_parcels_gemeinde,
-            //Geometry = _geometry,
             Building_begzgkt = _building_begzgkt,
             //ZeHGW = _zeHGW <- polylines
 
@@ -181,7 +179,7 @@ public class CreateReportStructure : ICreateReportStructure
         return report;
     }
 
-    private String AppendString (String OriginString, String NewString)
+    private static String AppendString(String OriginString, String NewString)
     {
         if (string.IsNullOrEmpty(OriginString))
         {
@@ -189,7 +187,7 @@ public class CreateReportStructure : ICreateReportStructure
         }
         else
         {
-            return $"{OriginString}, {NewString}".ToString();
+            return $"{OriginString}, {NewString}";
         }
     }
 }

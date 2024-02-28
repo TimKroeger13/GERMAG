@@ -26,7 +26,3 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         return reportList;
     }
 }
-
-//polygonBasedReport[0].Geometry = landParcelElement.GeometryJson
-
-//
