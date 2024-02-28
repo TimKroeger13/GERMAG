@@ -18,6 +18,15 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
     public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
-        return await createReport.CreateGeothermalReportAsync(landParcelElement);
+        IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement);
+
+        List<Report> reportList = polygonBasedReport.ToList();
+        reportList[0].Geometry = landParcelElement.GeometryJson;
+
+        return reportList;
     }
 }
+
+//polygonBasedReport[0].Geometry = landParcelElement.GeometryJson
+
+//

@@ -15,7 +15,7 @@ async function InitalPointQuery(lng, lat) {
     var ReportRequest_Json = await GetRequest(lng, lat);
 
     //Transform Geometry Back
-    // >--< var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
+    var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
 
     //Create Gethermalreport
     var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0]);
@@ -25,7 +25,7 @@ async function InitalPointQuery(lng, lat) {
     await openModal(GeothermalReport);
 
     //Plots geometry on map
-    // >--< await handleMapClickResult(LandParcelGeometry);
+    await handleMapClickResult(LandParcelGeometry);
 
     return true
 
