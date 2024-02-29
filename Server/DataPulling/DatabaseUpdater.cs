@@ -40,9 +40,13 @@ namespace GERMAG.Server.DataPulling
 
             if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "LineString" || geometryTypeNameAsString == "MultiLineString" || geometryTypeNameAsString == "Point" || geometryTypeNameAsString == "MultiPolygon")
             {
-                if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "MultiPolygon")
+                if (geometryTypeNameAsString == "Polygon")
                 {
                     CurrentGeometryType = Geometry_Type.polygon;
+                }
+                if (geometryTypeNameAsString == "MultiPolygon")
+                 {
+                     CurrentGeometryType = Geometry_Type.multipolygon;
                 }
                 if (geometryTypeNameAsString == "LineString" || geometryTypeNameAsString == "MultiLineString")
                 {
@@ -163,8 +167,58 @@ namespace GERMAG.Server.DataPulling
                     context.SaveChanges();
                     break;
 
+                case Geometry_Type.multipolygon:
+                    Console.WriteLine("Transfering data to database");
+                    foreach (var feature in json?.Features ?? throw new Exception("DatabaseUpdater: feature not found!"))
+                    {
+                        i++;
+                        var coordinates = feature?.Geometry?.Coordinates;
+
+                        if (coordinates != null)
+                        {
+                            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: espgNumber);
+                            var exteriorLinearRing = geometryFactory.CreateLinearRing(coordinates[0].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
+                            var polygon = geometryFactory.CreatePolygon(exteriorLinearRing);
+
+                            if (coordinates.Count > 1)
+                            {
+                                for (int k = 1; k < coordinates.Count; k++)
+                                {
+                                    var holeLinearRing = geometryFactory.CreateLinearRing(coordinates[k].Select(coord => new Coordinate(coord[0], coord[1])).ToArray());
+                                    var subPolygon = geometryFactory.CreatePolygon(holeLinearRing);
+
+                                    var subNewGeoDatum = new DataModel.Database.GeoDatum
+                                    {
+                                        Id = 0,
+                                        Geom = subPolygon,
+                                        ParameterKey = foreignKey,
+                                        Parameter = JsonSerializer.Serialize(feature?.Properties)
+                                    };
+                                    context.GeoData.Add(subNewGeoDatum);
+                                }
+                            }
+                            var newGeoDatum = new DataModel.Database.GeoDatum
+                            {
+                                Id = 0,
+                                Geom = polygon,
+                                ParameterKey = foreignKey,
+                                Parameter = JsonSerializer.Serialize(feature?.Properties)
+                            };
+                            context.GeoData.Add(newGeoDatum);
+                        }
+                        if (i % 1000 == 0)
+                        {
+                            Console.WriteLine(Math.Round((Convert.ToDouble(i) / totalLength) * 100, 0) + "%");
+                        }
+                    }
+                    context.GeothermalParameter.First(gp => gp.Id == foreignKey).LastUpdate = DateTime.Now;
+                    context.SaveChanges();
+                    break;
                 case Geometry_Type.raster:
                     throw new Exception("Raster Data is currently not supportet");
+
+                case Geometry_Type.empty:
+                    break;
                 default:
                     throw new Exception("Given Geometry_Type is NOT supportet!");
             }

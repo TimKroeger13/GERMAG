@@ -68,5 +68,6 @@ public enum Geometry_Type
     polygon,
     polyline,
     raster,
+    multipolygon,
     empty
 }
