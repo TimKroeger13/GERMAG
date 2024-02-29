@@ -10,7 +10,6 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
 public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel) : ControllerBase
 {
     [HttpGet("reportdata")]
@@ -18,6 +17,15 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
     public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
+
+        if (landParcelElement.Error == true)
+        {
+            return new[] { new Report
+        {
+            Error = "Land Parcel not Found in the search area"
+        }};
+        }
+
         IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement);
 
         List<Report> reportList = polygonBasedReport.ToList();

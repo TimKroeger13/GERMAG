@@ -10,12 +10,6 @@
 
 <p>Fetched data from geothermal_parameter Table</p>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
     <table class="table">
         <thead>
             <tr>
@@ -49,19 +43,16 @@ else
             }
         </tbody>
     </table>
-}
 
 @code {
     [Inject] IRestInteropFactory RestInteropFactory { get; set; } = default!;
     [Inject] IGeothermalParameterService ParameterService { get; set; } = default!;
-    private WeatherForecast[]? forecasts;
     private IRestInterop _restInterop { get; set; } = default!;
     private IEnumerable<GeothermalParameterModel> _geoModels = [];
 
     protected override async Task OnInitializedAsync()
     {
         _restInterop = RestInteropFactory.CreateRestInterop("api/WeatherForecast");
-        forecasts = await _restInterop.GetAsync<WeatherForecast[]>("sampledata");
         _geoModels = await ParameterService.GetParameters() ?? [];
     }
 }

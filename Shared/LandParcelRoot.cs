@@ -15,4 +15,5 @@ public class LandParcel
     public string? Parameter { get; set; }
     public NetTopologySuite.Geometries.Geometry? Geometry { get; set; }
     public string? GeometryJson { get; set; }
+    public bool? Error { get; set; }
 }

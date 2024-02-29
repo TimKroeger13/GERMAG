@@ -39,7 +39,10 @@ public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
 
             if (landparcelIntersection.Count == 0)
             {
-                throw new Exception("Area not coverd by GERMAG\n Area Covered: {Berlin}");
+                return new LandParcel
+                {
+                    Error = true,
+                };
             }
 
             var returnValue = new LandParcel

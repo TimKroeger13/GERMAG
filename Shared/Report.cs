@@ -33,4 +33,5 @@ public class Report
     public List<String>? Verordnung { get; set; }
     public List<String>? Veror_link { get; set; }
     public String? Geometry { get; set; }
+    public String? Error { get; set; }
 }
