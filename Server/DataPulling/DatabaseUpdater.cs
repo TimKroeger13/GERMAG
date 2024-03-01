@@ -34,9 +34,10 @@ namespace GERMAG.Server.DataPulling
 
             //find GeometryType
 
-            Geometry_Type CurrentGeometryType = Geometry_Type.empty;
+/*            Geometry_Type CurrentGeometryType = Geometry_Type.empty;
 
             var geometryTypeNameAsString = json?.Features?[0]?.Geometry?.Type;
+
 
             if (geometryTypeNameAsString == "Polygon" || geometryTypeNameAsString == "LineString" || geometryTypeNameAsString == "MultiLineString" || geometryTypeNameAsString == "Point" || geometryTypeNameAsString == "MultiPolygon")
             {
@@ -61,7 +62,9 @@ namespace GERMAG.Server.DataPulling
             else
             {
                 throw new Exception("No Geometry Type in the webrequest found thats matches a known Type");
-            }
+            }*/
+
+            Geometry_Type? CurrentGeometryType = context.GeothermalParameter.First(gp => gp.Id == foreignKey).Geometry_Type;
 
             switch (CurrentGeometryType)
             {

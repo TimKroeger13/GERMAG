@@ -22,7 +22,37 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             Console.WriteLine("Pining data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
             var getrequest = allGeothermalParameters[i].Getrequest;
 
-            string seriallizedInputJson = await client.GetStringAsync(getrequest);
+            //string seriallizedInputJson = await client.GetStringAsync(getrequest);
+
+            int maxRetries = 10;
+
+            string seriallizedInputJson = "";
+            int retryCount = 0;
+
+            while (retryCount < maxRetries)
+            {
+                try
+                {
+                    seriallizedInputJson = await client.GetStringAsync(getrequest);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    retryCount++;
+
+                    if (retryCount < maxRetries)
+                    {
+                        TimeSpan delay = TimeSpan.FromSeconds(3);
+                        await Task.Delay(delay);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Maximum retries reached. Unable to get data.");
+                        throw;
+                    }
+                }
+            }
 
             //Check if Data is up to date
 
