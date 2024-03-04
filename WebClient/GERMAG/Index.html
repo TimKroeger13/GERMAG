@@ -74,7 +74,7 @@
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);5
+    }).addTo(map);
     var popup = L.popup();
 
     map.on('click', function (e) {
@@ -84,23 +84,15 @@
 
     async function removeLandParcels(){
       if (typeof geoJsonLayer !== 'undefined') {
-        map.removeLayer(geoJsonLayer);
+
+        geoJsonLayer.clearLayers();
+        
       }
     }
 
     //Geometry Postion
     async function CreateLandParcel(landParcelGeometry, fillColor, color, weight, opacity, fillOpacity) {
 
-      /*
-      landParcelGeometry.coordinates = landParcelGeometry.coordinates.filter(function(polygonCoordinates) {
-        return polygonCoordinates && polygonCoordinates[0] && polygonCoordinates[0].length > 0;
-      });
-      */
-
-
-    geoJsonLayer = L.geoJSON(landParcelGeometry).addTo(map);
-
-      /*
       geoJsonLayer = L.geoJSON(landParcelGeometry, {
         style: function (feature) {
           return {
@@ -112,7 +104,6 @@
           };
         }
       }).addTo(map); 
-      */
 
     }
 

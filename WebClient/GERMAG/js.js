@@ -45,7 +45,8 @@ async function ShowDetailedReport() {
     await openModal(GeothermalReport);
 
     await removeLandParcels()
-    await CreateLandParcel(UsabeGeometry,'#3388ff','#3388ff',2,1,0.2);
+    await CreateLandParcel(UsabeGeometry,'#08C918','#08C918',2,1,0.2);
+    await CreateLandParcel(ResrictionGeometry,'#FF2B32','#FF2B32',2,1,0.2);
 
     return true;
 
@@ -351,9 +352,27 @@ async function BackTransformationOfGeometry(geometry) {
     var LandParcelGeometry = JSON.parse(geometry);
 
     if (Array.isArray(LandParcelGeometry.coordinates) && LandParcelGeometry.coordinates.length > 0) {
+
+        if(LandParcelGeometry.coordinates.length == 1){
+
         var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[0]);
 
         LandParcelGeometry.coordinates[0] = flattenedCoordinates;
+
+        }else{
+            for (let i = 0; i < LandParcelGeometry.coordinates.length; i++) {
+
+                if(LandParcelGeometry.coordinates[0][0].length == 2){
+                    var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[i]);
+                    LandParcelGeometry.coordinates[i] = flattenedCoordinates;
+                }else{
+                    var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[i][0]);
+                    LandParcelGeometry.coordinates[i][0] = flattenedCoordinates;
+                }
+
+
+            }
+        }
 
         return LandParcelGeometry;
 
