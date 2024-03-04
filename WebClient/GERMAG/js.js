@@ -3,7 +3,6 @@ proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs");
 
 var Current_lat_coordiante = null;
 var Current_lng_coordiante = null;
-var Current_srid = 4326;
 
 async function onMapClick(e, callback) {
 
@@ -16,9 +15,42 @@ async function onMapClick(e, callback) {
 }
 
 async function ShowDetailedReport() {
-    const url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Current_srid}`;
 
-    const response = await fetch(url);
+    var ReportRequest_Json = await GetRequestFullReport();
+
+    if(ReportRequest_Json[0].error != null){
+        return true
+    }
+
+    const geometry_Usable_json = JSON.parse(ReportRequest_Json[0].geometry_Usable);
+    const geometry_Resriction_json = JSON.parse(ReportRequest_Json[0].geometry_Restiction);
+
+    if (geometry_Usable_json.coordinates.length === 0){
+        UsabeGeometry = null
+    }else{
+        var UsabeGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Usable);
+    }
+
+    if (geometry_Resriction_json.coordinates.length === 0){
+        ResrictionGeometry = null
+    }else{
+        var ResrictionGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Restiction);
+    }
+
+    
+
+    //Create Gethermalreport
+    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0]);
+    await SetReport(GeothermalReport);
+
+    //opens modal window
+    await openModal(GeothermalReport);
+
+
+
+    return true;
+
+
 }
 
 async function InitalPointQuery(lng, lat) {
@@ -32,7 +64,7 @@ async function InitalPointQuery(lng, lat) {
     }
 
     //Transform Geometry Back
-    var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json);
+    var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry);
 
     //Create Gethermalreport
     var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0]);
@@ -60,6 +92,9 @@ async function getGeojsonFromAddress(address) {
 
     x = parsedGeoJson.features[0].geometry.coordinates[1];
     y = parsedGeoJson.features[0].geometry.coordinates[0];
+
+    Current_lat_coordiante = x;
+    Current_lng_coordiante = y;
 
     var mapFocus = document.getElementById('map');
     mapFocus.focus();
@@ -268,6 +303,39 @@ async function GetRequest(Xcor, Ycor) {
     }
 }
 
+async function GetRequestFullReport() {
+    var Srid = 4326;
+
+    const url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}`;
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.error('Server error:', response.status);
+
+            try {
+                const errorData = await response.json();
+                console.error('Error details:', errorData);
+                alert(`Server error: ${response.status} - ${errorData.message}`);
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
+                alert(`Server error: ${response.status} - Error parsing response`);
+            }
+
+            return null;
+        }
+
+        const GetJsonString = await response.json();
+        return GetJsonString;
+
+    } catch (error) {
+        console.error('Error:', error.message);
+        alert('Network error or failed request. Please try again.');
+        return null;
+    }
+}
+
 
 //Quick search by hitting enter
 function handleKeyPress(event) {
@@ -278,9 +346,9 @@ function handleKeyPress(event) {
 
 // Back transformation
 
-async function BackTransformationOfGeometry(ReportRequest) {
+async function BackTransformationOfGeometry(geometry) {
 
-    var LandParcelGeometry = JSON.parse(ReportRequest[0].geometry);
+    var LandParcelGeometry = JSON.parse(geometry);
 
     if (Array.isArray(LandParcelGeometry.coordinates) && LandParcelGeometry.coordinates.length > 0) {
         var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[0]);

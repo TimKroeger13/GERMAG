@@ -24,7 +24,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
             //string seriallizedInputJson = await client.GetStringAsync(getrequest);
 
-            int maxRetries = 10;
+            const int maxRetries = 10;
 
             string seriallizedInputJson = "";
             int retryCount = 0;

@@ -34,4 +34,9 @@ public class Report
     public List<String>? Veror_link { get; set; }
     public String? Geometry { get; set; }
     public String? Error { get; set; }
+
+    public String? Geometry_Usable { get; set; }
+    public String? Geometry_Restiction { get; set; }
+    public double? Geometry_Usable_Area { get; set; }
+    public double? Geometry_Restiction_Area { get; set; }
 }

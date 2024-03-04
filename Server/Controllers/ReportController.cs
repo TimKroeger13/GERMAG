@@ -34,17 +34,24 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         return reportList;
     }
 
-
     [HttpGet("fullreport")]
     [EnableCors(CorsPolicies.GetAllowed)]
-    public async Task<String> GetFullReport(double Xcor, double Ycor, int Srid)
+    public async Task<IEnumerable<Report>> GetFullReport(double Xcor, double Ycor, int Srid)
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
 
-        return await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+        if (landParcelElement.Error == true)
+        {
+            return new[] { new Report
+        {
+            Error = "Land Parcel not Found in the search area"
+        }};
+        }
 
+        IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement);
 
-        //return "Second API works";
+        List<Report> RestrictionbasedReport = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement, polygonBasedReport.ToList());
+
+        return RestrictionbasedReport;
     }
-
 }
