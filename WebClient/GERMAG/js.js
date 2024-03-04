@@ -1,12 +1,24 @@
 proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs");
 proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs");
 
+var Current_lat_coordiante = null;
+var Current_lng_coordiante = null;
+var Current_srid = 4326;
+
 async function onMapClick(e, callback) {
 
     var clickCoordinates = e.latlng;
 
     await InitalPointQuery(clickCoordinates.lng, clickCoordinates.lat)
 
+    Current_lat_coordiante = clickCoordinates.lat;
+    Current_lng_coordiante = clickCoordinates.lng;
+}
+
+async function ShowDetailedReport() {
+    const url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Current_srid}`;
+
+    const response = await fetch(url);
 }
 
 async function InitalPointQuery(lng, lat) {

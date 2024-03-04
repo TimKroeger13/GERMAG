@@ -10,7 +10,7 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel) : ControllerBase
+public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel) : ControllerBase
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
@@ -33,4 +33,18 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
         return reportList;
     }
+
+
+    [HttpGet("fullreport")]
+    [EnableCors(CorsPolicies.GetAllowed)]
+    public async Task<String> GetFullReport(double Xcor, double Ycor, int Srid)
+    {
+        LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
+
+        return await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+
+
+        //return "Second API works";
+    }
+
 }

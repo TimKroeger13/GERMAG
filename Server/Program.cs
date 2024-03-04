@@ -34,6 +34,7 @@ builder.Services.AddTransient<IParameterDeserialator, ParameterDeserialator>();
 builder.Services.AddTransient<IFindAllParameterForCoordinate, FindAllParameterForCoordinate>();
 builder.Services.AddTransient<ICreateReportStructure, CreateReportStructure>();
 builder.Services.AddTransient<IReceiveLandParcel, ReceiveLandParcel>();
+builder.Services.AddTransient<IRestrictionFromLandParcel, RestrictionFromLandParcel>();
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.DatabaseConnection);
 var dataSource = dataSourceBuilder.ConfigureAndBuild();
 builder.Services.AddDbContext<DataContext>(options =>
