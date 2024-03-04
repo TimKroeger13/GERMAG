@@ -46,7 +46,7 @@ async function ShowDetailedReport() {
 
     await removeLandParcels()
     await CreateLandParcel(UsabeGeometry,'#08C918','#08C918',2,1,0.2);
-    await CreateLandParcel(ResrictionGeometry,'#FF2B32','#FF2B32',2,1,0.2);
+    await CreateLandParcel(ResrictionGeometry,'#FF2B32','#FF2B32',2,1,0.8);
 
     return true;
 

@@ -42,7 +42,8 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
             NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(mergedBuildings);
             UsableArea = UsableArea?.Union();
 
-            NetTopologySuite.Geometries.Geometry? RestictionArea = landParcelPolygon?.Intersection(bufferedLandParcel).Union(mergedBuildings);
+            NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(mergedBuildings);
+            RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
             RestictionArea = RestictionArea?.Union();
 
 
