@@ -74,20 +74,45 @@
     const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+    }).addTo(map);5
     var popup = L.popup();
 
     map.on('click', function (e) {
       onMapClick(e);
     });
 
-    //Geometry Postion
-    async function handleMapClickResult(landParcelGeometry) {
+
+    async function removeLandParcels(){
       if (typeof geoJsonLayer !== 'undefined') {
         map.removeLayer(geoJsonLayer);
       }
+    }
 
-      geoJsonLayer = L.geoJSON(landParcelGeometry).addTo(map);
+    //Geometry Postion
+    async function CreateLandParcel(landParcelGeometry, fillColor, color, weight, opacity, fillOpacity) {
+
+      /*
+      landParcelGeometry.coordinates = landParcelGeometry.coordinates.filter(function(polygonCoordinates) {
+        return polygonCoordinates && polygonCoordinates[0] && polygonCoordinates[0].length > 0;
+      });
+      */
+
+
+    geoJsonLayer = L.geoJSON(landParcelGeometry).addTo(map);
+
+      /*
+      geoJsonLayer = L.geoJSON(landParcelGeometry, {
+        style: function (feature) {
+          return {
+            fillColor: fillColor,  // Change this to the desired fill color
+            color: color,     // Change this to the desired border color
+            weight: weight,          // Change this to the desired border weight
+            opacity: opacity,         // Change this to the desired opacity
+            fillOpacity: fillOpacity    // Change this to the desired fill opacity
+          };
+        }
+      }).addTo(map); 
+      */
 
     }
 

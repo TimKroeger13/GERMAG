@@ -37,8 +37,6 @@ async function ShowDetailedReport() {
         var ResrictionGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Restiction);
     }
 
-    
-
     //Create Gethermalreport
     var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0]);
     await SetReport(GeothermalReport);
@@ -46,7 +44,8 @@ async function ShowDetailedReport() {
     //opens modal window
     await openModal(GeothermalReport);
 
-
+    await removeLandParcels()
+    await CreateLandParcel(UsabeGeometry,'#3388ff','#3388ff',2,1,0.2);
 
     return true;
 
@@ -74,7 +73,8 @@ async function InitalPointQuery(lng, lat) {
     await openModal(GeothermalReport);
 
     //Plots geometry on map
-    await handleMapClickResult(LandParcelGeometry);
+    await removeLandParcels()
+    await CreateLandParcel(LandParcelGeometry,'#3388ff','#3388ff',2,1,0.2);
 
     return true
 
