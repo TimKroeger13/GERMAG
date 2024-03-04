@@ -126,9 +126,6 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
         ");
 
         Console.WriteLine("Database Updated Complety and Spatial Indexing Refreshed!");
-
-
-
     }
 
     private static int HashString(string text)
