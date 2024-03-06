@@ -68,6 +68,8 @@
 
   <script>
 
+    let geoJsonList = [];
+
     var map = L.map('map',{
       keyboard: false}).setView([52.52, 13.40], 12);
 
@@ -82,6 +84,7 @@
     });
 
 
+        /*
     async function removeLandParcels(){
       if (typeof geoJsonLayer !== 'undefined') {
 
@@ -91,6 +94,7 @@
     }
 
     //Geometry Postion
+
     async function CreateLandParcel(landParcelGeometry, fillColor, color, weight, opacity, fillOpacity) {
 
       geoJsonLayer = L.geoJSON(landParcelGeometry, {
@@ -105,6 +109,35 @@
         }
       }).addTo(map); 
 
+    }
+    */
+
+
+
+    async function removeLandParcels() {
+      for (const layer of geoJsonList) {
+        map.removeLayer(layer);
+      }
+      // Clear the array
+      geoJsonList = [];
+    }
+
+    async function CreateLandParcel(landParcelGeometry, fillColor, color, weight, opacity, fillOpacity) {
+
+      geoJsonLayer = L.geoJSON(landParcelGeometry, {
+        style: function (feature) {
+          return {
+            fillColor: fillColor,
+            color: color,
+            weight: weight,
+            opacity: opacity,
+            fillOpacity: fillOpacity
+          };
+        }
+      }).addTo(map);
+    
+      // Add the layer to the array
+      geoJsonList.push(geoJsonLayer);
     }
 
     //Address Postion
@@ -121,13 +154,6 @@
 
       if (addressValue != "") {
         await getGeojsonFromAddress(addressValue)
-      }
-    }
-
-    //Close all geometry
-    async function closeAllGeometry(){
-      if (typeof geoJsonLayer !== 'undefined') {
-        map.removeLayer(geoJsonLayer);
       }
     }
 

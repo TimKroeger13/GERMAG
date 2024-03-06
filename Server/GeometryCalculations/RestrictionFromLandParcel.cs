@@ -38,13 +38,38 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance);
 
-
-            NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(mergedBuildings);
+            NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
             UsableArea = UsableArea?.Union();
 
-            NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(mergedBuildings);
-            RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
-            RestictionArea = RestictionArea?.Union();
+            //NetTopologySuite.Geometries.Geometry? RestictionArea = landParcelPolygon?.Difference(UsableArea);
+
+            NetTopologySuite.Geometries.Geometry? RestictionArea;
+
+            if (UsableArea is Polygon usablePolygon)
+            {
+                // UsableArea is a Polygon, directly calculate the difference
+                RestictionArea = landParcelPolygon?.Difference(usablePolygon);
+            }
+            else if (UsableArea is MultiPolygon usableMultiPolygon)
+            {
+                // UsableArea is a MultiPolygon, initialize RestictionArea to the original landParcelPolygon
+                RestictionArea = landParcelPolygon;
+
+                // Iterate over MultiPolygon components and calculate the difference for each
+                foreach (var polygon in usableMultiPolygon.Geometries.OfType<Polygon>())
+                {
+                    RestictionArea = RestictionArea?.Difference(polygon);
+                }
+            }
+            else
+            {
+                // Handle other cases as needed
+                RestictionArea = null;
+            }
+
+
+            //RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
+            //RestictionArea = RestictionArea?.Union();
 
 
             report[0].Geometry_Usable = geoJsonWriter.Write(UsableArea);

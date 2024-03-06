@@ -45,8 +45,8 @@ async function ShowDetailedReport() {
     await openModal(GeothermalReport);
 
     await removeLandParcels()
-    await CreateLandParcel(UsabeGeometry,'#08C918','#08C918',2,1,0.2);
-    await CreateLandParcel(ResrictionGeometry,'#FF2B32','#FF2B32',2,1,0.8);
+    await CreateLandParcel(UsabeGeometry,'#00ff00','#00ff00',2,0,0.2);
+    await CreateLandParcel(ResrictionGeometry,'#ff6600','#ff6600',2,1,0.2);
 
     return true;
 
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 $('.modal').modal('hide');
             }
             addressInput.focus();
-            closeAllGeometry()
+            removeLandParcels();
         });
     }
 });
