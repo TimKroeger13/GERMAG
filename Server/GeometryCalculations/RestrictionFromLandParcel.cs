@@ -38,8 +38,31 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance);
 
-            NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
-            UsableArea = UsableArea?.Union();
+            //NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
+            //UsableArea = UsableArea?.Union();
+
+            NetTopologySuite.Geometries.Geometry? UsableArea;
+
+
+            if (bufferedBuldings is Polygon bufferedBuldingsPolygon)
+            {
+                // UsableArea is a Polygon, directly calculate the difference
+                UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
+                UsableArea = UsableArea?.Union();
+            }
+            else if (bufferedBuldings is MultiPolygon bufferedBuldingsMultipolygon)
+            {
+                UsableArea = landParcelPolygon?.Difference(bufferedLandParcel);
+                foreach (var polygon in bufferedBuldingsMultipolygon.Geometries.OfType<Polygon>())
+                {
+                    UsableArea = UsableArea?.Difference(polygon);
+                }
+            }
+            else
+            {
+                // Handle other cases as needed
+                UsableArea = null;
+            }
 
             //NetTopologySuite.Geometries.Geometry? RestictionArea = landParcelPolygon?.Difference(UsableArea);
 
