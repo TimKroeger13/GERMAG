@@ -57,6 +57,7 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
                 {
                     UsableArea = UsableArea?.Difference(polygon);
                 }
+                UsableArea = UsableArea?.Union();
             }
             else
             {
@@ -79,10 +80,20 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
                 RestictionArea = landParcelPolygon;
 
                 // Iterate over MultiPolygon components and calculate the difference for each
-                foreach (var polygon in usableMultiPolygon.Geometries.OfType<Polygon>())
+/*                foreach (var polygon in usableMultiPolygon.Geometries.OfType<Polygon>())
                 {
                     RestictionArea = RestictionArea?.Difference(polygon);
+                }*/
+
+                foreach (var polygon in usableMultiPolygon.Geometries.OfType<Polygon>())
+                {
+                    if (polygon.IsValid)
+                    {
+                        RestictionArea = RestictionArea?.Difference(polygon);
+                    }
                 }
+
+                RestictionArea = RestictionArea?.Union();
             }
             else
             {
