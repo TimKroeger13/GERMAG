@@ -2,6 +2,7 @@
 using GERMAG.Shared;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
+using NetTopologySuite.Operation.Overlay;
 
 namespace GERMAG.Server.GeometryCalculations;
 
@@ -16,8 +17,6 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
     {
         return await Task.Run(() =>
         {
-            GeometryFactory geometryFactory = new GeometryFactory();
-
             var geoJsonWriter = new GeoJsonWriter();
 
             var buildingID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.building_surfaces).Id;
@@ -32,106 +31,20 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             NetTopologySuite.Geometries.Geometry? bufferedLandParcel = landParcelLineString?.Buffer(OfficalParameters.LandParcelDistance);
 
-            if (mergedBuildings == null || mergedBuildings.IsEmpty)
+            if (mergedBuildings?.IsEmpty != false)
             {
+                GeometryFactory geometryFactory = new GeometryFactory();
                 mergedBuildings = geometryFactory.CreatePolygon();
             }
 
             NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance);
 
-            //NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
-            //UsableArea = UsableArea?.Union();
+            NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
+            UsableArea = UsableArea?.Union();
 
-            NetTopologySuite.Geometries.Geometry? UsableArea;
-            //NetTopologySuite.Geometries.MultiPolygon UsableArea = NetTopologySuite.Geometries.MultiPolygon.Create();
-
-
-
-            if (bufferedBuldings is Polygon bufferedBuldingsPolygon)
-            {
-                // UsableArea is a Polygon, directly calculate the difference
-                UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
-                UsableArea = UsableArea?.Union();
-            }
-            else if (bufferedBuldings is MultiPolygon bufferedBuldingsMultipolygon)
-            {
-                UsableArea = landParcelPolygon?.Difference(bufferedLandParcel);
-
-                //UsableArea = UsableArea?.Difference(bufferedBuldingsMultipolygon[0]);
-                //UsableArea = UsableArea?.Difference(bufferedBuldingsMultipolygon[1]);
-
-                NetTopologySuite.Geometries.MultiPolygon? a = (MultiPolygon?)UsableArea?.Difference(bufferedBuldingsMultipolygon[0]);
-                NetTopologySuite.Geometries.MultiPolygon? b = (MultiPolygon?)a?.Difference(bufferedBuldingsMultipolygon[1]);
-
-                UsableArea = b;
-
-                //UsableArea.Geometries.Add(UsableArea?.Difference(bufferedBuldingsMultipolygon[0]));
-                //UsableArea.Geometries.Add(UsableArea?.Difference(bufferedBuldingsMultipolygon[1]));
-
-
-
-                //var buildingSubtraction = bufferedBuldingsMultipolygon[0].Union(bufferedBuldingsMultipolygon[1]);
-                //UsableArea = UsableArea?.Difference(buildingSubtraction);
-
-                //UsableArea = UsableArea?.Difference(bufferedBuldingsMultipolygon);
-
-                /*                UsableArea = bufferedBuldingsMultipolygon.Geometries
-                                    .OfType<Polygon>()
-                                    .Aggregate(UsableArea, (currentUsableArea, polygon) =>
-                                        currentUsableArea?.Difference(polygon)) ?? UsableArea;*/
-
-                /*                foreach (var polygon in bufferedBuldingsMultipolygon.Geometries.OfType<Polygon>())
-                                {
-                                    UsableArea = UsableArea?.Difference(polygon);
-                                }*/
-            }
-            else
-            {
-                UsableArea = null;
-            }
-            //UsableArea = UsableArea?.Union();
-
-
-            //NetTopologySuite.Geometries.Geometry? RestictionArea = landParcelPolygon?.Difference(UsableArea);
-
-            NetTopologySuite.Geometries.Geometry? RestictionArea;
-
-            if (UsableArea is Polygon usablePolygon)
-            {
-                // UsableArea is a Polygon, directly calculate the difference
-                RestictionArea = landParcelPolygon?.Difference(usablePolygon);
-            }
-            else if (UsableArea is MultiPolygon usableMultiPolygon)
-            {
-                // UsableArea is a MultiPolygon, initialize RestictionArea to the original landParcelPolygon
-                RestictionArea = landParcelPolygon;
-
-                // Iterate over MultiPolygon components and calculate the difference for each
-/*                foreach (var polygon in usableMultiPolygon.Geometries.OfType<Polygon>())
-                {
-                    RestictionArea = RestictionArea?.Difference(polygon);
-                }*/
-
-                foreach (var polygon in usableMultiPolygon.Geometries.OfType<Polygon>())
-                {
-                    if (polygon.IsValid)
-                    {
-                        RestictionArea = RestictionArea?.Difference(polygon);
-                    }
-                }
-
-                RestictionArea = RestictionArea?.Union();
-            }
-            else
-            {
-                // Handle other cases as needed
-                RestictionArea = null;
-            }
-
-
-            //RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
-            //RestictionArea = RestictionArea?.Union();
-
+            NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(bufferedBuldings);
+            RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
+            RestictionArea = RestictionArea?.Union();
 
             report[0].Geometry_Usable = geoJsonWriter.Write(UsableArea);
             report[0].Geometry_Restiction = geoJsonWriter.Write(RestictionArea);

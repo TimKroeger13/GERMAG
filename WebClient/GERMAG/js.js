@@ -18,22 +18,22 @@ async function ShowDetailedReport() {
 
     var ReportRequest_Json = await GetRequestFullReport();
 
-    if(ReportRequest_Json[0].error != null){
+    if (ReportRequest_Json[0].error != null) {
         return true
     }
 
     const geometry_Usable_json = JSON.parse(ReportRequest_Json[0].geometry_Usable);
     const geometry_Resriction_json = JSON.parse(ReportRequest_Json[0].geometry_Restiction);
 
-    if (geometry_Usable_json.coordinates.length === 0){
+    if (geometry_Usable_json.coordinates.length === 0) {
         UsabeGeometry = null
-    }else{
+    } else {
         var UsabeGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Usable);
     }
 
-    if (geometry_Resriction_json.coordinates.length === 0){
+    if (geometry_Resriction_json.coordinates.length === 0) {
         ResrictionGeometry = null
-    }else{
+    } else {
         var ResrictionGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Restiction);
     }
 
@@ -45,8 +45,8 @@ async function ShowDetailedReport() {
     await openModal(GeothermalReport);
 
     await removeLandParcels()
-    await CreateLandParcel(UsabeGeometry,'#00ff00','#00ff00',2,1,0.8);  //2,0,0.2
-    await CreateLandParcel(ResrictionGeometry,'#ff6600','#ff6600',2,1,0.2);
+    await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
+    await CreateLandParcel(ResrictionGeometry, '#ff6600', '#ff6600', 2, 1, 0.2);
 
     return true;
 
@@ -58,7 +58,7 @@ async function InitalPointQuery(lng, lat) {
     //Get Json from Server
     var ReportRequest_Json = await GetRequest(lng, lat);
 
-    if(ReportRequest_Json[0].error != null){
+    if (ReportRequest_Json[0].error != null) {
         //alert(ReportRequest_Json[0].error);
         return true
     }
@@ -75,7 +75,7 @@ async function InitalPointQuery(lng, lat) {
 
     //Plots geometry on map
     await removeLandParcels()
-    await CreateLandParcel(LandParcelGeometry,'#3388ff','#3388ff',2,1,0.2);
+    await CreateLandParcel(LandParcelGeometry, '#3388ff', '#3388ff', 2, 1, 0.2);
 
     return true
 
@@ -119,11 +119,11 @@ async function openModal(html) {
     $("#myModal").on('shown.bs.modal', function (e) {
         $(".modal-body").html(html);
     });
-    
+
     $("#myModal").on('hide.bs.modal', function (e) {
         $(".modal iframe").attr('src', "");
     });
-    
+
     $("#myModal").modal({ backdrop: false });
 
 }
@@ -154,9 +154,9 @@ async function PrintPDF() {
         source,
         margins.left,
         margins.top, {
-            'width': margins.width,
-            'elementHandlers': specialElementHandlers
-        },
+        'width': margins.width,
+        'elementHandlers': specialElementHandlers
+    },
         function (dispose) {
             var pdfDataUri = pdf.output('datauristring');
             var newWindow = window.open();
@@ -351,33 +351,49 @@ async function BackTransformationOfGeometry(geometry) {
 
     var LandParcelGeometry = JSON.parse(geometry);
 
-    if (Array.isArray(LandParcelGeometry.coordinates) && LandParcelGeometry.coordinates.length > 0) {
+    if (LandParcelGeometry.type == "Polygon") {
 
-        if(LandParcelGeometry.coordinates.length == 1){
+        if (Array.isArray(LandParcelGeometry.coordinates) && LandParcelGeometry.coordinates.length > 0) {
 
-        var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[0]);
+            if (LandParcelGeometry.coordinates.length == 1) {
 
-        LandParcelGeometry.coordinates[0] = flattenedCoordinates;
+                var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[0]);
 
-        }else{
-            for (let i = 0; i < LandParcelGeometry.coordinates.length; i++) {
+                LandParcelGeometry.coordinates[0] = flattenedCoordinates;
 
-                if(LandParcelGeometry.coordinates[0][0].length == 2){
-                    var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[i]);
-                    LandParcelGeometry.coordinates[i] = flattenedCoordinates;
-                }else{
-                    var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[i][0]);
-                    LandParcelGeometry.coordinates[i][0] = flattenedCoordinates;
+            } else {
+                for (let i = 0; i < LandParcelGeometry.coordinates.length; i++) {
+
+                    if (LandParcelGeometry.coordinates[0][0].length == 2) {
+                        var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[i]);
+                        LandParcelGeometry.coordinates[i] = flattenedCoordinates;
+                    } else {
+                        var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[i][0]);
+                        LandParcelGeometry.coordinates[i][0] = flattenedCoordinates;
+                    }
+
                 }
-
-
             }
+
+            return LandParcelGeometry;
+
+        } else {
+            console.error("Error: Invalid coordinates format in LandParcelGeometry");
         }
-
-        return LandParcelGeometry;
-
-    } else {
-        console.error("Error: Invalid coordinates format in LandParcelGeometry");
+    }
+    
+    if (LandParcelGeometry.type == "MultiPolygon") {
+        if (Array.isArray(LandParcelGeometry.coordinates) && LandParcelGeometry.coordinates.length > 0) {
+            for (let i = 0; i < LandParcelGeometry.coordinates.length; i++) {
+                for (let j = 0; j < LandParcelGeometry.coordinates[i].length; j++) {
+                    var flattenedCoordinates = transformCoordinates(LandParcelGeometry.coordinates[i][j]);
+                    LandParcelGeometry.coordinates[i][j] = flattenedCoordinates;
+                }
+            }
+            return LandParcelGeometry;
+        } else {
+            console.error("Error: Invalid coordinates format in MultiPolygon");
+        }
     }
 }
 
