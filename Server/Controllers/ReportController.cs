@@ -50,8 +50,14 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
         IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement);
 
-        List<Report> RestrictionbasedReport = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement, polygonBasedReport.ToList());
+        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
 
-        return RestrictionbasedReport;
+        var FinalReport = polygonBasedReport.ToList();
+        FinalReport[0].Geometry_Usable = RestrictionFile.Geometry_Usable_geoJson;
+        FinalReport[0].Geometry_Restiction = RestrictionFile.Geometry_Restiction_geoJson;
+        FinalReport[0].Usable_Area = RestrictionFile.Usable_Area;
+        FinalReport[0].Restiction_Area = RestrictionFile.Restiction_Area;
+
+        return FinalReport;
     }
 }

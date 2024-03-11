@@ -8,12 +8,12 @@ namespace GERMAG.Server.GeometryCalculations;
 
 public interface IRestrictionFromLandParcel
 {
-    Task<List<Report>> CalculateRestrictions(LandParcel landParcelElement, List<Report> report);
+    Task<Restricion> CalculateRestrictions(LandParcel landParcelElement);
 }
 
 public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLandParcel
 {
-    public async Task<List<Report>> CalculateRestrictions(LandParcel landParcelElement, List<Report> report)
+    public async Task<Restricion> CalculateRestrictions(LandParcel landParcelElement)
     {
         return await Task.Run(() =>
         {
@@ -46,12 +46,17 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
             RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
             RestictionArea = RestictionArea?.Union();
 
-            report[0].Geometry_Usable = geoJsonWriter.Write(UsableArea);
-            report[0].Geometry_Restiction = geoJsonWriter.Write(RestictionArea);
-            report[0].Usable_Area = UsableArea?.Area ?? 0;
-            report[0].Restiction_Area = RestictionArea?.Area ?? 0;
+            var returnValue = new Restricion
+            {
+                Geometry_Usable = UsableArea,
+                Geometry_Restiction = RestictionArea,
+                Geometry_Usable_geoJson = geoJsonWriter.Write(UsableArea),
+                Geometry_Restiction_geoJson = geoJsonWriter.Write(RestictionArea),
+                Usable_Area = UsableArea?.Area ?? 0,
+                Restiction_Area = RestictionArea?.Area ?? 0,
+            };
 
-            return report;
+            return returnValue;
         });
     }
 }
