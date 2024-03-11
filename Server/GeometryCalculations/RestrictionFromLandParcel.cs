@@ -48,8 +48,8 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             report[0].Geometry_Usable = geoJsonWriter.Write(UsableArea);
             report[0].Geometry_Restiction = geoJsonWriter.Write(RestictionArea);
-            report[0].Geometry_Usable_Area = UsableArea?.Area ?? 0;
-            report[0].Geometry_Restiction_Area = RestictionArea?.Area ?? 0;
+            report[0].Usable_Area = UsableArea?.Area ?? 0;
+            report[0].Restiction_Area = RestictionArea?.Area ?? 0;
 
             return report;
         });

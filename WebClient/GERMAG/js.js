@@ -267,7 +267,7 @@ async function CreateReportHTML(reportData,ReportIsDetailed) {
 if (ReportIsDetailed){
 
     html = html + `
-    <p><strong>Usable Area:</strong> ${Math.round(reportData.geometry_Usable_Area*100)/100}m&sup2</p>`
+    <p><strong>Usable Area:</strong> ${Math.round(reportData.usable_Area*100)/100}m&sup2</p>`
     
 }
 

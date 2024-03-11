@@ -37,6 +37,6 @@ public class Report
 
     public String? Geometry_Usable { get; set; }
     public String? Geometry_Restiction { get; set; }
-    public double? Geometry_Usable_Area { get; set; }
-    public double? Geometry_Restiction_Area { get; set; }
+    public double? Usable_Area { get; set; }
+    public double? Restiction_Area { get; set; }
 }
