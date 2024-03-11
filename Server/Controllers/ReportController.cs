@@ -10,7 +10,7 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel) : ControllerBase
+public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion) : ControllerBase
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
@@ -57,6 +57,8 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         FinalReport[0].Geometry_Restiction = RestrictionFile.Geometry_Restiction_geoJson;
         FinalReport[0].Usable_Area = RestrictionFile.Usable_Area;
         FinalReport[0].Restiction_Area = RestrictionFile.Restiction_Area;
+
+        var a = geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
 
         return FinalReport;
     }
