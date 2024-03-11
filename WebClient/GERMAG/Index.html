@@ -83,37 +83,6 @@
       onMapClick(e);
     });
 
-
-        /*
-    async function removeLandParcels(){
-      if (typeof geoJsonLayer !== 'undefined') {
-
-        geoJsonLayer.clearLayers();
-        
-      }
-    }
-
-    //Geometry Postion
-
-    async function CreateLandParcel(landParcelGeometry, fillColor, color, weight, opacity, fillOpacity) {
-
-      geoJsonLayer = L.geoJSON(landParcelGeometry, {
-        style: function (feature) {
-          return {
-            fillColor: fillColor,  // Change this to the desired fill color
-            color: color,     // Change this to the desired border color
-            weight: weight,          // Change this to the desired border weight
-            opacity: opacity,         // Change this to the desired opacity
-            fillOpacity: fillOpacity    // Change this to the desired fill opacity
-          };
-        }
-      }).addTo(map); 
-
-    }
-    */
-
-
-
     async function removeLandParcels() {
       for (const layer of geoJsonList) {
         map.removeLayer(layer);

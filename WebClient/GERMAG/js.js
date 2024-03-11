@@ -38,7 +38,7 @@ async function ShowDetailedReport() {
     }
 
     //Create Gethermalreport
-    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0]);
+    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0],true);
     await SetReport(GeothermalReport);
 
     //opens modal window
@@ -67,7 +67,7 @@ async function InitalPointQuery(lng, lat) {
     var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry);
 
     //Create Gethermalreport
-    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0]);
+    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0],false);
     await SetReport(GeothermalReport);
 
     //opens modal window
@@ -207,7 +207,7 @@ function httpGet(theUrl) {
 }
 
 
-async function CreateReportHTML(reportData) {
+async function CreateReportHTML(reportData,ReportIsDetailed) {
 
     String_geo_poten_restrict = ``;
     if (reportData.geo_poten_restrict.length > 0) {
@@ -227,7 +227,7 @@ async function CreateReportHTML(reportData) {
         }
     }
 
-    const html = `
+    var html = `
     <div class="geothermal-report">
         <p><strong>Gemeinde:</strong> ${reportData.land_parcels_gemeinde}</p>
         <p><strong>Flurstück:</strong> ${reportData.land_parcel_number}</p>
@@ -261,10 +261,23 @@ async function CreateReportHTML(reportData) {
         </ul>
         <!-- <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p> -->
         ${String_geo_poten_restrict}
-        ${String_Water_protec_areas}
+        ${String_Water_protec_areas}`;
+
+
+if (ReportIsDetailed){
+
+    html = html + `
+    <p><strong>Usable Area:</strong> ${Math.round(reportData.geometry_Usable_Area*100)/100}m&sup2</p>`
+    
+}
+
+
+
+html = html + `
         
-    </div>
-`;
+</div>`
+
+
 
     return html
 
