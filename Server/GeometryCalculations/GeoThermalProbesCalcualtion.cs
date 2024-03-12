@@ -2,6 +2,7 @@
 using GERMAG.Shared;
 using GERMAG.Shared.PointProperties;
 using NetTopologySuite.Geometries;
+using System.Collections.Generic;
 
 namespace GERMAG.Server.GeometryCalculations;
 
@@ -22,11 +23,11 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
         double? currentArea;
 
         List<NetTopologySuite.Geometries.Coordinate?> CandidatePoints = [];
-        NetTopologySuite.Geometries.Geometry? CandidateMultiPoint;
-        NetTopologySuite.Geometries.Geometry? CandidateBuffer;
+        NetTopologySuite.Geometries.MultiPoint? CandidateMultiPoint;
+        //NetTopologySuite.Geometries.MultiPolygon? CandidateBuffer;
         NetTopologySuite.Geometries.Geometry? CandidateBufferRing;
         NetTopologySuite.Geometries.Point? lastCurrentPoint;
-        NetTopologySuite.Geometries.Geometry? CandidateGeometry;
+        //NetTopologySuite.Geometries.Geometry? CandidateGeometry;
         ProbePoint? CandidateChoosenPoint;
         NetTopologySuite.Geometries.Geometry? smallestAreaGeometry = null;
         int smallestAreaIndex;
@@ -68,96 +69,166 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         //loop start
 
-        smallestAreaIndex = -1;
-
-        CandidateMultiPoint = new GeometryFactory().CreateMultiPointFromCoords(CandidatePoints.ToArray());
-
-        CandidateBuffer = CandidateMultiPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2));
-
-        CandidateGeometry = currentGeometry?.Intersection(CandidateBuffer);
-
-        if (CandidateGeometry is MultiPolygon multiPolygon)
+        while (currentArea > 0)
         {
+
+            CandidateMultiPoint = new GeometryFactory().CreateMultiPointFromCoords(CandidatePoints.ToArray());
+
+            //CandidateBuffer = CandidateMultiPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2));
+            //List<NetTopologySuite.Geometries.Polygon> candidateBuffer = new List<NetTopologySuite.Geometries.Polygon>();
+
+            NetTopologySuite.Geometries.Polygon? candidateBuffer;
+            List<NetTopologySuite.Geometries.Geometry?> combinedBufferCollection = [];
+
+            foreach (var TempCandidatePoint in CandidateMultiPoint.Geometries)
+            {
+                candidateBuffer = (NetTopologySuite.Geometries.Polygon)TempCandidatePoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2));
+
+                var TempBufferIntersectionSingle = currentGeometry?.Intersection(candidateBuffer);
+
+                if (TempBufferIntersectionSingle != null)
+                {
+                    combinedBufferCollection.Add(TempBufferIntersectionSingle);
+                }
+            }
+
+
+            smallestAreaIndex = -1;
             double smallestArea = double.MaxValue;
 
-            var i = 0;
 
-            foreach (var geometry in multiPolygon.Geometries)
+            for (int i = 0; i < combinedBufferCollection.Count; i++)
             {
-                double minArea = geometry.Area;
+                var candidateGeometry = combinedBufferCollection[i]; //Here candidateGeometry can be a Colltion which holds polygons. Then all polygons need to be combined in a multipolygon and the script excuted with the already defined next steps
 
-                if (minArea < smallestArea)
+                if (candidateGeometry is not null)
                 {
-                    smallestArea = minArea;
-                    smallestAreaGeometry = geometry;
-                    smallestAreaIndex = i;
-                }
-                i = i++;
-            }
-        }
-        else if (CandidateGeometry is Polygon polygon)
-        {
-            smallestAreaGeometry = polygon;
-            smallestAreaIndex = 0;
-        }
+                    if (candidateGeometry is MultiPolygon multiPolygon)
+                    {
+                        foreach (var geometry in multiPolygon.Geometries)
+                        {
+                            double minArea = geometry.Area;
 
-        lastCurrentPoint = new GeometryFactory().CreatePoint(CandidatePoints[smallestAreaIndex]);
+                            if (minArea < smallestArea)
+                            {
+                                smallestArea = minArea;
+                                smallestAreaGeometry = geometry;
+                                smallestAreaIndex = i;
+                            }
+                        }
+                    }
+                    else if (candidateGeometry is NetTopologySuite.Geometries.Polygon polygon)
+                    {
+                        double minArea = polygon.Area;
 
-        CandidateChoosenPoint = new()
-        {
-            Geometry = lastCurrentPoint,
-            Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
-        };
-
-        ReportGeothermalPoints.Add(CandidateChoosenPoint);
-
-        CandidatePoints.Clear();
-
-        //Find Candiate Points in nearby geometry
-
-        CandidateBufferRing = lastCurrentPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2)).Boundary;
-
-        if (currentOutline is NetTopologySuite.Geometries.MultiLineString multiLineString)
-        {
-            foreach (var lineString in multiLineString.Geometries)
-            {
-                if(lineString is NetTopologySuite.Geometries.LinearRing && CandidateBufferRing is NetTopologySuite.Geometries.LinearRing)
-                {
-                    CandidatePoints = await FindNewCandidates(lineString, CandidateBufferRing, CandidatePoints);
+                        if (minArea < smallestArea)
+                        {
+                            smallestArea = minArea;
+                            smallestAreaGeometry = polygon;
+                            smallestAreaIndex = i;
+                        }
+                    }
                 }
             }
-        }
-        else if (currentOutline is NetTopologySuite.Geometries.LinearRing SoloLineString)
-        {
-            CandidatePoints = await FindNewCandidates(SoloLineString, CandidateBufferRing, CandidatePoints);
-        }
 
-        //Update Data
 
-        currentGeometry = currentGeometry?.Difference(smallestAreaGeometry);
-        currentOutline = currentGeometry?.Boundary;
-        currentPoints = currentGeometry?.Coordinates;
-        currentArea = currentGeometry?.Area;
 
-        if (currentArea == 0)
-        {
-            return 0;
-        }
 
-        /*        NetTopologySuite.Geometries.Geometry? intersectionResult = pointBuffer.Intersection(currentOutline);
+            /*            NetTopologySuite.Geometries.Geometry CandidateGeometry = new NetTopologySuite.Geometries.MultiPolygon(combinedBufferCollection.ToArray());
 
-                if (intersectionResult is NetTopologySuite.Geometries.MultiPoint multiPoint)
+                        if (CandidateGeometry is MultiPolygon multiPolygon)
+                        {
+                            double smallestArea = double.MaxValue;
+
+                            var i = 0;
+
+                            foreach (var geometry in multiPolygon.Geometries)
+                            {
+                                double minArea = geometry.Area;
+
+                                if (minArea < smallestArea)
+                                {
+                                    smallestArea = minArea;
+                                    smallestAreaGeometry = geometry;
+                                    smallestAreaIndex = i;
+                                }
+                                i = i++;
+                            }
+                        }
+                        else if (CandidateGeometry is Polygon polygon)
+                        {
+                            smallestAreaGeometry = polygon;
+                            smallestAreaIndex = 0;
+                        }*/
+
+            lastCurrentPoint = new GeometryFactory().CreatePoint(CandidatePoints[smallestAreaIndex]);
+
+            CandidateChoosenPoint = new()
+            {
+                Geometry = lastCurrentPoint,
+                Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
+            };
+
+            ReportGeothermalPoints.Add(CandidateChoosenPoint);
+
+            CandidatePoints.Clear();
+
+            //Find Candiate Points in nearby geometry
+
+            CandidateBufferRing = lastCurrentPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2)).Boundary;
+
+            if (currentOutline is NetTopologySuite.Geometries.MultiLineString multiLineString)
+            {
+                foreach (var lineString in multiLineString.Geometries)
                 {
-                    // Extract points from the MultiPoint and add them to CandidatePoints
-                    CandidatePoints.AddRange(multiPoint.Coordinates);
+                    if (lineString is NetTopologySuite.Geometries.LinearRing && CandidateBufferRing is NetTopologySuite.Geometries.LinearRing)
+                    {
+                        CandidatePoints = await FindNewCandidates(lineString, CandidateBufferRing, CandidatePoints);
+                    }
                 }
-                else if (intersectionResult is NetTopologySuite.Geometries.Point point)
-                {
-                    // Add the single point to CandidatePoints
-                    CandidatePoints.Add(point.Coordinate);
-                }*/
+            }
+            else if (currentOutline is NetTopologySuite.Geometries.LinearRing SoloLineString)
+            {
+                CandidatePoints = await FindNewCandidates(SoloLineString, CandidateBufferRing, CandidatePoints);
+            }
 
-        //!!! Case for RestrictionAreas = 0
+            //Update Data
+
+            currentGeometry = currentGeometry?.Difference(smallestAreaGeometry);
+            currentOutline = currentGeometry?.Boundary;
+            currentPoints = currentGeometry?.Coordinates;
+            currentArea = currentGeometry?.Area;
+
+            if (currentArea == 0)
+            {
+                return 0;
+            }
+
+            if (CandidatePoints.Count == 0)
+            {
+                Array.Clear(distances, 0, distances.Length);
+
+                for (int i = 0; i < currentPoints?.Length; i++)
+                {
+                    distances[i] = centroid?.Distance(new NetTopologySuite.Geometries.Point(currentPoints[i])) ?? 0;
+                }
+
+                indexOfCandidate = Array.IndexOf(distances, distances.Max());
+
+                if (indexOfCandidate != -1)
+                {
+                    CandidatePoints.Add(currentPoints?[indexOfCandidate]);
+                }
+
+                if (CandidatePoints.Count == 0)
+                {
+                    return 0;
+                }
+            }
+        }
+
+
+        
 
         return 1;
     }
