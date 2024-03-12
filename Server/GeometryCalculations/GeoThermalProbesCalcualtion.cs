@@ -1,5 +1,6 @@
 ﻿using GeoAPI.Geometries;
 using GERMAG.Shared;
+using GERMAG.Shared.PointProperties;
 using NetTopologySuite.Geometries;
 
 namespace GERMAG.Server.GeometryCalculations;
@@ -13,6 +14,8 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 {
     public async Task<int> CalculateGeoThermalProbes(Restricion RestrictionAreas)
     {
+        var geometryFactory = new GeometryFactory();
+
         NetTopologySuite.Geometries.Geometry? currentGeometry;
         NetTopologySuite.Geometries.Geometry? currentOutline;
         NetTopologySuite.Geometries.Coordinate[]? currentPoints;
@@ -21,18 +24,22 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
         List<NetTopologySuite.Geometries.Coordinate?> CandidatePoints = [];
         NetTopologySuite.Geometries.Geometry? CandidateMultiPoint;
         NetTopologySuite.Geometries.Geometry? CandidateBuffer;
+        NetTopologySuite.Geometries.Geometry? CandidateBufferRing;
+        NetTopologySuite.Geometries.Point? lastCurrentPoint;
         NetTopologySuite.Geometries.Geometry? CandidateGeometry;
-        NetTopologySuite.Geometries.Geometry? CandidateChoosenPoint;
+        ProbePoint? CandidateChoosenPoint;
         NetTopologySuite.Geometries.Geometry? smallestAreaGeometry = null;
         int smallestAreaIndex;
+
+        List<ProbePoint?> ReportGeothermalPoints = [];
 
         var centroid = RestrictionAreas.Geometry_Usable?.Centroid;
 
         //Inital cycle
 
+        currentGeometry = RestrictionAreas?.Geometry_Usable;
         currentOutline = RestrictionAreas?.Geometry_Usable?.Boundary;
         currentPoints = RestrictionAreas?.Geometry_Usable?.Coordinates;
-        currentGeometry = RestrictionAreas?.Geometry_Usable;
         currentArea = RestrictionAreas?.Geometry_Usable?.Area;
 
         if (currentArea == 0)
@@ -54,7 +61,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             CandidatePoints.Add(currentPoints?[indexOfCandidate]);
         }
 
-        if(CandidatePoints.Count == 0)
+        if (CandidatePoints.Count == 0)
         {
             return 0;
         }
@@ -94,16 +101,97 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             smallestAreaIndex = 0;
         }
 
-        CandidateChoosenPoint = new GeometryFactory().CreatePoint(CandidatePoints[0]);
+        lastCurrentPoint = new GeometryFactory().CreatePoint(CandidatePoints[smallestAreaIndex]);
 
+        CandidateChoosenPoint = new()
+        {
+            Geometry = lastCurrentPoint,
+            Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
+        };
 
-        //<= Save CandidateChoosenPoint in a List of a self defined class Structure. 
+        ReportGeothermalPoints.Add(CandidateChoosenPoint);
+
+        CandidatePoints.Clear();
+
+        //Find Candiate Points in nearby geometry
+
+        CandidateBufferRing = lastCurrentPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2)).Boundary;
+
+        if (currentOutline is NetTopologySuite.Geometries.MultiLineString multiLineString)
+        {
+            foreach (var lineString in multiLineString.Geometries)
+            {
+                if(lineString is NetTopologySuite.Geometries.LinearRing && CandidateBufferRing is NetTopologySuite.Geometries.LinearRing)
+                {
+                    CandidatePoints = await FindNewCandidates(lineString, CandidateBufferRing, CandidatePoints);
+                }
+            }
+        }
+        else if (currentOutline is NetTopologySuite.Geometries.LinearRing SoloLineString)
+        {
+            CandidatePoints = await FindNewCandidates(SoloLineString, CandidateBufferRing, CandidatePoints);
+        }
+
+        //Update Data
+
+        currentGeometry = currentGeometry?.Difference(smallestAreaGeometry);
+        currentOutline = currentGeometry?.Boundary;
+        currentPoints = currentGeometry?.Coordinates;
+        currentArea = currentGeometry?.Area;
+
+        if (currentArea == 0)
+        {
+            return 0;
+        }
+
+        /*        NetTopologySuite.Geometries.Geometry? intersectionResult = pointBuffer.Intersection(currentOutline);
+
+                if (intersectionResult is NetTopologySuite.Geometries.MultiPoint multiPoint)
+                {
+                    // Extract points from the MultiPoint and add them to CandidatePoints
+                    CandidatePoints.AddRange(multiPoint.Coordinates);
+                }
+                else if (intersectionResult is NetTopologySuite.Geometries.Point point)
+                {
+                    // Add the single point to CandidatePoints
+                    CandidatePoints.Add(point.Coordinate);
+                }*/
 
         //!!! Case for RestrictionAreas = 0
 
-
-
-
         return 1;
     }
+
+    private async Task<List<NetTopologySuite.Geometries.Coordinate?>> FindNewCandidates(NetTopologySuite.Geometries.Geometry SearchLineRing, NetTopologySuite.Geometries.Geometry CandidateBufferRing, List<NetTopologySuite.Geometries.Coordinate?> CandidatePoints)
+    {
+        return await Task.Run(() =>
+        {
+            var lineStringIntersection = CandidateBufferRing?.Intersection(SearchLineRing);
+
+            if (lineStringIntersection is NetTopologySuite.Geometries.Point point)
+            {
+                CandidatePoints.Add(point.Coordinate);
+            }
+            else if (lineStringIntersection is NetTopologySuite.Geometries.MultiPoint multiPoint)
+            {
+                foreach (var multiPointCoordinate in multiPoint.Coordinates)
+                {
+                    CandidatePoints.Add(multiPointCoordinate);
+                }
+            }
+            else if (lineStringIntersection is NetTopologySuite.Geometries.GeometryCollection geometryCollection)
+            {
+                foreach (var geometry in geometryCollection.Geometries)
+                {
+                    if (geometry is NetTopologySuite.Geometries.Point collectionPoint)
+                    {
+                        CandidatePoints.Add(collectionPoint.Coordinate);
+                    }
+                }
+            }
+
+            return CandidatePoints;
+        });
+    }
+
 }

@@ -1,6 +1,8 @@
 ﻿using GERMAG.DataModel.Database;
 using GERMAG.Shared;
+using GERMAG.Shared.PointProperties;
 using System.Text.Json;
+using Properties = GERMAG.Shared.Properties;
 
 namespace GERMAG.Server.ReportCreation;
 
