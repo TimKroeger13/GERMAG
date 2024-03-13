@@ -31,6 +31,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
         ProbePoint? CandidateChoosenPoint;
         NetTopologySuite.Geometries.Geometry? smallestAreaGeometry = null;
         int smallestAreaIndex;
+        bool probePointGotRest = true;
 
         List<ProbePoint?> ReportGeothermalPoints = [];
 
@@ -71,11 +72,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         while (currentArea > 0)
         {
-
             CandidateMultiPoint = new GeometryFactory().CreateMultiPointFromCoords(CandidatePoints.ToArray());
-
-            //CandidateBuffer = CandidateMultiPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2));
-            //List<NetTopologySuite.Geometries.Polygon> candidateBuffer = new List<NetTopologySuite.Geometries.Polygon>();
 
             NetTopologySuite.Geometries.Polygon? candidateBuffer;
             List<NetTopologySuite.Geometries.Geometry?> combinedBufferCollection = [];
@@ -93,29 +90,153 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             }
 
 
+
+
+
+
+
+
+/*            if (probePointGotRest && currentGeometry is not null)
+            {
+                // Use the first point from CandidateMultiPoint
+                var singlePoint = (Point)CandidateMultiPoint[0];
+
+                if (currentGeometry is Polygon polygon)
+                {
+                    // Subtract the single point from the polygon's vertices
+                    Geometry resultGeometry = SubtractPointFromPolygon(polygon, singlePoint);
+
+                    // Check if the result is valid
+                    if (resultGeometry.IsValid)
+                    {
+                        // Update currentGeometry with the result
+                        currentGeometry = resultGeometry;
+                    }
+                    else
+                    {
+                        // Handle the case where the result is invalid, e.g., set currentGeometry to null or take another appropriate action
+                        currentGeometry = null;
+                    }
+                }
+                else if (currentGeometry is MultiPolygon multiPolygon)
+                {
+                    // Iterate through all polygons in the MultiPolygon
+                    List<Geometry> validPolygons = new List<Geometry>();
+
+                    foreach (var subGeometry in multiPolygon.Geometries)
+                    {
+                        if (subGeometry is Polygon subPolygon)
+                        {
+                            // Subtract the single point from the sub-polygon's vertices
+                            Geometry resultGeometry = SubtractPointFromPolygon(subPolygon, singlePoint);
+
+                            // Check if the result is valid
+                            if (resultGeometry.IsValid)
+                            {
+                                validPolygons.Add(resultGeometry);
+                            }
+                            // Handle the case where the result is invalid, if needed
+                        }
+                    }
+
+                    // Create a new MultiPolygon with valid polygons
+                    currentGeometry = validPolygons.Count > 0 ? new MultiPolygon(validPolygons.ToArray()) : null;
+                }
+            }
+
+            // Helper method to subtract a point from a polygon's vertices
+            private Geometry SubtractPointFromPolygon(Polygon polygon, Point point)
+            {
+                // Get the polygon's coordinates
+                Coordinate[] coordinates = polygon.Coordinates;
+
+                // Remove the point from the coordinates
+                var remainingCoordinates = coordinates.Where(coord => !coord.Equals2D(point.Coordinate)).ToArray();
+
+                // Create a new polygon with the remaining coordinates
+                return remainingCoordinates.Length >= 3 ? new Polygon(new LinearRing(remainingCoordinates)) : null;
+            }*/
+
+
+
+
+
+
+
+
+            if (probePointGotRest)
+            {
+
+
+            }
+            probePointGotRest = false;
+
+
+
+
+
+
+
+
+
             smallestAreaIndex = -1;
             double smallestArea = double.MaxValue;
 
 
             for (int i = 0; i < combinedBufferCollection.Count; i++)
             {
-                var candidateGeometry = combinedBufferCollection[i]; //Here candidateGeometry can be a Colltion which holds polygons. Then all polygons need to be combined in a multipolygon and the script excuted with the already defined next steps
+                var candidateGeometry = combinedBufferCollection[i];
 
                 if (candidateGeometry is not null)
                 {
+                    if (!candidateGeometry.IsValid)
+                    {
+                        continue;
+                    }
+
+                    if (candidateGeometry is not MultiPolygon)
+                    {
+                        if (candidateGeometry is GeometryCollection geometryCollection)
+                        {
+                            List<NetTopologySuite.Geometries.Polygon> polygonsInGeometryCollection = [];
+
+                            foreach (var Geometry in geometryCollection)
+                            {
+                                if (Geometry is Polygon localPolygon)
+                                {
+                                    polygonsInGeometryCollection.Add(localPolygon);
+                                }
+                            }
+                            candidateGeometry = new NetTopologySuite.Geometries.MultiPolygon(polygonsInGeometryCollection.ToArray());
+                        }
+                    }
+
                     if (candidateGeometry is MultiPolygon multiPolygon)
                     {
-                        foreach (var geometry in multiPolygon.Geometries)
-                        {
-                            double minArea = geometry.Area;
+                        double totalArea = 0.0;
 
-                            if (minArea < smallestArea)
-                            {
-                                smallestArea = minArea;
-                                smallestAreaGeometry = geometry;
-                                smallestAreaIndex = i;
-                            }
+                        foreach (var polygon in multiPolygon)
+                        {
+                            totalArea += polygon.Area;
                         }
+
+                        if (totalArea < smallestArea)
+                        {
+                            smallestArea = totalArea;
+                            smallestAreaGeometry = multiPolygon;
+                            smallestAreaIndex = i;
+                        }
+
+
+
+                        /*                         double minArea = multiPolygon.Area;
+
+                                                if (minArea < smallestArea)
+                                                {
+                                                    smallestArea = minArea;
+                                                    smallestAreaGeometry = multiPolygon;
+                                                    smallestAreaIndex = i;
+                                                }*/
                     }
                     else if (candidateGeometry is NetTopologySuite.Geometries.Polygon polygon)
                     {
@@ -132,72 +253,83 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             }
 
 
+            Console.WriteLine(currentArea);
+            Console.WriteLine(smallestArea);
+            Console.WriteLine(" ");
 
 
-            /*            NetTopologySuite.Geometries.Geometry CandidateGeometry = new NetTopologySuite.Geometries.MultiPolygon(combinedBufferCollection.ToArray());
-
-                        if (CandidateGeometry is MultiPolygon multiPolygon)
-                        {
-                            double smallestArea = double.MaxValue;
-
-                            var i = 0;
-
-                            foreach (var geometry in multiPolygon.Geometries)
-                            {
-                                double minArea = geometry.Area;
-
-                                if (minArea < smallestArea)
-                                {
-                                    smallestArea = minArea;
-                                    smallestAreaGeometry = geometry;
-                                    smallestAreaIndex = i;
-                                }
-                                i = i++;
-                            }
-                        }
-                        else if (CandidateGeometry is Polygon polygon)
-                        {
-                            smallestAreaGeometry = polygon;
-                            smallestAreaIndex = 0;
-                        }*/
-
-            lastCurrentPoint = new GeometryFactory().CreatePoint(CandidatePoints[smallestAreaIndex]);
-
-            CandidateChoosenPoint = new()
+            if (smallestArea >0.5 && smallestAreaGeometry!.IsValid)
             {
-                Geometry = lastCurrentPoint,
-                Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
-            };
+                lastCurrentPoint = new GeometryFactory().CreatePoint(CandidatePoints[smallestAreaIndex]);
 
-            ReportGeothermalPoints.Add(CandidateChoosenPoint);
-
-            CandidatePoints.Clear();
-
-            //Find Candiate Points in nearby geometry
-
-            CandidateBufferRing = lastCurrentPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2)).Boundary;
-
-            if (currentOutline is NetTopologySuite.Geometries.MultiLineString multiLineString)
-            {
-                foreach (var lineString in multiLineString.Geometries)
+                CandidateChoosenPoint = new()
                 {
-                    if (lineString is NetTopologySuite.Geometries.LinearRing && CandidateBufferRing is NetTopologySuite.Geometries.LinearRing)
+                    Geometry = lastCurrentPoint,
+                    Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
+                };
+
+                ReportGeothermalPoints.Add(CandidateChoosenPoint);
+
+                CandidatePoints.Clear();
+
+                //Find Candiate Points in nearby geometry
+
+                CandidateBufferRing = lastCurrentPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2)).Boundary;
+
+                if (currentOutline is NetTopologySuite.Geometries.MultiLineString multiLineString)
+                {
+                    foreach (var lineString in multiLineString.Geometries)
                     {
-                        CandidatePoints = await FindNewCandidates(lineString, CandidateBufferRing, CandidatePoints);
+                        if (lineString is NetTopologySuite.Geometries.LinearRing && CandidateBufferRing is NetTopologySuite.Geometries.LinearRing)
+                        {
+                            CandidatePoints = await FindNewCandidates(lineString, CandidateBufferRing, CandidatePoints);
+                        }
                     }
                 }
+                else if (currentOutline is NetTopologySuite.Geometries.LinearRing SoloLineString)
+                {
+                    CandidatePoints = await FindNewCandidates(SoloLineString, CandidateBufferRing, CandidatePoints);
+                }
+
+                //Update Data
+
+                currentGeometry = currentGeometry?.Difference(smallestAreaGeometry);
+
+                if (currentGeometry is MultiPolygon multiPolygon)
+                {
+                    List<Polygon> validPolygons = new List<Polygon>();
+
+                    foreach (var polygon in multiPolygon.Geometries.OfType<Polygon>())
+                    {
+                        double polygonArea = polygon.Area;
+
+                        if (polygonArea >= 1)
+                        {
+                            validPolygons.Add(polygon);
+                        }
+                    }
+
+                    currentGeometry = validPolygons.Count > 0 ? new MultiPolygon(validPolygons.ToArray()) : null;
+                }
+                else if (currentGeometry is Polygon polygon)
+                {
+                    double polygonArea = polygon.Area;
+
+                    if (polygonArea < 1)
+                    {
+                        currentGeometry = null;
+                    }
+                }
+
+                currentOutline = currentGeometry?.Boundary;
+                currentPoints = currentGeometry?.Coordinates;
+                currentArea = currentGeometry?.Area;
+
             }
-            else if (currentOutline is NetTopologySuite.Geometries.LinearRing SoloLineString)
+            else
             {
-                CandidatePoints = await FindNewCandidates(SoloLineString, CandidateBufferRing, CandidatePoints);
+                CandidatePoints.Clear();
             }
-
-            //Update Data
-
-            currentGeometry = currentGeometry?.Difference(smallestAreaGeometry);
-            currentOutline = currentGeometry?.Boundary;
-            currentPoints = currentGeometry?.Coordinates;
-            currentArea = currentGeometry?.Area;
 
             if (currentArea == 0)
             {
@@ -206,7 +338,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
             if (CandidatePoints.Count == 0)
             {
-                Array.Clear(distances, 0, distances.Length);
+                distances = new double[currentPoints!.Length];
 
                 for (int i = 0; i < currentPoints?.Length; i++)
                 {
@@ -214,6 +346,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                 }
 
                 indexOfCandidate = Array.IndexOf(distances, distances.Max());
+                probePointGotRest = true;
 
                 if (indexOfCandidate != -1)
                 {
