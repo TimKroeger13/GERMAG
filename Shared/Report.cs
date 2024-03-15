@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.Geometries;
+﻿using GERMAG.Shared.PointProperties;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,4 +40,7 @@ public class Report
     public String? Geometry_Restiction { get; set; }
     public double? Usable_Area { get; set; }
     public double? Restiction_Area { get; set; }
+
+    public List<ProbePoint?>? ProbePoint { get; set; }
+    public String? Geometry_LeftOverArea { get; set; }
 }

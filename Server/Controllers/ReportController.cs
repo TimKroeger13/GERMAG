@@ -5,6 +5,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Runtime.InteropServices;
 using GERMAG.Server.ReportCreation;
 using GERMAG.Server.GeometryCalculations;
+using NetTopologySuite.IO;
 
 namespace GERMAG.Server.Controllers;
 
@@ -58,7 +59,13 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         FinalReport[0].Usable_Area = RestrictionFile.Usable_Area;
         FinalReport[0].Restiction_Area = RestrictionFile.Restiction_Area;
 
-        var a = geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
+
+        var geoJsonWriter = new GeoJsonWriter();
+
+        var test = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
+
+        FinalReport[0].ProbePoint = test.Item1;
+        FinalReport[0].Geometry_LeftOverArea = geoJsonWriter.Write(test.Item2);
 
         return FinalReport;
     }

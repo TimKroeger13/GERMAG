@@ -2,20 +2,23 @@
 using GERMAG.Shared;
 using GERMAG.Shared.PointProperties;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace GERMAG.Server.GeometryCalculations;
 
 public interface IGeoThermalProbesCalcualtion
 {
-    Task<int> CalculateGeoThermalProbes(Restricion RestrictionAreas);
+    Task<(List<ProbePoint?>, NetTopologySuite.Geometries.Geometry?)> CalculateGeoThermalProbes(Restricion RestrictionAreas);
 }
 
 public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 {
-    public async Task<int> CalculateGeoThermalProbes(Restricion RestrictionAreas)
+    public async Task<(List<ProbePoint?>,NetTopologySuite.Geometries.Geometry?)> CalculateGeoThermalProbes(Restricion RestrictionAreas)
     {
         var geometryFactory = new GeometryFactory();
+        var geoJsonWriter = new GeoJsonWriter();
 
         NetTopologySuite.Geometries.Geometry? currentGeometry;
         NetTopologySuite.Geometries.Geometry? currentOutline;
@@ -46,7 +49,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         if (currentArea == 0)
         {
-            return 0;
+            return (ReportGeothermalPoints, currentGeometry);
         }
 
         double[] distances = new double[currentPoints!.Length];
@@ -65,13 +68,26 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         if (CandidatePoints.Count == 0)
         {
-            return 0;
+            return (ReportGeothermalPoints, currentGeometry);
         }
 
         //loop start
 
+        var test = 0;
+
         while (currentArea > 0)
         {
+
+            if (test > 0)
+            {
+                break;
+            }
+
+            test++;
+
+
+
+
             CandidateMultiPoint = new GeometryFactory().CreateMultiPointFromCoords(CandidatePoints.ToArray());
 
             NetTopologySuite.Geometries.Polygon? candidateBuffer;
@@ -264,7 +280,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
                 CandidateChoosenPoint = new()
                 {
-                    Geometry = lastCurrentPoint,
+                    Geometry = geoJsonWriter.Write(lastCurrentPoint),
                     Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
                 };
 
@@ -333,7 +349,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
             if (currentArea == 0)
             {
-                return 0;
+                return (ReportGeothermalPoints, currentGeometry);
             }
 
             if (CandidatePoints.Count == 0)
@@ -355,15 +371,13 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
                 if (CandidatePoints.Count == 0)
                 {
-                    return 0;
+                    return (ReportGeothermalPoints, currentGeometry);
                 }
             }
         }
 
+        return (ReportGeothermalPoints, currentGeometry);
 
-        
-
-        return 1;
     }
 
     private async Task<List<NetTopologySuite.Geometries.Coordinate?>> FindNewCandidates(NetTopologySuite.Geometries.Geometry SearchLineRing, NetTopologySuite.Geometries.Geometry CandidateBufferRing, List<NetTopologySuite.Geometries.Coordinate?> CandidatePoints)

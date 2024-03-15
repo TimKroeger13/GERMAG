@@ -24,6 +24,9 @@ async function ShowDetailedReport() {
 
     const geometry_Usable_json = JSON.parse(ReportRequest_Json[0].geometry_Usable);
     const geometry_Resriction_json = JSON.parse(ReportRequest_Json[0].geometry_Restiction);
+    const geometry_ProbePoints_json = JSON.parse(ReportRequest_Json[0].probePoint[0].geometry);
+    const geometry_LeftOverArea_json = JSON.parse(ReportRequest_Json[0].geometry_LeftOverArea);
+
 
     if (geometry_Usable_json.coordinates.length === 0) {
         UsabeGeometry = null
@@ -37,6 +40,20 @@ async function ShowDetailedReport() {
         var ResrictionGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Restiction);
     }
 
+    if (geometry_ProbePoints_json.coordinates.length === 0) {
+        ProbePointsGeometry = null
+    } else {
+        var ProbePointsGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].probePoint);
+    }
+
+    if (geometry_LeftOverArea_json.coordinates.length === 0) {
+        LeftOverAreaGeometry = null
+    } else {
+        var LeftOverAreaGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_LeftOverArea);
+    }
+
+
+
     //Create Gethermalreport
     var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0],true);
     await SetReport(GeothermalReport);
@@ -47,6 +64,8 @@ async function ShowDetailedReport() {
     await removeLandParcels()
     await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
     await CreateLandParcel(ResrictionGeometry, '#ff6600', '#ff6600', 2, 1, 0.2);
+    await CreateLandParcel(LeftOverAreaGeometry, '#000000', '#000000', 2, 1, 0.4);
+
 
     return true;
 
@@ -409,6 +428,36 @@ async function BackTransformationOfGeometry(geometry) {
         }
     }
 }
+
+
+/*
+async function BackTransformationOfProbepoints(probePoints) {
+    // Loop through each probe point
+    for (let i = 0; i < probePoints.length; i++) {
+        var probePoint = probePoints[i];
+
+        // Parse the geometry of the probe point
+        var geometry = JSON.parse(probePoint.Geometry);
+
+        // Perform back transformation on the geometry coordinates
+        if (geometry.type === "Point") {
+            // If the geometry is a point, transform its coordinates
+            var transformedCoordinates = transformCoordinates(geometry.coordinates);
+            geometry.coordinates = transformedCoordinates;
+        } else {
+            console.error("Error: Unsupported geometry type for probe point");
+            continue; // Skip this probe point and proceed to the next one
+        }
+
+        // Update the geometry of the probe point
+        probePoint.Geometry = geometry;
+    }
+
+    // No need to return the transformed probe points, as they are modified in-place
+}
+*/
+
+
 
 function transformCoordinates(coordinates) {
     var transformedCoordinates = [];
