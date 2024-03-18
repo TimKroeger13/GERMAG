@@ -65,7 +65,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         var test = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
 
         FinalReport[0].ProbePoint = test.Item1;
-        FinalReport[0].Geometry_LeftOverArea = geoJsonWriter.Write(test.Item2);
+        //FinalReport[0].Geometry_LeftOverArea = geoJsonWriter.Write(test.Item2);
 
         return FinalReport;
     }
