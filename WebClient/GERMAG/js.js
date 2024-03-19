@@ -24,7 +24,7 @@ async function ShowDetailedReport() {
 
     const geometry_Usable_json = JSON.parse(ReportRequest_Json[0].geometry_Usable);
     const geometry_Resriction_json = JSON.parse(ReportRequest_Json[0].geometry_Restiction);
-    const geometry_ProbePoints_json = JSON.parse(ReportRequest_Json[0].probePoint[0].geometry);
+    const geometry_ProbePoints_json = JSON.parse(ReportRequest_Json[0].probePoint[0].geometryJson);
     //const geometry_LeftOverArea_json = JSON.parse(ReportRequest_Json[0].geometry_LeftOverArea);
 
 
@@ -40,7 +40,7 @@ async function ShowDetailedReport() {
         var ResrictionGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Restiction);
     }
 
-    if (geometry_ProbePoints_json.coordinates.length === 0) {
+    if (geometry_ProbePoints_json.length=== 0) {
         ProbePointsGeometry = null
     } else {
         var ProbePointsGeometry = await BackTransformationOfProbepoints(ReportRequest_Json[0].probePoint);
@@ -68,10 +68,19 @@ async function ShowDetailedReport() {
     await CreateLandParcel(ResrictionGeometry, '#ff6600', '#ff6600', 2, 1, 0.2);
     //await CreateLandParcel(LeftOverAreaGeometry, '#000000', '#000000', 2, 1, 0.4);
 
-    for (let k = 0; k < ProbePointsGeometry.geometry.length; k++) {
-        await CreatePoint(ProbePointsGeometry.geometry[k][0]);
+    
+
+    for (let k = 0; k < ProbePointsGeometry.length; k++) {
+        await new Promise(resolve => setTimeout(resolve, 10)); // Introduce a delay of 100 milliseconds
+        await CreateLandParcel(ProbePointsGeometry[k], '#000000', '#000000', 2, 1, 1);
     }
 
+    /*
+    for (let k = 0; k < ProbePointsGeometry.geometryJson.length; k++) {
+        await new Promise(resolve => setTimeout(resolve, 10)); // Introduce a delay of 100 milliseconds
+        await CreatePoint(ProbePointsGeometry.geometryJson[k][0]);
+    }
+    */
 
 
     return true;
@@ -445,18 +454,18 @@ async function BackTransformationOfProbepoints(probePoints) {
     for (let i = 0; i < probePoints.length; i++) {
         var probePoint = probePoints[i];
 
-        var geometry = JSON.parse(probePoint.geometry);
+        var geometry = JSON.parse(probePoint.geometryJson);
 
-        if (geometry.type === "Point") {
-            var transformedCoordinates = transformCoordinates([geometry.coordinates]);
-            cor[i] = transformedCoordinates;
-        } else {
-            console.error("Error: Unsupported geometry type for probe point");
-            continue;
-        }
+        geometry.coordinates[0] = transformCoordinates(geometry.coordinates[0]);
+
+        probePoints[i] = geometry;
+
+        //var transformedCoordinates = transformCoordinates(geometry.coordinates[0]);
+        //cor[i] = transformedCoordinates;
+
     }
-    probePoint.geometry = cor;
-    return probePoint;
+    //probePoint.geometryJson = cor;
+    return probePoints;
 }
 
 

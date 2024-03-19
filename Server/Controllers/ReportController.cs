@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using GERMAG.Server.ReportCreation;
 using GERMAG.Server.GeometryCalculations;
 using NetTopologySuite.IO;
+using GERMAG.Shared.PointProperties;
 
 namespace GERMAG.Server.Controllers;
 
@@ -59,13 +60,25 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         FinalReport[0].Usable_Area = RestrictionFile.Usable_Area;
         FinalReport[0].Restiction_Area = RestrictionFile.Restiction_Area;
 
+        List<ProbePoint?> FullPointProbe = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
 
-        var geoJsonWriter = new GeoJsonWriter();
+        List<ProbePoint?> TruncatedPointProbe = new List<ProbePoint?>();
 
-        var test = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
+        foreach (var probePoint in FullPointProbe)
+        {
+            if (probePoint != null)
+            {
+                TruncatedPointProbe.Add(new ProbePoint
+                {
+                    GeometryJson = probePoint.GeometryJson,
+                    Properties = probePoint.Properties
+                });
+            }
+            else { TruncatedPointProbe.Add(null); }
+        }
 
-        FinalReport[0].ProbePoint = test.Item1;
-        //FinalReport[0].Geometry_LeftOverArea = geoJsonWriter.Write(test.Item2);
+
+        FinalReport[0].ProbePoint = TruncatedPointProbe;
 
         return FinalReport;
     }

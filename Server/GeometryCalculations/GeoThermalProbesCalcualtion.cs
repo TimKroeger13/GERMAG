@@ -5,17 +5,18 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace GERMAG.Server.GeometryCalculations;
 
 public interface IGeoThermalProbesCalcualtion
 {
-    Task<(List<ProbePoint?>, NetTopologySuite.Geometries.Geometry?)> CalculateGeoThermalProbes(Restricion RestrictionAreas);
+    Task<List<ProbePoint?>> CalculateGeoThermalProbes(Restricion RestrictionAreas);
 }
 
 public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 {
-    public async Task<(List<ProbePoint?>,NetTopologySuite.Geometries.Geometry?)> CalculateGeoThermalProbes(Restricion RestrictionAreas)
+    public async Task<List<ProbePoint?>> CalculateGeoThermalProbes(Restricion RestrictionAreas)
     {
         var geometryFactory = new GeometryFactory();
         var geoJsonWriter = new GeoJsonWriter();
@@ -27,14 +28,12 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         List<NetTopologySuite.Geometries.Coordinate?> CandidatePoints = [];
         NetTopologySuite.Geometries.MultiPoint? CandidateMultiPoint;
-        //NetTopologySuite.Geometries.MultiPolygon? CandidateBuffer;
         NetTopologySuite.Geometries.Geometry? CandidateBufferRing;
         NetTopologySuite.Geometries.Point? lastCurrentPoint;
-        //NetTopologySuite.Geometries.Geometry? CandidateGeometry;
         ProbePoint? CandidateChoosenPoint;
         NetTopologySuite.Geometries.Geometry? smallestAreaBuffer = null;
+        NetTopologySuite.Geometries.Geometry? lastCurrentPointGeometry;
         int smallestAreaIndex;
-        bool probePointGotRest = true;
 
         List<ProbePoint?> ReportGeothermalPoints = [];
 
@@ -49,7 +48,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         if (currentArea == 0)
         {
-            return (ReportGeothermalPoints, currentGeometry);
+            return (ReportGeothermalPoints);
         }
 
         double[] distances = new double[currentPoints!.Length];
@@ -68,26 +67,13 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         if (CandidatePoints.Count == 0)
         {
-            return (ReportGeothermalPoints, currentGeometry);
+            return (ReportGeothermalPoints);
         }
 
         //loop start
 
-        var test = 0;
-        var b = 3;
-
         while (currentArea > 0)
         {
-
-            if (test > 409)
-            {
-                b = 4;
-            }
-
-            test++;
-
-
-
 
             CandidateMultiPoint = new GeometryFactory().CreateMultiPointFromCoords(CandidatePoints.ToArray());
 
@@ -107,13 +93,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                     combinedBufferCollection.Add(candidateBuffer);
                 }
             }
-
-            if (probePointGotRest)
-            {
-
-
-            }
-            probePointGotRest = false;
 
             smallestAreaIndex = -1;
             double smallestArea = double.MaxValue;
@@ -179,18 +158,16 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             }
 
 
-            //Console.WriteLine(currentArea);
-            //Console.WriteLine(smallestArea);
-            //Console.WriteLine(" ");
-
-
             if (smallestAreaBuffer!.IsValid)
             {
                 lastCurrentPoint = new GeometryFactory().CreatePoint(CandidatePoints[smallestAreaIndex]);
+                lastCurrentPointGeometry = lastCurrentPoint.Buffer(OfficalParameters.ProbeDiameter / 2);
+
 
                 CandidateChoosenPoint = new()
                 {
-                    Geometry = geoJsonWriter.Write(lastCurrentPoint),
+                    Geometry = lastCurrentPointGeometry,
+                    GeometryJson = geoJsonWriter.Write(lastCurrentPointGeometry),
                     Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
                 };
 
@@ -259,7 +236,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
             if (currentArea == 0 || currentPoints == null)
             {
-                return (ReportGeothermalPoints, currentGeometry);
+                return (ReportGeothermalPoints);
             }
 
             if (CandidatePoints.Count == 0)
@@ -272,7 +249,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                 }
 
                 indexOfCandidate = Array.IndexOf(distances, distances.Max());
-                probePointGotRest = true;
 
                 if (indexOfCandidate != -1)
                 {
@@ -281,12 +257,12 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
                 if (CandidatePoints.Count == 0 || currentPoints == null)
                 {
-                    return (ReportGeothermalPoints, currentGeometry);
+                    return (ReportGeothermalPoints);
                 }
             }
         }
 
-        return (ReportGeothermalPoints, currentGeometry);
+        return (ReportGeothermalPoints);
 
     }
 

@@ -9,7 +9,8 @@ namespace GERMAG.Shared.PointProperties;
 public class ProbePoint
 {
     public string Type => "Feature";
-    public string? Geometry { get; set; }
+    public NetTopologySuite.Geometries.Geometry? Geometry { get; set; }
+    public string? GeometryJson { get; set; }
     public Properties? Properties { get; set; }
 }
 
