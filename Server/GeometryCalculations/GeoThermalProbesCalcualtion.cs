@@ -32,7 +32,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
         NetTopologySuite.Geometries.Point? lastCurrentPoint;
         ProbePoint? CandidateChoosenPoint;
         NetTopologySuite.Geometries.Geometry? smallestAreaBuffer = null;
-        NetTopologySuite.Geometries.Geometry? lastCurrentPointGeometry;
         int smallestAreaIndex;
 
         List<ProbePoint?> ReportGeothermalPoints = [];
@@ -161,13 +160,11 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             if (smallestAreaBuffer!.IsValid)
             {
                 lastCurrentPoint = new GeometryFactory().CreatePoint(CandidatePoints[smallestAreaIndex]);
-                lastCurrentPointGeometry = lastCurrentPoint.Buffer(OfficalParameters.ProbeDiameter / 2);
-
 
                 CandidateChoosenPoint = new()
                 {
-                    Geometry = lastCurrentPointGeometry,
-                    GeometryJson = geoJsonWriter.Write(lastCurrentPointGeometry),
+                    Geometry = lastCurrentPoint,
+                    GeometryJson = geoJsonWriter.Write(lastCurrentPoint),
                     Properties = new Shared.PointProperties.Properties { GeoPoten = null, ThermalCon = null }
                 };
 

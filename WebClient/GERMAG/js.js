@@ -24,9 +24,6 @@ async function ShowDetailedReport() {
 
     const geometry_Usable_json = JSON.parse(ReportRequest_Json[0].geometry_Usable);
     const geometry_Resriction_json = JSON.parse(ReportRequest_Json[0].geometry_Restiction);
-    const geometry_ProbePoints_json = JSON.parse(ReportRequest_Json[0].probePoint[0].geometryJson);
-    //const geometry_LeftOverArea_json = JSON.parse(ReportRequest_Json[0].geometry_LeftOverArea);
-
 
     if (geometry_Usable_json.coordinates.length === 0) {
         UsabeGeometry = null
@@ -40,24 +37,14 @@ async function ShowDetailedReport() {
         var ResrictionGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_Restiction);
     }
 
-    if (geometry_ProbePoints_json.length=== 0) {
+    if (ReportRequest_Json[0].probePoint.length === 0) {
         ProbePointsGeometry = null
     } else {
         var ProbePointsGeometry = await BackTransformationOfProbepoints(ReportRequest_Json[0].probePoint);
     }
 
-    /*
-    if (geometry_LeftOverArea_json.coordinates.length === 0) {
-        LeftOverAreaGeometry = null
-    } else {
-        var LeftOverAreaGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry_LeftOverArea);
-    }
-    */
-
-
-
     //Create Gethermalreport
-    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0],true);
+    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true);
     await SetReport(GeothermalReport);
 
     //opens modal window
@@ -66,21 +53,14 @@ async function ShowDetailedReport() {
     await removeLandParcels()
     await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
     await CreateLandParcel(ResrictionGeometry, '#ff6600', '#ff6600', 2, 1, 0.2);
-    //await CreateLandParcel(LeftOverAreaGeometry, '#000000', '#000000', 2, 1, 0.4);
 
-    
 
-    for (let k = 0; k < ProbePointsGeometry.length; k++) {
-        await new Promise(resolve => setTimeout(resolve, 10)); // Introduce a delay of 100 milliseconds
-        await CreateLandParcel(ProbePointsGeometry[k], '#000000', '#000000', 2, 1, 1);
+    if (ReportRequest_Json[0].probePoint.length != 0) {
+        for (let k = 0; k < ProbePointsGeometry.length; k++) {
+            await new Promise(resolve => setTimeout(resolve, 10)); // Introduce a delay of 100 milliseconds
+            await CreatePoint(ProbePointsGeometry[k].coordinates[0]);
+        }
     }
-
-    /*
-    for (let k = 0; k < ProbePointsGeometry.geometryJson.length; k++) {
-        await new Promise(resolve => setTimeout(resolve, 10)); // Introduce a delay of 100 milliseconds
-        await CreatePoint(ProbePointsGeometry.geometryJson[k][0]);
-    }
-    */
 
 
     return true;
@@ -102,7 +82,7 @@ async function InitalPointQuery(lng, lat) {
     var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry);
 
     //Create Gethermalreport
-    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0],false);
+    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], false);
     await SetReport(GeothermalReport);
 
     //opens modal window
@@ -242,7 +222,7 @@ function httpGet(theUrl) {
 }
 
 
-async function CreateReportHTML(reportData,ReportIsDetailed) {
+async function CreateReportHTML(reportData, ReportIsDetailed) {
 
     String_geo_poten_restrict = ``;
     if (reportData.geo_poten_restrict.length > 0) {
@@ -299,16 +279,16 @@ async function CreateReportHTML(reportData,ReportIsDetailed) {
         ${String_Water_protec_areas}`;
 
 
-if (ReportIsDetailed){
+    if (ReportIsDetailed) {
+
+        html = html + `
+    <p><strong>Usable Area:</strong> ${Math.round(reportData.usable_Area * 100) / 100}m&sup2</p>`
+
+    }
+
+
 
     html = html + `
-    <p><strong>Usable Area:</strong> ${Math.round(reportData.usable_Area*100)/100}m&sup2</p>`
-    
-}
-
-
-
-html = html + `
         
 </div>`
 
@@ -429,7 +409,7 @@ async function BackTransformationOfGeometry(geometry) {
             console.error("Error: Invalid coordinates format in LandParcelGeometry");
         }
     }
-    
+
     if (LandParcelGeometry.type == "MultiPolygon") {
         if (Array.isArray(LandParcelGeometry.coordinates) && LandParcelGeometry.coordinates.length > 0) {
             for (let i = 0; i < LandParcelGeometry.coordinates.length; i++) {
@@ -456,9 +436,9 @@ async function BackTransformationOfProbepoints(probePoints) {
 
         var geometry = JSON.parse(probePoint.geometryJson);
 
-        geometry.coordinates[0] = transformCoordinates(geometry.coordinates[0]);
+        probePoint.coordinates = transformCoordinates([geometry.coordinates]);
 
-        probePoints[i] = geometry;
+        probePoints[i] = probePoint;
 
         //var transformedCoordinates = transformCoordinates(geometry.coordinates[0]);
         //cor[i] = transformedCoordinates;

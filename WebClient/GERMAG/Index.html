@@ -113,7 +113,21 @@
 
     async function CreatePoint(point) {
 
-      var marker = L.marker([point[1], point[0]]).addTo(map);
+      var greenIcon = L.icon({
+        iconUrl: 'probe.png',
+    
+        iconSize:     [8, 8], // size of the icon
+        iconAnchor:   [4, 4], // point of the icon which will correspond to marker's location
+        popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+    });
+
+
+
+
+
+
+
+      var marker = L.marker([point[1], point[0]], {icon: greenIcon}).addTo(map);
 
       geoJsonList.push(marker);
     }
