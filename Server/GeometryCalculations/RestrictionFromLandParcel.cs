@@ -29,7 +29,7 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             LineString? landParcelLineString = landParcelPolygon?.ExteriorRing;
 
-            NetTopologySuite.Geometries.Geometry? bufferedLandParcel = landParcelLineString?.Buffer(OfficalParameters.LandParcelDistance + (OfficalParameters.ProbeDiameter / 2));
+            NetTopologySuite.Geometries.Geometry? bufferedLandParcel = landParcelLineString?.Buffer(OfficalParameters.LandParcelDistance); // + (OfficalParameters.ProbeDiameter / 2)
 
             if (mergedBuildings?.IsEmpty != false)
             {
@@ -37,7 +37,7 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
                 mergedBuildings = geometryFactory.CreatePolygon();
             }
 
-            NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance + (OfficalParameters.ProbeDiameter / 2));
+            NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance); // + (OfficalParameters.ProbeDiameter / 2)
 
             NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
             UsableArea = UsableArea?.Union();

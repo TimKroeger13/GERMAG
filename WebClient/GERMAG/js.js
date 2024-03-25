@@ -4,7 +4,11 @@ proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs");
 var Current_lat_coordiante = null;
 var Current_lng_coordiante = null;
 
+var NewObjectClicked = false;
+
 async function onMapClick(e, callback) {
+
+    NewObjectClicked = true;
 
     var clickCoordinates = e.latlng;
 
@@ -15,6 +19,8 @@ async function onMapClick(e, callback) {
 }
 
 async function ShowDetailedReport() {
+
+    NewObjectClicked = true;
 
     var ReportRequest_Json = await GetRequestFullReport();
 
@@ -54,10 +60,15 @@ async function ShowDetailedReport() {
     await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
     await CreateLandParcel(ResrictionGeometry, '#ff6600', '#ff6600', 2, 1, 0.2);
 
+    NewObjectClicked = false;
 
     if (ReportRequest_Json[0].probePoint.length != 0) {
         for (let k = 0; k < ProbePointsGeometry.length; k++) {
-            await new Promise(resolve => setTimeout(resolve, 10)); // Introduce a delay of 100 milliseconds
+            if (NewObjectClicked){
+                break
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 5)); // Introduce a delay of 100 milliseconds
             await CreatePoint(ProbePointsGeometry[k].coordinates[0]);
         }
     }
@@ -74,7 +85,6 @@ async function InitalPointQuery(lng, lat) {
     var ReportRequest_Json = await GetRequest(lng, lat);
 
     if (ReportRequest_Json[0].error != null) {
-        //alert(ReportRequest_Json[0].error);
         return true
     }
 

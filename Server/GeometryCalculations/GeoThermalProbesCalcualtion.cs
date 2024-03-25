@@ -33,10 +33,17 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
         ProbePoint? CandidateChoosenPoint;
         NetTopologySuite.Geometries.Geometry? smallestAreaBuffer = null;
         int smallestAreaIndex;
+        double[] distances;
+        int indexOfCandidate;
 
         List<ProbePoint?> ReportGeothermalPoints = [];
 
-        var centroid = RestrictionAreas.Geometry_Usable?.Centroid;
+        //update Geometry
+
+        RestrictionAreas.Geometry_Usable = RestrictionAreas?.Geometry_Usable?.Buffer(-(OfficalParameters.ProbeDiameter / 2));
+
+
+        var centroid = RestrictionAreas?.Geometry_Usable?.Centroid;
 
         //Inital cycle
 
@@ -50,14 +57,14 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             return (ReportGeothermalPoints);
         }
 
-        double[] distances = new double[currentPoints!.Length];
+        distances = new double[currentPoints!.Length];
 
         for (int i = 0; i < currentPoints?.Length; i++)
         {
             distances[i] = centroid?.Distance(new NetTopologySuite.Geometries.Point(currentPoints[i])) ?? 0;
         }
 
-        int indexOfCandidate = Array.IndexOf(distances, distances.Max());
+        indexOfCandidate = Array.IndexOf(distances, distances.Max());
 
         if (indexOfCandidate != -1)
         {
@@ -73,7 +80,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         while (currentArea > 0)
         {
-
             CandidateMultiPoint = new GeometryFactory().CreateMultiPointFromCoords(CandidatePoints.ToArray());
 
             NetTopologySuite.Geometries.Polygon? candidateBuffer;
@@ -155,7 +161,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                     }
                 }
             }
-
 
             if (smallestAreaBuffer!.IsValid)
             {
