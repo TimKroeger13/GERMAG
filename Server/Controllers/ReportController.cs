@@ -60,7 +60,17 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         FinalReport[0].Usable_Area = RestrictionFile.Usable_Area;
         FinalReport[0].Restiction_Area = RestrictionFile.Restiction_Area;
 
-        List<ProbePoint?> FullPointProbe = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
+        List<ProbePoint?> FullPointProbe;
+
+        try
+        {
+            FullPointProbe = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(RestrictionFile);
+        }
+        catch (Exception e)
+        {
+            FinalReport[0].Error = e.Message;
+            return FinalReport;
+        }
 
         List<ProbePoint?> TruncatedPointProbe = new List<ProbePoint?>();
 

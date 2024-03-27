@@ -25,6 +25,7 @@ async function ShowDetailedReport() {
     var ReportRequest_Json = await GetRequestFullReport();
 
     if (ReportRequest_Json[0].error != null) {
+        alert(ReportRequest_Json[0].error)
         return true
     }
 
