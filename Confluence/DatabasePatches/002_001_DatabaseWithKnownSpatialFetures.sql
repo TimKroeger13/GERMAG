@@ -11,8 +11,6 @@ CREATE TYPE typeofdata AS ENUM ('land_parcels','dgm','geo_poten_restrict','veg_h
 								'geo_poten_40m_with_1800ha','thermal_con_40','thermal_con_60','thermal_con_80',
 								'thermal_con_100','groundwater_measuring_points','building_surfaces');
 
-
-
 CREATE TYPE area AS ENUM ('berlin');
 
 CREATE TYPE range AS ENUM ('near_range','far_range');
