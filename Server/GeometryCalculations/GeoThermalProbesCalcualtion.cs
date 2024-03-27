@@ -38,10 +38,14 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         List<ProbePoint?> ReportGeothermalPoints = [];
 
+        //check for to Large Areas
+
+        if (RestrictionAreas.Geometry_Usable?.Area > OfficalParameters.MaximalAreaSizeForCalculations)
+        { throw new Exception("Selected Area is to Large"); }
+
         //update Geometry
 
         RestrictionAreas.Geometry_Usable = RestrictionAreas?.Geometry_Usable?.Buffer(-(OfficalParameters.ProbeDiameter / 2));
-
 
         var centroid = RestrictionAreas?.Geometry_Usable?.Centroid;
 
@@ -299,5 +303,4 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             return CandidatePoints;
         });
     }
-
 }
