@@ -68,7 +68,7 @@ async function ShowDetailedReport() {
                 break
             }
 
-            await new Promise(resolve => setTimeout(resolve, 5)); // Introduce a delay of 100 milliseconds
+            //await new Promise(resolve => setTimeout(resolve, 5)); // Introduce a delay of 100 milliseconds
             await CreatePoint(ProbePointsGeometry[k].coordinates[0]);
         }
     }
@@ -290,19 +290,23 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
 
 
     if (ReportIsDetailed) {
-
+        //Usable Area
         html = html + `
     <p><strong>Usable Area:</strong> ${Math.round(reportData.usable_Area * 100) / 100}m&sup2</p>`
+        //Number Of Probes
+        html = html + `
+    <p><strong>Amount of possible probes:</strong> ${reportData.probePoint.length}</p>`
 
+        
     }
+
+
 
 
 
     html = html + `
         
 </div>`
-
-
 
     return html
 
