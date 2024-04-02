@@ -1,6 +1,7 @@
 ﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.DataPulling;
@@ -20,7 +21,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
             Console.WriteLine("Pining data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
-            var getrequest = allGeothermalParameters[i].Getrequest;
+            var getrequest = allGeothermalParameters[i].Getrequest ?? "";
 
             //string seriallizedInputJson = await client.GetStringAsync(getrequest);
 
@@ -29,7 +30,11 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             string seriallizedInputJson = "";
             int retryCount = 0;
 
-            while (retryCount < maxRetries)
+            if (getrequest.StartsWith("https"))
+            {
+                continue;
+
+                while (retryCount < maxRetries)
             {
                 try
                 {
@@ -53,6 +58,14 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
                     }
                 }
             }
+            }
+            else //local case
+            {
+                string a = "";
+                var b = 3;
+
+            }
+
 
             //Check if Data is up to date
 
