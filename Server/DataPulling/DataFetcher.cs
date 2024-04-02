@@ -1,6 +1,8 @@
 ﻿using GERMAG.DataModel.Database;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Index.HPRtree;
+using Newtonsoft.Json;
 using System;
 using System.Text.RegularExpressions;
 
@@ -20,7 +22,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
-            Console.WriteLine("Pining data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
+            Console.WriteLine("Pinging data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
             var getrequest = allGeothermalParameters[i].Getrequest ?? "";
 
             //string seriallizedInputJson = await client.GetStringAsync(getrequest);
@@ -35,37 +37,59 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
                 continue;
 
                 while (retryCount < maxRetries)
-            {
-                try
                 {
-                    seriallizedInputJson = await client.GetStringAsync(getrequest);
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                    retryCount++;
+                    try
+                    {
+                        seriallizedInputJson = await client.GetStringAsync(getrequest);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                        retryCount++;
 
-                    if (retryCount < maxRetries)
-                    {
-                        TimeSpan delay = TimeSpan.FromSeconds(3);
-                        await Task.Delay(delay);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Maximum retries reached. Unable to get data.");
-                        throw;
+                        if (retryCount < maxRetries)
+                        {
+                            TimeSpan delay = TimeSpan.FromSeconds(3);
+                            await Task.Delay(delay);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Maximum retries reached. Unable to get data.");
+                            throw;
+                        }
                     }
                 }
-            }
             }
             else //local case
             {
-                string a = "";
-                var b = 3;
+                string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string targetDirectory = "GERMAG";
 
+                while (!Directory.Exists(Path.Combine(currentDirectory, targetDirectory)))
+                {
+                    DirectoryInfo? parentDirectory = Directory.GetParent(currentDirectory);
+                    if (parentDirectory == null)
+                    {
+                        throw new Exception("Target directory not found.");
+                    }
+                    currentDirectory = parentDirectory.FullName;
+                }
+
+                string resourcesFile = Path.Combine(currentDirectory, targetDirectory, "Resources", getrequest);
+
+                if (File.Exists(resourcesFile))
+                {
+                    using (StreamReader r = new StreamReader(resourcesFile))
+                    {
+                        seriallizedInputJson = r.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    throw new Exception("Target file not found.");
+                }
             }
-
 
             //Check if Data is up to date
 
@@ -126,11 +150,11 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
         // Create and update Indexing
 
         context.Database.ExecuteSqlRaw(@"
-            DO $$ 
-            BEGIN 
-                IF EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'geometry_index') THEN 
-                    DROP INDEX geometry_index; 
-                END IF; 
+            DO $$
+            BEGIN
+                IF EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'geometry_index') THEN
+                    DROP INDEX geometry_index;
+                END IF;
             END $$;
 
             CREATE INDEX geometry_index
