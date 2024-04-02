@@ -1,7 +1,5 @@
-﻿using NetTopologySuite.Geometries;
-
-namespace GERMAG.DataModel.Database;
-
+﻿namespace GERMAG.DataModel.Database;
+using NetTopologySuite.Geometries;
 public partial class GeoDatum
 {
     public GeoDatum()
