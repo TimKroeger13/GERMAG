@@ -34,8 +34,6 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
             if (getrequest.StartsWith("https"))
             {
-                continue;
-
                 while (retryCount < maxRetries)
                 {
                     try

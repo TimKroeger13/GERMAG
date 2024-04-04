@@ -36,6 +36,7 @@ public class CreateReportStructure : ICreateReportStructure
     private string? _zeHGW = "";
     private readonly List<String>? _verordnung = [];
     private readonly List<String>? _veror_link = [];
+    private readonly List<String>? _holstein_depth = [];
     public Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -104,7 +105,9 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.building_surfaces:
                     //_building_begzgkt = AppendString(_building_begzgkt ?? "", CoordinateParameter.JsonDataParameter?.Bezgfk?.ToString() ?? "");
                     break;
-
+                case DataModel.Database.TypeOfData.depth_restrictions:
+                    _holstein_depth?.Add(CoordinateParameter.JsonDataParameter?.VALUE?.ToString() ?? "");
+                    break;
                 //Cases Not relevant for the Report or right now not implemented
                 case DataModel.Database.TypeOfData.groundwater_measuring_points:
                     break;
@@ -150,6 +153,7 @@ public class CreateReportStructure : ICreateReportStructure
 
         var report = new[] { new Report
         {
+            Holstein = _holstein_depth?.ConvertDocumentationString(),
             Geo_poten_100m_with_2400ha = _geo_poten_100m_with_2400ha?.ConvertDocumentationString(),
             Geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha?.ConvertDocumentationString(),
             Geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha?.ConvertDocumentationString(),
