@@ -6,7 +6,7 @@ namespace GERMAG.Server.ExtensionMethods;
 
 public static partial class GetDocumentationString
 {
-    public static String ConvertDocumentationString (this List<string> dokumentationString)
+    public static String ConvertDocumentationString (this List<string> dokumentationString, int round)
     {
         if (dokumentationString.Count == 0)
         {
@@ -42,7 +42,7 @@ public static partial class GetDocumentationString
                 {
                     if (double.TryParse(value.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double number))
                     {
-                        numbers.Add(number);
+                        numbers.Add(Math.Round(number, round));
                     }
                 }
             }
