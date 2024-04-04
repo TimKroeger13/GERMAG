@@ -36,6 +36,7 @@ public class CreateReportStructure : ICreateReportStructure
     private string? _zeHGW = "";
     private readonly List<String>? _verordnung = [];
     private readonly List<String>? _veror_link = [];
+    private readonly List<String>? _holstein_depth = [];
     public Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -104,7 +105,9 @@ public class CreateReportStructure : ICreateReportStructure
                 case DataModel.Database.TypeOfData.building_surfaces:
                     //_building_begzgkt = AppendString(_building_begzgkt ?? "", CoordinateParameter.JsonDataParameter?.Bezgfk?.ToString() ?? "");
                     break;
-
+                case DataModel.Database.TypeOfData.depth_restrictions:
+                    _holstein_depth?.Add(CoordinateParameter.JsonDataParameter?.VALUE?.ToString() ?? "");
+                    break;
                 //Cases Not relevant for the Report or right now not implemented
                 case DataModel.Database.TypeOfData.groundwater_measuring_points:
                     break;
@@ -150,22 +153,23 @@ public class CreateReportStructure : ICreateReportStructure
 
         var report = new[] { new Report
         {
-            Geo_poten_100m_with_2400ha = _geo_poten_100m_with_2400ha?.ConvertDocumentationString(),
-            Geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha?.ConvertDocumentationString(),
-            Geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha?.ConvertDocumentationString(),
-            Geo_poten_40m_with_2400ha = _geo_poten_40m_with_2400ha?.ConvertDocumentationString(),
-            Geo_poten_100m_with_1800ha = _geo_poten_100m_with_1800ha?.ConvertDocumentationString(),
-            Geo_poten_80m_with_1800ha = _geo_poten_80m_with_1800ha?.ConvertDocumentationString(),
-            Geo_poten_60m_with_1800ha = _geo_poten_60m_with_1800ha?.ConvertDocumentationString(),
-            Geo_poten_40m_with_1800ha = _geo_poten_40m_with_1800ha?.ConvertDocumentationString(),
-            Thermal_con_100 = _thermal_con_100?.ConvertDocumentationString(),
-            Thermal_con_80 = _thermal_con_80?.ConvertDocumentationString(),
-            Thermal_con_60 = _thermal_con_60?.ConvertDocumentationString(),
-            Thermal_con_40 = _thermal_con_40?.ConvertDocumentationString(),
-            Mean_water_temp_20to100 = _mean_water_temp_20to100?.ConvertDocumentationString(),
-            Mean_water_temp_60 = _mean_water_temp_60?.ConvertDocumentationString(),
-            Mean_water_temp_40 = _mean_water_temp_40?.ConvertDocumentationString(),
-            Mean_water_temp_20 = _mean_water_temp_20?.ConvertDocumentationString(),
+            Holstein = _holstein_depth?.ConvertDocumentationString(0),
+            Geo_poten_100m_with_2400ha = _geo_poten_100m_with_2400ha?.ConvertDocumentationString(2),
+            Geo_poten_80m_with_2400ha = _geo_poten_80m_with_2400ha?.ConvertDocumentationString(2),
+            Geo_poten_60m_with_2400ha = _geo_poten_60m_with_2400ha?.ConvertDocumentationString(2),
+            Geo_poten_40m_with_2400ha = _geo_poten_40m_with_2400ha?.ConvertDocumentationString(2),
+            Geo_poten_100m_with_1800ha = _geo_poten_100m_with_1800ha?.ConvertDocumentationString(2),
+            Geo_poten_80m_with_1800ha = _geo_poten_80m_with_1800ha?.ConvertDocumentationString(2),
+            Geo_poten_60m_with_1800ha = _geo_poten_60m_with_1800ha?.ConvertDocumentationString(2),
+            Geo_poten_40m_with_1800ha = _geo_poten_40m_with_1800ha?.ConvertDocumentationString(2),
+            Thermal_con_100 = _thermal_con_100?.ConvertDocumentationString(2),
+            Thermal_con_80 = _thermal_con_80?.ConvertDocumentationString(2),
+            Thermal_con_60 = _thermal_con_60?.ConvertDocumentationString(2),
+            Thermal_con_40 = _thermal_con_40?.ConvertDocumentationString(2),
+            Mean_water_temp_20to100 = _mean_water_temp_20to100?.ConvertDocumentationString(2),
+            Mean_water_temp_60 = _mean_water_temp_60?.ConvertDocumentationString(2),
+            Mean_water_temp_40 = _mean_water_temp_40?.ConvertDocumentationString(2),
+            Mean_water_temp_20 = _mean_water_temp_20?.ConvertDocumentationString(2),
             Geo_poten_restrict = _geo_poten_restrict,
             Verordnung = _verordnung,
             Veror_link = _veror_link,

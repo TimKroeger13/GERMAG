@@ -253,6 +253,12 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
         }
     }
 
+    holstein = ``;
+    if(reportData.holstein != ""){
+        holstein = `<p><strong>Holstein-Schicht:</strong> ${reportData.holstein} meter</p>`
+    }
+
+
     var html = `
     <div class="geothermal-report">
         <p><strong>Gemeinde:</strong> ${reportData.land_parcels_gemeinde}</p>
@@ -286,6 +292,7 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
             <li><strong>20:</strong> ${reportData.mean_water_temp_20}</li>
         </ul>
         <!-- <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p> -->
+        ${holstein}
         ${String_geo_poten_restrict}
         ${String_Water_protec_areas}`;
 
