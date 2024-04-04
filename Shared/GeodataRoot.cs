@@ -111,6 +111,7 @@ public class Properties
     public string? Hnr { get; set; }
     public string? Pnr { get; set; }
     public string? Lnr { get; set; }
+    public double? VALUE { get; set; }
 }
 public class Root
 {

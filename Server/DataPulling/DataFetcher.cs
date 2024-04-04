@@ -83,6 +83,8 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
                     using (StreamReader r = new StreamReader(resourcesFile))
                     {
                         seriallizedInputJson = r.ReadToEnd();
+
+                        seriallizedInputJson = Regex.Replace(Regex.Replace(Regex.Replace(seriallizedInputJson, @"\s+", ""), @"\n", ""), @"\r", "");
                     }
                 }
                 else
