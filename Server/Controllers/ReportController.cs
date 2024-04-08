@@ -28,7 +28,9 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         }};
         }
 
-        IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement);
+        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+
+        IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement, RestrictionFile);
 
         List<Report> reportList = polygonBasedReport.ToList();
         reportList[0].Geometry = landParcelElement.GeometryJson;
@@ -50,9 +52,9 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         }};
         }
 
-        IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement);
-
         Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+
+        IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement, RestrictionFile);
 
         var FinalReport = polygonBasedReport.ToList();
         FinalReport[0].Geometry_Usable = RestrictionFile.Geometry_Usable_geoJson;
