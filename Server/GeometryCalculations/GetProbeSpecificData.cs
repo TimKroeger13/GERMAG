@@ -15,6 +15,10 @@ public class GetProbeSpecificData(DataContext context, IParameterDeserialator pa
 {
     public async Task<List<ProbePoint?>> GetPointProbeData(LandParcel landParcelElement, List<ProbePoint?> probePoints)
     {
+        Console.WriteLine("Start of GetPointProbe");
+
+        //using var transaction = context.Database.BeginTransaction();
+
         foreach (var SingleProbePoint in probePoints)
         {
             if (SingleProbePoint == null || SingleProbePoint.Geometry == null || SingleProbePoint.Properties == null)
@@ -31,6 +35,7 @@ public class GetProbeSpecificData(DataContext context, IParameterDeserialator pa
                     gd.ParameterKey,
                     gd.Parameter
                 });
+            //context.SaveChanges();
 
             var intersectingResult = IntersectingGeometry
                 .Join(
@@ -54,9 +59,8 @@ public class GetProbeSpecificData(DataContext context, IParameterDeserialator pa
             }
             else
             {
-                var DeserializedDepthRestrictions = parameterDeserialator.DeserializeParameters(UnserilizedDepthRestrictions?.Parameter ?? "");
+                var DeserializedDepthRestrictions = await Task.Run(() => parameterDeserialator.DeserializeParameters(UnserilizedDepthRestrictions?.Parameter ?? ""));
                 MaxDepth = DeserializedDepthRestrictions.VALUE;
-
             }
 
             //Poetential = 100,80,60,40
@@ -87,10 +91,10 @@ public class GetProbeSpecificData(DataContext context, IParameterDeserialator pa
             SingleProbePoint.Properties.GeoPotenDepth = GeoPotenDepth;
             SingleProbePoint.Properties.GeoPoten = GeoPoten;
 
-
         }
+        //transaction.Commit();
 
-        var a = probePoints.ToList();
+        Console.WriteLine("End of GetPointProbe");
 
         return probePoints;
     }
