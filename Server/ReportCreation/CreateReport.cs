@@ -9,14 +9,14 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface ICreateReportAsync
 {
-    Task<IEnumerable<Report>> CreateGeothermalReportAsync(LandParcel landParcelElement);
+    Task<IEnumerable<Report>> CreateGeothermalReportAsync(LandParcel landParcelElement, Restricion RestrictionFile);
 }
 
 public class CreateReport(IFindAllParameterForCoordinate findAllParameterForCoordinate, IParameterDeserialator parameterDeserialator, ICreateReportStructure createReportStructure) : ICreateReportAsync
 {
-    public async Task<IEnumerable<Report>> CreateGeothermalReportAsync(LandParcel landParcelElement)
+    public async Task<IEnumerable<Report>> CreateGeothermalReportAsync(LandParcel landParcelElement, Restricion RestrictionFile)
     {
-        var ParameterList = await Task.Run(() => findAllParameterForCoordinate.FindCoordianteParameters(landParcelElement));
+        var ParameterList = await Task.Run(() => findAllParameterForCoordinate.FindCoordianteParameters(landParcelElement, RestrictionFile));
 
         var jsonData_Parameter = await Task.Run(() => ParameterList.ConvertAll(p => parameterDeserialator.DeserializeParameters(p.Parameter ?? "")));
 

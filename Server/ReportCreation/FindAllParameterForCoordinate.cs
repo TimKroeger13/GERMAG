@@ -17,15 +17,15 @@ namespace GERMAG.Server.ReportCreation;
 
 public interface IFindAllParameterForCoordinate
 {
-    List<GeometryElementParameter> FindCoordianteParameters(LandParcel landParcelElement);
+    List<GeometryElementParameter> FindCoordianteParameters(LandParcel landParcelElement, Restricion RestrictionFile);
 }
 
 public class FindAllParameterForCoordinate(DataContext context) : IFindAllParameterForCoordinate
 {
-    public List<GeometryElementParameter> FindCoordianteParameters(LandParcel landParcelElement)
+    public List<GeometryElementParameter> FindCoordianteParameters(LandParcel landParcelElement, Restricion RestrictionFile)
     {
         var IntersectingGeometry = context.GeoData
-            .Where(gd => gd.ParameterKey != landParcelElement.ParameterKey && gd.Geom!.Intersects(landParcelElement.Geometry))
+            .Where(gd => gd.ParameterKey != landParcelElement.ParameterKey && gd.Geom!.Intersects(RestrictionFile.Geometry_Usable))
             .Select(gd => new
             {
                 gd.ParameterKey,
