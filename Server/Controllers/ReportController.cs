@@ -12,7 +12,7 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion) : ControllerBase
+public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData) : ControllerBase
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
@@ -73,6 +73,8 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
             FinalReport[0].Error = e.Message;
             return FinalReport;
         }
+
+        List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
 
         List<ProbePoint?> TruncatedPointProbe = new List<ProbePoint?>();
 

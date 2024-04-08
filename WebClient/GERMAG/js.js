@@ -309,7 +309,7 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
 
     html = html + `
     ${String_geo_poten_restrict}
-    ${String_Water_protec_areas};`
+    ${String_Water_protec_areas}`
 
     }
 
