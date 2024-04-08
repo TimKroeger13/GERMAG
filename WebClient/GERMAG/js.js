@@ -292,9 +292,11 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
             <li><strong>20:</strong> ${reportData.mean_water_temp_20}</li>
         </ul>
         <!-- <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p> -->
-        ${holstein}
-        ${String_geo_poten_restrict}
-        ${String_Water_protec_areas}`;
+        ${holstein}`;
+
+
+        
+        
 
 
     if (ReportIsDetailed) {
@@ -305,7 +307,10 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
         html = html + `
     <p><strong>Amount of possible probes:</strong> ${reportData.probePoint.length}</p>`
 
-        
+    html = html + `
+    ${String_geo_poten_restrict}
+    ${String_Water_protec_areas};`
+
     }
 
 
