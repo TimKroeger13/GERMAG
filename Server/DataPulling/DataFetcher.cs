@@ -20,8 +20,17 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
         using var client = httpFactory.CreateClient(HttpClients.LongTimeoutClient);
         var allGeothermalParameters = context.GeothermalParameter.OrderBy(gp => gp.Id).ToList();
 
+        bool dataNotFound;
+
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
+            dataNotFound = false;
+            if (i == 0 || i == 31)
+            {
+                continue;
+            }
+
+
             Console.WriteLine("Pinging data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
             var getrequest = allGeothermalParameters[i].Getrequest ?? "";
 
@@ -54,7 +63,7 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
                         else
                         {
                             Console.WriteLine("Maximum retries reached. Unable to get data.");
-                            throw;
+                            dataNotFound = true;
                         }
                     }
                 }
@@ -96,10 +105,13 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
             var dataHash = allGeothermalParameters[i].Hash ?? -1;
             var hash = HashString(seriallizedInputJson);
 
-            context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).LastPing = DateTime.Now;
-            context.SaveChanges();
+            if (!dataNotFound)
+            {
+                context.GeothermalParameter.First(gp => gp.Id == allGeothermalParameters[i].Id).LastPing = DateTime.Now;
+                context.SaveChanges();
+            }
 
-            if (dataHash != hash)
+            if (dataHash != hash && !dataNotFound)
             {
                 //Differentiate between different coordiante formats
 
