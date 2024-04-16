@@ -55,7 +55,7 @@ async function ShowDetailedReport() {
     await SetReport(GeothermalReport);
 
     //opens modal window
-    await openModal(GeothermalReport);
+    await openModal(GeothermalReport, true, ReportRequest_Json[0]);
 
     await removeLandParcels()
     await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
@@ -74,10 +74,7 @@ async function ShowDetailedReport() {
         }
     }
 
-
     return true;
-
-
 }
 
 async function InitalPointQuery(lng, lat) {
@@ -97,7 +94,7 @@ async function InitalPointQuery(lng, lat) {
     await SetReport(GeothermalReport);
 
     //opens modal window
-    await openModal(GeothermalReport);
+    await openModal(GeothermalReport, false);
 
     //Plots geometry on map
     await removeLandParcels()
@@ -133,8 +130,7 @@ async function getGeojsonFromAddress(address) {
     }
 }
 
-async function openModal(html) {
-
+async function openModal(html, ReportIsDetailed, jsonData) {
     $("#myModal").modal({ backdrop: false });
     $('.modal').modal('hide');
 
@@ -142,8 +138,18 @@ async function openModal(html) {
         handle: ".modal-header"
     });
 
+    // Set modal body content
+    $(".modal-body").html(html);
+
+    if (ReportIsDetailed) {
+        await loadGoogleCharts(); // Wait for Google Charts API to load
+    }
+
+    // Redraw the chart when the modal is shown
     $("#myModal").on('shown.bs.modal', function (e) {
-        $(".modal-body").html(html);
+        if (ReportIsDetailed) {
+            drawChart(jsonData);
+        }
     });
 
     $("#myModal").on('hide.bs.modal', function (e) {
@@ -151,7 +157,47 @@ async function openModal(html) {
     });
 
     $("#myModal").modal({ backdrop: false });
+}
+async function loadGoogleCharts() {
+    return new Promise((resolve, reject) => {
+        // Load Google Charts API script dynamically
+        var script = document.createElement('script');
+        script.src = 'https://www.gstatic.com/charts/loader.js?version={version}';
+        document.head.appendChild(script);
 
+        script.onload = function () {
+            // Initialize Google Charts API
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(resolve); // Resolve the promise when API is loaded
+        };
+
+        script.onerror = reject; // Reject the promise if script loading fails
+    });
+}
+
+function drawChart(JasonData) {
+
+    var data = google.visualization.arrayToDataTable([
+        ['Task', 'Hours per Day'],
+        ['Work', 11],
+        ['Eat', 2],
+        ['Commute', 2],
+        ['Watch TV', 2],
+        ['Sleep', 7]
+    ]);
+
+    var options = {
+        title: JasonData.land_parcel_number
+    };
+
+    // Ensure the container is ready before drawing the chart
+    var container = document.getElementById('piechart'); // Change to 'piechart'
+    if (container) {
+        var chart = new google.visualization.PieChart(container);
+        chart.draw(data, options);
+    } else {
+        //console.error("Container for chart not found");
+    }
 }
 
 
@@ -192,9 +238,6 @@ async function PrintPDF() {
         }, margins);
 }
 
-
-
-
 //Close Modal, when adress bar ist clicked
 document.addEventListener('DOMContentLoaded', function () {
     var addressInput = document.getElementById('address-input');
@@ -208,8 +251,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
-
 
 function httpGet(theUrl) {
     return new Promise(function (resolve, reject) {
@@ -295,10 +336,6 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
         ${holstein}`;
 
 
-        
-        
-
-
     if (ReportIsDetailed) {
         //Usable Area
         html = html + `
@@ -311,11 +348,9 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
     ${String_geo_poten_restrict}
     ${String_Water_protec_areas}`
 
+    html = html + `<div id="piechart" style="width: 500px; height: 300px;"></div>`
+
     }
-
-
-
-
 
     html = html + `
         

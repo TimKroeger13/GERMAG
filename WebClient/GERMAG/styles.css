@@ -46,13 +46,14 @@ p {
   margin: 0;
   padding: 0;
   pointer-events: auto; 
+  max-height: 80vh !important;;
+  overflow-y: auto !important;;
 }
 
 .modal {
   pointer-events: none;
   animation: fadeIn 0.5s ease-out;
 }
-
 
 @keyframes fadeIn {
   from {
@@ -62,8 +63,6 @@ p {
       opacity: 1;
   }
 }
-
-
 
 .modal.show {
   pointer-events: auto; 
