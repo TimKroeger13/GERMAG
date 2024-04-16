@@ -177,17 +177,25 @@ async function loadGoogleCharts() {
 
 function drawChart(JasonData) {
 
-    var data = google.visualization.arrayToDataTable([
+    var classifedData = classifyData(JasonData)
+
+    const dataArray = Object.entries(classifedData).map(([task, hours]) => [task.toString(), hours]);
+
+    dataArray.unshift(['Task', 'Hours per Day']);
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    /*var data = google.visualization.arrayToDataTable([
         ['Task', 'Hours per Day'],
         ['Work', 11],
         ['Eat', 2],
         ['Commute', 2],
         ['Watch TV', 2],
         ['Sleep', 7]
-    ]);
+    ]);*/
 
     var options = {
-        title: JasonData.land_parcel_number
+        title: "Proben genaue Auflösung"
     };
 
     // Ensure the container is ready before drawing the chart
@@ -200,6 +208,20 @@ function drawChart(JasonData) {
     }
 }
 
+function classifyData(JasonData) {
+    const counts = {};
+
+    for (let i = 0; i < JasonData.probePoint.length; i++) {
+        const geoPoten = JasonData.probePoint[i].properties.geoPoten;
+        if (counts[geoPoten]) {
+            counts[geoPoten]++;
+        } else {
+            counts[geoPoten] = 1;
+        }
+    }
+
+    return counts;
+}
 
 async function PrintPDF() {
     var pdf = new jsPDF('p', 'pt', 'letter');
