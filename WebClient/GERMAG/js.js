@@ -141,16 +141,15 @@ async function openModal(html, ReportIsDetailed, jsonData) {
     // Set modal body content
     $(".modal-body").html(html);
 
+    // Remove any existing 'shown.bs.modal' event listeners
+    $("#myModal").off('shown.bs.modal');
+
     if (ReportIsDetailed) {
         await loadGoogleCharts(); // Wait for Google Charts API to load
+        $("#myModal").on('shown.bs.modal', function (e) {
+            drawChart(jsonData); // Only draw the chart if ReportIsDetailed is true
+        });
     }
-
-    // Redraw the chart when the modal is shown
-    $("#myModal").on('shown.bs.modal', function (e) {
-        if (ReportIsDetailed) {
-            drawChart(jsonData);
-        }
-    });
 
     $("#myModal").on('hide.bs.modal', function (e) {
         $(".modal iframe").attr('src', "");
@@ -158,6 +157,7 @@ async function openModal(html, ReportIsDetailed, jsonData) {
 
     $("#myModal").modal({ backdrop: false });
 }
+
 async function loadGoogleCharts() {
     return new Promise((resolve, reject) => {
         // Load Google Charts API script dynamically
