@@ -40,7 +40,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
     [HttpGet("fullreport")]
     [EnableCors(CorsPolicies.GetAllowed)]
-    public async Task<IEnumerable<Report>> GetFullReport(double Xcor, double Ycor, int Srid)
+    public async Task<IEnumerable<Report>> GetFullReport(double Xcor, double Ycor, int Srid, bool probeRes)
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
 
@@ -74,7 +74,10 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
             return FinalReport;
         }
 
-        List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+        if (probeRes)
+        {
+            List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+        }
 
         List<ProbePoint?> TruncatedPointProbe = new List<ProbePoint?>();
 

@@ -92,6 +92,15 @@ p {
   pointer-events: auto;
 }
 
+.modal-footer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.modal-footer .print-btn:first-child {
+  margin-right: auto;
+}
+
 #address-input {
   flex: 1;
   font-size: 2vh;

@@ -18,11 +18,11 @@ async function onMapClick(e, callback) {
     Current_lng_coordiante = clickCoordinates.lng;
 }
 
-async function ShowDetailedReport() {
+async function ShowDetailedReport(reportType) {
 
     NewObjectClicked = true;
 
-    var ReportRequest_Json = await GetRequestFullReport();
+    var ReportRequest_Json = await GetRequestFullReport(reportType);
 
     if (ReportRequest_Json[0].error != null) {
         alert(ReportRequest_Json[0].error)
@@ -51,11 +51,21 @@ async function ShowDetailedReport() {
     }
 
     //Create Gethermalreport
-    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true);
+    if(reportType == 'probe'){
+        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true);
+    }else{
+        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], false);
+    }
+
     await SetReport(GeothermalReport);
 
     //opens modal window
-    await openModal(GeothermalReport, true, ReportRequest_Json[0]);
+
+    if(reportType == 'probe'){
+        await openModal(GeothermalReport, true, ReportRequest_Json[0]);
+    }else{
+        await openModal(GeothermalReport, false);
+    }
 
     await removeLandParcels()
     await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
@@ -138,16 +148,14 @@ async function openModal(html, ReportIsDetailed, jsonData) {
         handle: ".modal-header"
     });
 
-    // Set modal body content
     $(".modal-body").html(html);
 
-    // Remove any existing 'shown.bs.modal' event listeners
     $("#myModal").off('shown.bs.modal');
 
     if (ReportIsDetailed) {
-        await loadGoogleCharts(); // Wait for Google Charts API to load
+        await loadGoogleCharts();
         $("#myModal").on('shown.bs.modal', function (e) {
-            drawChart(jsonData); // Only draw the chart if ReportIsDetailed is true
+            drawChart(jsonData);
         });
     }
 
@@ -160,18 +168,16 @@ async function openModal(html, ReportIsDetailed, jsonData) {
 
 async function loadGoogleCharts() {
     return new Promise((resolve, reject) => {
-        // Load Google Charts API script dynamically
         var script = document.createElement('script');
         script.src = 'https://www.gstatic.com/charts/loader.js?version={version}';
         document.head.appendChild(script);
 
         script.onload = function () {
-            // Initialize Google Charts API
             google.charts.load('current', { 'packages': ['corechart'] });
-            google.charts.setOnLoadCallback(resolve); // Resolve the promise when API is loaded
+            google.charts.setOnLoadCallback(resolve); 
         };
 
-        script.onerror = reject; // Reject the promise if script loading fails
+        script.onerror = reject;
     });
 }
 
@@ -185,26 +191,16 @@ function drawChart(JasonData) {
 
     var data = google.visualization.arrayToDataTable(dataArray);
 
-    /*var data = google.visualization.arrayToDataTable([
-        ['Task', 'Hours per Day'],
-        ['Work', 11],
-        ['Eat', 2],
-        ['Commute', 2],
-        ['Watch TV', 2],
-        ['Sleep', 7]
-    ]);*/
-
     var options = {
         title: "Proben genaue Auflösung"
     };
 
-    // Ensure the container is ready before drawing the chart
-    var container = document.getElementById('piechart'); // Change to 'piechart'
+    var container = document.getElementById('piechart'); 
     if (container) {
         var chart = new google.visualization.PieChart(container);
         chart.draw(data, options);
     } else {
-        //console.error("Container for chart not found");
+        console.error("Container for chart not found");
     }
 }
 
@@ -416,10 +412,16 @@ async function GetRequest(Xcor, Ycor) {
     }
 }
 
-async function GetRequestFullReport() {
+async function GetRequestFullReport(reportType) {
     var Srid = 4326;
 
-    const url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}`;
+    var url = ""
+
+    if(reportType == 'probe'){
+        url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=true`;
+    }else{
+        url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=false`;
+    }
 
     try {
         const response = await fetch(url);
