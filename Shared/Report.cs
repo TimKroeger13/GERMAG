@@ -30,7 +30,7 @@ public class Report
     public String? Land_parcel_number { get; set; }
     public String? Land_parcels_gemeinde { get; set; }
     public String? Building_begzgkt { get; set; }
-    public String? ZeHGW { get; set; }
+    public double? ZeHGW { get; set; }
     public List<String>? Verordnung { get; set; }
     public List<String>? Veror_link { get; set; }
     public String? Geometry { get; set; }

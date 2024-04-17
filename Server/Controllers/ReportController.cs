@@ -12,7 +12,7 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData) : ControllerBase
+public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData, IGetPolylineData getPolylineData) : ControllerBase
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
@@ -74,10 +74,13 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
             return FinalReport;
         }
 
-        if (probeRes)
+        if (probeRes) //Probe Resulution
         {
             List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
         }
+
+        //LineInformation - ExpectedGroundWaterHeight
+        FinalReport[0].ZeHGW = await getPolylineData.GetNearestPolylineData(landParcelElement);
 
         List<ProbePoint?> TruncatedPointProbe = new List<ProbePoint?>();
 
@@ -93,7 +96,6 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
             }
             else { TruncatedPointProbe.Add(null); }
         }
-
 
         FinalReport[0].ProbePoint = TruncatedPointProbe;
 
