@@ -18,11 +18,11 @@ async function onMapClick(e, callback) {
     Current_lng_coordiante = clickCoordinates.lng;
 }
 
-async function ShowDetailedReport() {
+async function ShowDetailedReport(reportType) {
 
     NewObjectClicked = true;
 
-    var ReportRequest_Json = await GetRequestFullReport();
+    var ReportRequest_Json = await GetRequestFullReport(reportType);
 
     if (ReportRequest_Json[0].error != null) {
         alert(ReportRequest_Json[0].error)
@@ -51,11 +51,21 @@ async function ShowDetailedReport() {
     }
 
     //Create Gethermalreport
-    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true);
+    if(reportType == 'probe'){
+        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true);
+    }else{
+        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], false);
+    }
+
     await SetReport(GeothermalReport);
 
     //opens modal window
-    await openModal(GeothermalReport);
+
+    if(reportType == 'probe'){
+        await openModal(GeothermalReport, true, ReportRequest_Json[0]);
+    }else{
+        await openModal(GeothermalReport, false);
+    }
 
     await removeLandParcels()
     await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
@@ -74,10 +84,7 @@ async function ShowDetailedReport() {
         }
     }
 
-
     return true;
-
-
 }
 
 async function InitalPointQuery(lng, lat) {
@@ -97,7 +104,7 @@ async function InitalPointQuery(lng, lat) {
     await SetReport(GeothermalReport);
 
     //opens modal window
-    await openModal(GeothermalReport);
+    await openModal(GeothermalReport, false);
 
     //Plots geometry on map
     await removeLandParcels()
@@ -133,8 +140,7 @@ async function getGeojsonFromAddress(address) {
     }
 }
 
-async function openModal(html) {
-
+async function openModal(html, ReportIsDetailed, jsonData) {
     $("#myModal").modal({ backdrop: false });
     $('.modal').modal('hide');
 
@@ -142,18 +148,76 @@ async function openModal(html) {
         handle: ".modal-header"
     });
 
-    $("#myModal").on('shown.bs.modal', function (e) {
-        $(".modal-body").html(html);
-    });
+    $(".modal-body").html(html);
+
+    $("#myModal").off('shown.bs.modal');
+
+    if (ReportIsDetailed) {
+        await loadGoogleCharts();
+        $("#myModal").on('shown.bs.modal', function (e) {
+            drawChart(jsonData);
+        });
+    }
 
     $("#myModal").on('hide.bs.modal', function (e) {
         $(".modal iframe").attr('src', "");
     });
 
     $("#myModal").modal({ backdrop: false });
-
 }
 
+async function loadGoogleCharts() {
+    return new Promise((resolve, reject) => {
+        var script = document.createElement('script');
+        script.src = 'https://www.gstatic.com/charts/loader.js?version={version}';
+        document.head.appendChild(script);
+
+        script.onload = function () {
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(resolve); 
+        };
+
+        script.onerror = reject;
+    });
+}
+
+function drawChart(JasonData) {
+
+    var classifedData = classifyData(JasonData)
+
+    const dataArray = Object.entries(classifedData).map(([task, hours]) => [task.toString(), hours]);
+
+    dataArray.unshift(['Task', 'Hours per Day']);
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    var options = {
+        title: "Proben genaue Auflösung"
+    };
+
+    var container = document.getElementById('piechart'); 
+    if (container) {
+        var chart = new google.visualization.PieChart(container);
+        chart.draw(data, options);
+    } else {
+        console.error("Container for chart not found");
+    }
+}
+
+function classifyData(JasonData) {
+    const counts = {};
+
+    for (let i = 0; i < JasonData.probePoint.length; i++) {
+        const geoPoten = JasonData.probePoint[i].properties.geoPoten;
+        if (counts[geoPoten]) {
+            counts[geoPoten]++;
+        } else {
+            counts[geoPoten] = 1;
+        }
+    }
+
+    return counts;
+}
 
 async function PrintPDF() {
     var pdf = new jsPDF('p', 'pt', 'letter');
@@ -192,9 +256,6 @@ async function PrintPDF() {
         }, margins);
 }
 
-
-
-
 //Close Modal, when adress bar ist clicked
 document.addEventListener('DOMContentLoaded', function () {
     var addressInput = document.getElementById('address-input');
@@ -208,8 +269,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
-
 
 function httpGet(theUrl) {
     return new Promise(function (resolve, reject) {
@@ -292,9 +351,7 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
             <li><strong>20:</strong> ${reportData.mean_water_temp_20}</li>
         </ul>
         <!-- <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p> -->
-        ${holstein}
-        ${String_geo_poten_restrict}
-        ${String_Water_protec_areas}`;
+        ${holstein}`;
 
 
     if (ReportIsDetailed) {
@@ -305,12 +362,13 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
         html = html + `
     <p><strong>Amount of possible probes:</strong> ${reportData.probePoint.length}</p>`
 
-        
+    html = html + `
+    ${String_geo_poten_restrict}
+    ${String_Water_protec_areas}`
+
+    html = html + `<div id="piechart" style="width: 500px; height: 300px;"></div>`
+
     }
-
-
-
-
 
     html = html + `
         
@@ -354,10 +412,16 @@ async function GetRequest(Xcor, Ycor) {
     }
 }
 
-async function GetRequestFullReport() {
+async function GetRequestFullReport(reportType) {
     var Srid = 4326;
 
-    const url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}`;
+    var url = ""
+
+    if(reportType == 'probe'){
+        url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=true`;
+    }else{
+        url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=false`;
+    }
 
     try {
         const response = await fetch(url);
