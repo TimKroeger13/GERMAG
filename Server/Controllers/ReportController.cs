@@ -80,7 +80,9 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         }
 
         //LineInformation - ExpectedGroundWaterHeight
-        FinalReport[0].ZeHGW = await getPolylineData.GetNearestPolylineData(landParcelElement);
+        var ZeHGW = await getPolylineData.GetNearestPolylineData(landParcelElement);
+
+        FinalReport[0].ZeHGW = ZeHGW;
 
         List<ProbePoint?> TruncatedPointProbe = new List<ProbePoint?>();
 
