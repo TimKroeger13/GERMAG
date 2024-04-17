@@ -52,9 +52,9 @@ async function ShowDetailedReport(reportType) {
 
     //Create Gethermalreport
     if(reportType == 'probe'){
-        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true);
+        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true, true);
     }else{
-        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], false);
+        var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true, false);
     }
 
     await SetReport(GeothermalReport);
@@ -100,7 +100,7 @@ async function InitalPointQuery(lng, lat) {
     var LandParcelGeometry = await BackTransformationOfGeometry(ReportRequest_Json[0].geometry);
 
     //Create Gethermalreport
-    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], false);
+    var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], false, false);
     await SetReport(GeothermalReport);
 
     //opens modal window
@@ -292,7 +292,7 @@ function httpGet(theUrl) {
 }
 
 
-async function CreateReportHTML(reportData, ReportIsDetailed) {
+async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafics) {
 
     String_geo_poten_restrict = ``;
     if (reportData.geo_poten_restrict.length > 0) {
@@ -316,7 +316,6 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
     if(reportData.holstein != ""){
         holstein = `<p><strong>Holstein-Schicht:</strong> ${reportData.holstein} meter</p>`
     }
-
 
     var html = `
     <div class="geothermal-report">
@@ -350,11 +349,14 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
             <li><strong>40:</strong> ${reportData.mean_water_temp_40}</li>
             <li><strong>20:</strong> ${reportData.mean_water_temp_20}</li>
         </ul>
-        <!-- <p><strong>zeHGW:</strong> ${reportData.zeHGW}</p> -->
         ${holstein}`;
 
-
     if (ReportIsDetailed) {
+
+        //Expected groundwater hight
+        html = html + `
+        <p><strong>ZeHGW:</strong> ${reportData.zeHGW} meter</p>`
+
         //Usable Area
         html = html + `
     <p><strong>Usable Area:</strong> ${Math.round(reportData.usable_Area * 100) / 100}m&sup2</p>`
@@ -366,8 +368,10 @@ async function CreateReportHTML(reportData, ReportIsDetailed) {
     ${String_geo_poten_restrict}
     ${String_Water_protec_areas}`
 
-    html = html + `<div id="piechart" style="width: 500px; height: 300px;"></div>`
+    }
 
+    if(DisplayGoogleGrafics) {
+        html = html + `<div id="piechart" style="width: 500px; height: 300px;"></div>`
     }
 
     html = html + `
