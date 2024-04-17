@@ -37,6 +37,7 @@ builder.Services.AddTransient<IReceiveLandParcel, ReceiveLandParcel>();
 builder.Services.AddTransient<IRestrictionFromLandParcel, RestrictionFromLandParcel>();
 builder.Services.AddTransient<IGeoThermalProbesCalcualtion, GeoThermalProbesCalcualtion>();
 builder.Services.AddTransient<IGetProbeSpecificData, GetProbeSpecificData>();
+builder.Services.AddTransient<IGetPolylineData, GetPolylineData>();
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.DatabaseConnection);
 var dataSource = dataSourceBuilder.ConfigureAndBuild();
 builder.Services.AddDbContext<DataContext>(options =>

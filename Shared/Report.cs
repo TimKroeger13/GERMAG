@@ -44,5 +44,7 @@ public class Report
     public List<ProbePoint?>? ProbePoint { get; set; }
     public String? Geometry_LeftOverArea { get; set; }
 
+    public double? ExpectedGroundWaterHeight { get; set; }
+
     public String? Holstein { get; set; }
 }
