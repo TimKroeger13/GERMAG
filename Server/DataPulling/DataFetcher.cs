@@ -24,8 +24,6 @@ public class DataFetcher(DataContext context, IDatabaseUpdater databaseUpdater, 
 
         for (int i = 0; i < allGeothermalParameters.Count; i++)
         {
-            i = 33;
-
             dataNotFound = false;
 
             Console.WriteLine("Pinging data: " + allGeothermalParameters[i].Type + " | " + allGeothermalParameters[i].Area);
