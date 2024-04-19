@@ -112,6 +112,19 @@ public class Properties
     public string? Pnr { get; set; }
     public string? Lnr { get; set; }
     public double? VALUE { get; set; }
+    public string? Bezfkt { get; set; }
+    public string? Veg { get; set; }
+    public string? Bezveg { get; set; }
+    public string? Agt { get; set; }
+    public string? Bezagt { get; set; }
+    public string? Lgt { get; set; }
+    public string? Bezlgt { get; set; }
+    public string? Hyd { get; set; }
+    public string? Bezhyd { get; set; }
+    public string? Art { get; set; }
+    public string? Bezart { get; set; }
+    public string? Bkt { get; set; }
+    public string? Bezbkt { get; set; }
 }
 public class Root
 {
