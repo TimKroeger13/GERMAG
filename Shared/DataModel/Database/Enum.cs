@@ -41,7 +41,8 @@ public enum TypeOfData
     groundwater_measuring_points,
     building_surfaces,
     depth_restrictions,
-    area_usage
+    area_usage,
+    tree_points
 }
 public enum Area
 {
