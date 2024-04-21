@@ -20,9 +20,17 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
             var geoJsonWriter = new GeoJsonWriter();
 
             var buildingID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.building_surfaces).Id;
+            var TreeID = context.GeothermalParameter.Where(gp => gp.Type == TypeOfData.tree_points).Select(gp => gp.Id).ToList();
 
             var buldingIntersection = context.GeoData.Where(gd => gd.ParameterKey == buildingID && gd.Geom!.Intersects(landParcelElement.Geometry)).Select(gd => new { gd.Geom });
 
+            var treeIntersection = context.GeoData.Where(gd => TreeID.Contains(gd.ParameterKey) && gd.Geom!.Intersects(landParcelElement.Geometry)).Select(gd => new { gd.Geom });
+
+            NetTopologySuite.Geometries.Geometry? mergedTrees = new GeometryFactory().BuildGeometry(treeIntersection.Select(item => item.Geom)).Union();
+
+            NetTopologySuite.Geometries.Geometry? bufferedTrees = mergedTrees.Buffer(OfficalParameters.TreeDistance);
+
+            //buildings and parcel distance
             NetTopologySuite.Geometries.Geometry? mergedBuildings = new GeometryFactory().BuildGeometry(buldingIntersection.Select(item => item.Geom)).Union();
 
             Polygon? landParcelPolygon = (Polygon?)landParcelElement.Geometry;
@@ -39,10 +47,10 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance); // + (OfficalParameters.ProbeDiameter / 2)
 
-            NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings);
+            NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings).Difference(bufferedTrees);
             UsableArea = UsableArea?.Union();
 
-            NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(bufferedBuldings);
+            NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(bufferedBuldings).Union(bufferedTrees);
             RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
             RestictionArea = RestictionArea?.Union();
 
