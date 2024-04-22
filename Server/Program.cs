@@ -5,6 +5,7 @@ using GERMAG.Server.DataPulling;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using GERMAG.Server.GeometryCalculations;
 using GERMAG.Server.ReportCreation;
+using GERMAG.Server.Research;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -28,6 +29,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
+builder.Services.AddTransient<ICalcualteAllParameterForArea, CalcualteAllParameterForArea>();
 builder.Services.AddTransient<IJsonDeserialize, JsonDeserialize>();
 builder.Services.AddTransient<ICreateReportAsync, CreateReport>();
 builder.Services.AddTransient<IParameterDeserialator, ParameterDeserialator>();
