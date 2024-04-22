@@ -6,6 +6,7 @@ public partial class DataContext : DbContext
 {
     public virtual DbSet<GeoDatum> GeoData { get; set; }
     public virtual DbSet<GeothermalParameter> GeothermalParameter { get; set; }
+    public virtual DbSet<Research> Researches { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,6 +59,15 @@ public partial class DataContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("last_update");
             entity.Property(e => e.Srid).HasColumnName("srid");
+        });
+
+        modelBuilder.Entity<Research>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("research");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
         });
 
         OnModelCreatingPartial(modelBuilder);
