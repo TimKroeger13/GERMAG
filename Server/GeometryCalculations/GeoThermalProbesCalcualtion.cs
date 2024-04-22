@@ -40,8 +40,8 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         //check for to Large Areas
 
-        if (RestrictionAreas.Geometry_Usable?.Area > OfficalParameters.MaximalAreaSizeForCalculations)
-        { throw new Exception("Selected Area is to Large"); }
+        //if (RestrictionAreas.Geometry_Usable?.Area > OfficalParameters.MaximalAreaSizeForCalculations)
+        //{ throw new Exception("Selected Area is to Large"); }
 
         //update Geometry
 
