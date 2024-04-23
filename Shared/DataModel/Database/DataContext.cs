@@ -5,6 +5,7 @@ namespace GERMAG.DataModel.Database;
 public partial class DataContext : DbContext
 {
     public virtual DbSet<AxBuilding> AxBuildings { get; set; }
+    public virtual DbSet<AxSelected> AxSelecteds { get; set; }
     public virtual DbSet<AxTree> AxTrees { get; set; }
     public virtual DbSet<FindUsageArea> FindUsageAreas { get; set; }
     public virtual DbSet<GeoDatum> GeoData { get; set; }
@@ -30,6 +31,15 @@ public partial class DataContext : DbContext
             entity
                 .HasNoKey()
                 .ToTable("ax_buildings");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
+
+        modelBuilder.Entity<AxSelected>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ax_selected");
 
             entity.Property(e => e.Geom).HasColumnName("geom");
         });
