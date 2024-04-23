@@ -25,10 +25,12 @@ FROM
 
 
 --Trees
+CREATE TABLE ax_tree AS
 SELECT ST_Union(geom) AS geom FROM geo_data
 WHERE parameter_key = 36 OR parameter_key = 37
 
 
 --buildings
+CREATE TABLE ax_buildings AS
 SELECT ST_Union(geom) AS geom FROM geo_data
 WHERE parameter_key = 32

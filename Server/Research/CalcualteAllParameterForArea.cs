@@ -26,28 +26,21 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
 
         //var geoJsonWriter = new GeoJsonWriter();
 
-
-
-
-
         //get geodata
         context.Database.SetCommandTimeout(TimeSpan.FromMinutes(60));
 
         var researchData = context.Researches.ToList();
+        var ax_tree = context.Researches.ToList();
+        var ax_buildings = context.Researches.ToList();
 
 
-
-        LandParcel landParcelElement = new LandParcel
-        {
-            Geometry = researchData[0].Geom
-        };
-
-        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+        var buildingID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.building_surfaces).Id;
+        var TreeID = context.GeothermalParameter.Where(gp => gp.Type == TypeOfData.tree_points).Select(gp => gp.Id).ToList();
 
 
         //var GeometryJson = geoJsonWriter.Write(RestrictionFile.Geometry_Usable_geoJson);
 
-        File.WriteAllText(path, RestrictionFile.Geometry_Usable_geoJson);
+        //File.WriteAllText(path, RestrictionFile.Geometry_Usable_geoJson);
 
 
 
