@@ -41,6 +41,7 @@ builder.Services.AddTransient<IGeoThermalProbesCalcualtion, GeoThermalProbesCalc
 builder.Services.AddTransient<IGetProbeSpecificData, GetProbeSpecificData>();
 builder.Services.AddTransient<IGetPolylineData, GetPolylineData>();
 builder.Services.AddTransient<IGetProbeSepcificDataSingleProbe, GetProbeSepcificDataSingleProbe>();
+builder.Services.AddTransient<IFindLocalDirectoryPath, FindLocalDirectoryPath>();
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.DatabaseConnection);
 var dataSource = dataSourceBuilder.ConfigureAndBuild();
 builder.Services.AddDbContext<DataContext>(options =>
