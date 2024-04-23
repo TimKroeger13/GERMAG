@@ -29,9 +29,9 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         //get geodata
         context.Database.SetCommandTimeout(TimeSpan.FromMinutes(60));
 
-        var researchData = context.Researches.ToList();
-        var ax_tree = context.Researches.ToList();
-        var ax_buildings = context.Researches.ToList();
+        var researchData = context.Researches.FirstOrDefault();
+        var ax_tree = context.AxTrees.FirstOrDefault();
+        var ax_buildings = context.AxBuildings.FirstOrDefault();
 
 
         var buildingID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.building_surfaces).Id;
@@ -48,3 +48,5 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         return "Test from Server";
     }
 }
+
+//Scaffold-DbContext "Host=10.140.17.197:5433;Database=gasag;Username=postgres;Password=gasag" Npgsql.EntityFrameworkCore.PostgreSQL -NoOnConfiguring -OutputDir../Shared/DataModel/Database -Force -Context DataContext -Namespace GERMAG.DataModel.Database -StartupProject GERMAG.Server -Project GERMAG.Shared

@@ -4,6 +4,9 @@ namespace GERMAG.DataModel.Database;
 
 public partial class DataContext : DbContext
 {
+    public virtual DbSet<AxBuilding> AxBuildings { get; set; }
+    public virtual DbSet<AxTree> AxTrees { get; set; }
+    public virtual DbSet<FindUsageArea> FindUsageAreas { get; set; }
     public virtual DbSet<GeoDatum> GeoData { get; set; }
     public virtual DbSet<GeothermalParameter> GeothermalParameter { get; set; }
     public virtual DbSet<Research> Researches { get; set; }
@@ -21,6 +24,34 @@ public partial class DataContext : DbContext
             .HasPostgresExtension("postgis_raster")
             .HasPostgresExtension("tiger", "postgis_tiger_geocoder")
             .HasPostgresExtension("topology", "postgis_topology");
+
+        modelBuilder.Entity<AxBuilding>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ax_buildings");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
+
+        modelBuilder.Entity<AxTree>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ax_tree");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
+
+        modelBuilder.Entity<FindUsageArea>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("find_usage_area");
+
+            entity.Property(e => e.Column).HasColumnName("?column?");
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
 
         modelBuilder.Entity<GeoDatum>(entity =>
         {
