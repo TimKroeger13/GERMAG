@@ -26,12 +26,22 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         context.Database.SetCommandTimeout(TimeSpan.FromMinutes(60));
 
 
-        var researchData = context.Researches.FirstOrDefault();
-        var ax_tree = context.AxTrees.FirstOrDefault();
-        var ax_buildings = context.AxBuildings.FirstOrDefault();
+        var selectedData = context.AxSelecteds.ToList();
+        var ax_tree = context.AxTrees.ToList();
+        var ax_buildings = context.AxBuildings.ToList();
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        List<NetTopologySuite.Geometries.Geometry?> bufferedTrees = ax_tree.Select(tree => tree.Geom?.Buffer(OfficalParameters.TreeDistance)).ToList();
+
+        List<Polygon?> landParcelPolygon = selectedData.Select(selected => (Polygon?)selected.Geom).ToList();
+
+        List<LineString?> landParcelLineString = landParcelPolygon.Select(land => land?.ExteriorRing).ToList();
+
+        List<NetTopologySuite.Geometries.Geometry?> bufferedLandParcel = landParcelLineString.Select(landlinestring => landlinestring?.Buffer(OfficalParameters.LandParcelDistance)).ToList();
 
 
-        NetTopologySuite.Geometries.Geometry? bufferedTrees = ax_tree!.Geom!.Buffer(OfficalParameters.TreeDistance);
+        /*NetTopologySuite.Geometries.Geometry? bufferedTrees = ax_tree!.Buffer(OfficalParameters.TreeDistance);
 
         Polygon? landParcelPolygon = (Polygon?)researchData!.Geom;
         LineString? landParcelLineString = landParcelPolygon?.ExteriorRing;
@@ -62,7 +72,7 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         };
 
         var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinWohnfläche.geojson");
-        File.WriteAllText(path, returnValue.Geometry_Usable_geoJson);
+        File.WriteAllText(path, returnValue.Geometry_Usable_geoJson);*/
 
 
 
