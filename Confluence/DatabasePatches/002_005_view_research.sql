@@ -34,3 +34,8 @@ WHERE parameter_key = 36 OR parameter_key = 37
 CREATE TABLE ax_buildings AS
 SELECT ST_Union(geom) AS geom FROM geo_data
 WHERE parameter_key = 32
+
+
+--AX_buffertrees
+CREATE TABLE ax_buffer_tree AS
+SELECT ST_Buffer(geom,4) FROM ax_tree

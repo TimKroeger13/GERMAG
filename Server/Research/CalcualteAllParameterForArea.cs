@@ -22,25 +22,47 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
 {
     public async Task<String> calucalteAllParameters()
     {
-        var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinWohnfläche.geojson");
-
-        //var geoJsonWriter = new GeoJsonWriter();
-
         //get geodata
         context.Database.SetCommandTimeout(TimeSpan.FromMinutes(60));
+
 
         var researchData = context.Researches.FirstOrDefault();
         var ax_tree = context.AxTrees.FirstOrDefault();
         var ax_buildings = context.AxBuildings.FirstOrDefault();
 
 
-        var buildingID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.building_surfaces).Id;
-        var TreeID = context.GeothermalParameter.Where(gp => gp.Type == TypeOfData.tree_points).Select(gp => gp.Id).ToList();
+        NetTopologySuite.Geometries.Geometry? bufferedTrees = ax_tree!.Geom!.Buffer(OfficalParameters.TreeDistance);
+
+        Polygon? landParcelPolygon = (Polygon?)researchData!.Geom;
+        LineString? landParcelLineString = landParcelPolygon?.ExteriorRing;
+
+        NetTopologySuite.Geometries.Geometry? bufferedLandParcel = landParcelLineString?.Buffer(OfficalParameters.LandParcelDistance);
+
+        NetTopologySuite.Geometries.Geometry? bufferedBuldings = ax_buildings?.Geom!.Buffer(OfficalParameters.BuildingDistance);
 
 
-        //var GeometryJson = geoJsonWriter.Write(RestrictionFile.Geometry_Usable_geoJson);
 
-        //File.WriteAllText(path, RestrictionFile.Geometry_Usable_geoJson);
+        NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings).Difference(bufferedTrees);
+        UsableArea = UsableArea?.Union();
+
+        NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(bufferedBuldings).Union(bufferedTrees);
+        RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
+        RestictionArea = RestictionArea?.Union();
+
+        var geoJsonWriter = new GeoJsonWriter();
+
+        var returnValue = new Restricion
+        {
+            Geometry_Usable = UsableArea,
+            Geometry_Restiction = RestictionArea,
+            Geometry_Usable_geoJson = geoJsonWriter.Write(UsableArea),
+            Geometry_Restiction_geoJson = geoJsonWriter.Write(RestictionArea),
+            Usable_Area = UsableArea?.Area ?? 0,
+            Restiction_Area = RestictionArea?.Area ?? 0,
+        };
+
+        var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinWohnfläche.geojson");
+        File.WriteAllText(path, returnValue.Geometry_Usable_geoJson);
 
 
 
@@ -48,5 +70,3 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         return "Test from Server";
     }
 }
-
-//Scaffold-DbContext "Host=10.140.17.197:5433;Database=gasag;Username=postgres;Password=gasag" Npgsql.EntityFrameworkCore.PostgreSQL -NoOnConfiguring -OutputDir../Shared/DataModel/Database -Force -Context DataContext -Namespace GERMAG.DataModel.Database -StartupProject GERMAG.Server -Project GERMAG.Shared
