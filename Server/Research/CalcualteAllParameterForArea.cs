@@ -43,13 +43,25 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
 
         List<NetTopologySuite.Geometries.Geometry?> bufferedBuldings = ax_buildings.Select(build => build.Geom?.Buffer(OfficalParameters.BuildingDistance)).ToList();
 
-
-        List<NetTopologySuite.Geometries.Geometry?> differences = landParcelPolygon
-            .Zip(bufferedLandParcel, (polygon, bufferedPolygon) =>
-                (polygon != null && bufferedPolygon != null) ? polygon.Difference(bufferedPolygon) : null)
-            .ToList();
+        var i = 0;
 
 
+        foreach (var single in landParcelPolygon)
+        {
+            List<NetTopologySuite.Geometries.Geometry?> intersectingTrees = bufferedTrees.Where(bt => bt!.Intersects(single)).ToList();
+
+            single.Difference(intersectingTrees.Select(x => x).ToList());
+
+
+                        i++;
+            Console.WriteLine(i + " / " + bufferedTrees.Count());
+        }
+
+        var b = 3;
+
+
+
+        //List<NetTopologySuite.Geometries.Geometry?>
 
 
         //var geoJsonWriter = new GeoJsonWriter();

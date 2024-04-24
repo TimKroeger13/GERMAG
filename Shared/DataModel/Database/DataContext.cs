@@ -6,7 +6,6 @@ public partial class DataContext : DbContext
 {
     public virtual DbSet<AxBuilding> AxBuildings { get; set; }
     public virtual DbSet<AxSelected> AxSelecteds { get; set; }
-    public virtual DbSet<AxSelectedTest> AxSelectedTests { get; set; }
     public virtual DbSet<AxTree> AxTrees { get; set; }
     public virtual DbSet<GeoDatum> GeoData { get; set; }
     public virtual DbSet<GeothermalParameter> GeothermalParameter { get; set; }
@@ -40,15 +39,6 @@ public partial class DataContext : DbContext
             entity
                 .HasNoKey()
                 .ToTable("ax_selected");
-
-            entity.Property(e => e.Geom).HasColumnName("geom");
-        });
-
-        modelBuilder.Entity<AxSelectedTest>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("ax_selected_test");
 
             entity.Property(e => e.Geom).HasColumnName("geom");
         });
