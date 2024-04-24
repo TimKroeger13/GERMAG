@@ -6,8 +6,8 @@ public partial class DataContext : DbContext
 {
     public virtual DbSet<AxBuilding> AxBuildings { get; set; }
     public virtual DbSet<AxSelected> AxSelecteds { get; set; }
+    public virtual DbSet<AxSelectedTest> AxSelectedTests { get; set; }
     public virtual DbSet<AxTree> AxTrees { get; set; }
-    public virtual DbSet<FindUsageArea> FindUsageAreas { get; set; }
     public virtual DbSet<GeoDatum> GeoData { get; set; }
     public virtual DbSet<GeothermalParameter> GeothermalParameter { get; set; }
     public virtual DbSet<Research> Researches { get; set; }
@@ -44,22 +44,21 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Geom).HasColumnName("geom");
         });
 
+        modelBuilder.Entity<AxSelectedTest>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ax_selected_test");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
+
         modelBuilder.Entity<AxTree>(entity =>
         {
             entity
                 .HasNoKey()
                 .ToTable("ax_tree");
 
-            entity.Property(e => e.Geom).HasColumnName("geom");
-        });
-
-        modelBuilder.Entity<FindUsageArea>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("find_usage_area");
-
-            entity.Property(e => e.Column).HasColumnName("?column?");
             entity.Property(e => e.Geom).HasColumnName("geom");
         });
 
