@@ -26,31 +26,18 @@ FROM
 
 --Table creation
 
---- ax_selected
-CREATE TABLE ax_selected AS
-SELECT ST_Intersection(usable_area.geom, parcel_area.geom) AS geom
-FROM 
+-- Usage area
+CREATE TABLE usage_area AS
+SELECT parameter ->> 'Uuid' AS uuid,parameter ->> 'Bezeich' AS bezeich,
+geom AS geom 
+FROM geo_data
+WHERE parameter_key = 
 (
-    SELECT ST_Union(geom) AS geom 
-    FROM geo_data
-    WHERE parameter_key = 
-	(
-		SELECT id
-		FROM geothermal_parameter
-		WHERE typeofdata = 'area_usage'
-	)
-	AND parameter ->> 'Bezeich' = 'AX_Wohnbauflaeche'
-) AS usable_area,
-(
-    SELECT ST_Union(geom) AS geom 
-    FROM geo_data
-    WHERE parameter_key = 
-	(
-		SELECT id
-		FROM geothermal_parameter
-		WHERE typeofdata = 'land_parcels'
-	)
-) AS parcel_area
+	SELECT id
+	FROM geothermal_parameter
+	WHERE typeofdata = 'area_usage'
+)
+
 
 --- ax_tree
 
@@ -60,34 +47,63 @@ SELECT geom AS geom FROM geo_data
 WHERE parameter_key = 36 OR parameter_key = 37
 
 
---buildings
+--ax_buildings
 CREATE TABLE ax_buildings AS
-SELECT ST_Union(geom) AS geom FROM geo_data
+SELECT geom AS geom FROM geo_data
 WHERE parameter_key = 32
 
+--ax_buildings_test
+CREATE TABLE ax_buildings AS
+SELECT geom AS geom FROM geo_data
+WHERE parameter_key = 32
 
---AX_buffertrees
---CREATE TABLE ax_buffer_tree AS
-SELECT ST_Buffer(geom,4) FROM ax_tree
---12 sec
-
-SELECT ST_Buffer(geom,6) FROM ax_buildings
---20
-
-
---Killer statement All intersections
-CREATE TABLE ax_selected AS
-SELECT ST_UNION(ST_Intersection(usable_area.geom, parcel_area.geom)) AS geom
+--ax_select_test
+CREATE TABLE ax_selected_test AS
+SELECT (ST_Dump(ST_UNION(parcel_area.geom))).geom AS geom
 FROM 
 (
-    SELECT ST_UNION(geom) AS geom 
+	SELECT geom AS geom 
+	FROM geo_data
+	WHERE parameter_key = 
+		(
+			SELECT id
+			FROM geothermal_parameter
+			WHERE typeofdata = 'area_usage'
+		)
+	AND parameter ->> 'Bezeich' = 'AX_Wohnbauflaeche'
+	AND (
+	parameter ->> 'Uuid' = 'DEBE02YY40001dGH'
+	OR
+	parameter ->> 'Uuid' = 'DEBE02YY40001cyw'
+	)
+) AS usable_area,
+(
+    SELECT geom AS geom 
     FROM geo_data
     WHERE parameter_key = 
 	(
 		SELECT id
 		FROM geothermal_parameter
-		WHERE typeofdata = 'area_usage'
+		WHERE typeofdata = 'land_parcels'
 	)
+) AS parcel_area
+WHERE ST_Covers(usable_area.geom, parcel_area.geom)
+AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
+
+
+--ax_select (Killer statement All intersections) 
+CREATE TABLE ax_selected AS
+SELECT (ST_Dump(ST_UNION(parcel_area.geom))).geom AS geom
+FROM 
+(
+	SELECT geom AS geom 
+	FROM geo_data
+	WHERE parameter_key = 
+		(
+			SELECT id
+			FROM geothermal_parameter
+			WHERE typeofdata = 'area_usage'
+		)
 	AND parameter ->> 'Bezeich' = 'AX_Wohnbauflaeche'
 ) AS usable_area,
 (
@@ -100,6 +116,8 @@ FROM
 		WHERE typeofdata = 'land_parcels'
 	)
 ) AS parcel_area
+WHERE ST_Covers(usable_area.geom, parcel_area.geom)
+AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
 
 
 -- possible network distance
