@@ -10,6 +10,7 @@ using GERMAG.Server.GeometryCalculations;
 using System.Net;
 using System.Text.RegularExpressions;
 using GERMAG.Server.DataPulling;
+using System.Collections.Generic;
 
 namespace GERMAG.Server.Research;
 
@@ -39,6 +40,21 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         List<LineString?> landParcelLineString = landParcelPolygon.Select(land => land?.ExteriorRing).ToList();
 
         List<NetTopologySuite.Geometries.Geometry?> bufferedLandParcel = landParcelLineString.Select(landlinestring => landlinestring?.Buffer(OfficalParameters.LandParcelDistance)).ToList();
+
+        List<NetTopologySuite.Geometries.Geometry?> bufferedBuldings = ax_buildings.Select(build => build.Geom?.Buffer(OfficalParameters.BuildingDistance)).ToList();
+
+
+        List<NetTopologySuite.Geometries.Geometry?> differences = landParcelPolygon
+            .Zip(bufferedLandParcel, (polygon, bufferedPolygon) =>
+                (polygon != null && bufferedPolygon != null) ? polygon.Difference(bufferedPolygon) : null)
+            .ToList();
+
+
+
+
+        //var geoJsonWriter = new GeoJsonWriter();
+        //var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinWohnflaeche.geojson");
+        //File.WriteAllText(path, geoJsonWriter.Write(UsableArea));
 
 
         /*NetTopologySuite.Geometries.Geometry? bufferedTrees = ax_tree!.Buffer(OfficalParameters.TreeDistance);
