@@ -126,6 +126,12 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         var u = 0;
         foreach (var FeatureElement in featureCollection)
         {
+
+            if(u >= 100)
+            {
+                break;
+            }
+
             u++;
             Console.WriteLine("Calculating Probe position " + u + " / " + (featureCollection.Count() - 1));
 
@@ -154,19 +160,6 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
         savePath = findLocalDirectoryPath.getLocalPath("CalculationResults", "GeoPoten.geojson");
         File.WriteAllText(savePath, JsonConvert.SerializeObject(GeoPotenList));
-
-
-        var b = 3;
-
-
-
-
-
-/*        SingleProbePoint.Properties.MaxDepth = MaxDepth;
-        SingleProbePoint.Properties.GeoPotenDepth = GeoPotenDepth;
-        SingleProbePoint.Properties.GeoPoten = GeoPoten;*/
-
-        //AllSelectedProbePoints.AddRange(FullPointProbe.Select(fpp => fpp?.Geometry).ToList());
 
         Console.WriteLine("All restricions for Berlin calculated!");
 

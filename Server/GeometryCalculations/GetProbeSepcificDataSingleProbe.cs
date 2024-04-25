@@ -91,6 +91,9 @@ public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDese
     private double? GetPotential(List<GeometryElementParameter> intersectingResult, TypeOfData typeOfData, string ParameterKeyValue)
     {
         GeometryElementParameter? UnserilizedGeoPoten = intersectingResult.FirstOrDefault(element => element.Type == typeOfData);
+
+        if(UnserilizedGeoPoten == null) { return null;  }
+
         Shared.Properties DeserializedGeoPoten = parameterDeserialator.DeserializeParameters(UnserilizedGeoPoten?.Parameter ?? "");
         double? GeoPoten = ParseStringToValue(DeserializedGeoPoten.La_100txt ?? "");
 
