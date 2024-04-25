@@ -11,6 +11,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using GERMAG.Server.DataPulling;
 using System.Collections.Generic;
+using GeoAPI.Geometries;
 
 namespace GERMAG.Server.Research;
 
@@ -43,21 +44,41 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
 
         List<NetTopologySuite.Geometries.Geometry?> bufferedBuldings = ax_buildings.Select(build => build.Geom?.Buffer(OfficalParameters.BuildingDistance)).ToList();
 
-        var i = 0;
+        List<Polygon?> diffTree = calcualteDifference(landParcelPolygon, bufferedTrees);
+
+        List<Polygon?> diffTreeParcel = calcualteDifference(diffTree, bufferedLandParcel);
+
+        List<Polygon?> diffTreeParcelBuilding = calcualteDifference(diffTreeParcel, bufferedBuldings);
 
 
-        foreach (var single in landParcelPolygon)
+        
+
+        var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinRestrictionFlaechen.geojson");
+
+        // Add features to the feature collection
+
+        var polygonList = new List<NetTopologySuite.Geometries.Polygon>();
+
+        var k = 0;
+        foreach (var polygon in diffTreeParcelBuilding)
         {
-            List<NetTopologySuite.Geometries.Geometry?> intersectingTrees = bufferedTrees.Where(bt => bt!.Intersects(single)).ToList();
-
-            single.Difference(intersectingTrees.Select(x => x).ToList());
-
-
-                        i++;
-            Console.WriteLine(i + " / " + bufferedTrees.Count());
+            k++;
+            Console.WriteLine(k + " / " + (diffTreeParcelBuilding.Count() - 1));
+            if (polygon != null && polygon is NetTopologySuite.Geometries.Polygon)
+            {
+                polygonList.Add((NetTopologySuite.Geometries.Polygon)polygon);
+            }
         }
 
-        var b = 3;
+        var multiPolygon = new NetTopologySuite.Geometries.MultiPolygon(polygonList.ToArray());
+
+        multiPolygon.SRID = 25833;
+
+        var geoJsonWriter = new GeoJsonWriter();
+
+        string geoJson = geoJsonWriter.Write(multiPolygon);
+
+        File.WriteAllText(path, geoJson);
 
 
 
@@ -107,4 +128,35 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         context.Database.SetCommandTimeout(null);
         return "Test from Server";
     }
+
+    private List<Polygon?> calcualteDifference(List<Polygon?> sourcePolygon, List<NetTopologySuite.Geometries.Geometry?> differenceList)
+    {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        for (var i = 0; i < sourcePolygon.Count; i++)
+        {
+            Console.WriteLine(i + " / " + (sourcePolygon.Count() - 1));
+
+            var single = sourcePolygon[i];
+
+            if (single == null) {
+                Console.WriteLine("Empty Element");
+                continue; }
+
+            List<NetTopologySuite.Geometries.Geometry?> intersectingGeometry = differenceList.Where(e => e!.Intersects(single)).ToList();
+
+            if (intersectingGeometry.Count == 0) { continue; }
+
+            NetTopologySuite.Geometries.Geometry intersectingGeometryUnion = geometryFactory.BuildGeometry(intersectingGeometry).Union();
+
+            sourcePolygon[i] = single.Difference(intersectingGeometryUnion) as Polygon;
+
+        }
+
+        return sourcePolygon;
+
+    }
+
+
+
 }
