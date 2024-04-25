@@ -36,7 +36,7 @@ FROM
 		WHERE typeofdata = 'land_parcels'
 	)
 ) AS parcel_area
-WHERE ST_Intersects(usable_area.geom, parcel_area.geom)
+WHERE ST_Covers(usable_area.geom, parcel_area.geom)
 AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
 
 
@@ -105,6 +105,42 @@ SELECT st_buffer(st_union(ST_ExteriorRing(geom)),3) FROM ax_selected
 
 
 
+
+
+
+--ax_select Test
+CREATE TABLE ax_selected AS
+SELECT (ST_Dump(ST_UNION(parcel_area.geom))).geom AS geom
+FROM 
+(
+	SELECT geom AS geom 
+	FROM geo_data
+	WHERE parameter_key = 
+		(
+			SELECT id
+			FROM geothermal_parameter
+			WHERE typeofdata = 'area_usage'
+		)
+	AND parameter ->> 'Bezeich' = 'AX_Wohnbauflaeche'
+	AND
+	(
+		parameter ->> 'Uuid' = 'DEBE02YY40001cxE'
+		OR
+		parameter ->> 'Uuid' = 'DEBE02YY40001cxj'
+	)
+) AS usable_area,
+(
+    SELECT geom AS geom 
+    FROM geo_data
+    WHERE parameter_key = 
+	(
+		SELECT id
+		FROM geothermal_parameter
+		WHERE typeofdata = 'land_parcels'
+	)
+) AS parcel_area
+WHERE ST_Covers(usable_area.geom, parcel_area.geom)
+AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
 
 
 
