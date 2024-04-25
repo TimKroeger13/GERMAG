@@ -124,6 +124,11 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         };
 
         var u = 0;
+
+
+
+
+
         foreach (var FeatureElement in featureCollection)
         {
 
