@@ -36,7 +36,7 @@ FROM
 		WHERE typeofdata = 'land_parcels'
 	)
 ) AS parcel_area
-WHERE ST_Covers(usable_area.geom, parcel_area.geom)
+WHERE ST_Intersects(usable_area.geom, parcel_area.geom)
 AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
 
 
@@ -85,7 +85,8 @@ FROM
     FROM geo_data
     WHERE parameter_key = 32
 ) AS building
-WHERE ST_Covers(usable_area.geom, building.geom)
+WHERE ST_Intersects(usable_area.geom, building.geom)
+
 
 
 --BU Tree Area

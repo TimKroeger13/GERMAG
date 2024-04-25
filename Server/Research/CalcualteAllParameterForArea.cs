@@ -122,6 +122,7 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
 
         
 
+        Console.WriteLine("All restricions for Berlin calculated!");
 
 
 
