@@ -12,6 +12,8 @@ using System.Text.RegularExpressions;
 using GERMAG.Server.DataPulling;
 using System.Collections.Generic;
 using GeoAPI.Geometries;
+using Microsoft.AspNetCore.Http.Features;
+using NetTopologySuite.Features;
 
 namespace GERMAG.Server.Research;
 
@@ -38,90 +40,88 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
 
         List<Polygon?> landParcelPolygon = selectedData.Select(selected => (Polygon?)selected.Geom).ToList();
 
+        List<NetTopologySuite.Geometries.Geometry?> landParcelPolygonGeometry= selectedData.Select(selected => selected.Geom).ToList();
+
         List<LineString?> landParcelLineString = landParcelPolygon.Select(land => land?.ExteriorRing).ToList();
 
         List<NetTopologySuite.Geometries.Geometry?> bufferedLandParcel = landParcelLineString.Select(landlinestring => landlinestring?.Buffer(OfficalParameters.LandParcelDistance)).ToList();
 
         List<NetTopologySuite.Geometries.Geometry?> bufferedBuldings = ax_buildings.Select(build => build.Geom?.Buffer(OfficalParameters.BuildingDistance)).ToList();
 
-        List<Polygon?> diffTree = calcualteDifference(landParcelPolygon, bufferedTrees);
+        List<NetTopologySuite.Geometries.Geometry?> diffTree = calcualteDifference(landParcelPolygonGeometry, bufferedTrees);
 
-        List<Polygon?> diffTreeParcel = calcualteDifference(diffTree, bufferedLandParcel);
+        List<NetTopologySuite.Geometries.Geometry?> diffTreeParcel = calcualteDifference(diffTree, bufferedLandParcel);
 
-        List<Polygon?> diffTreeParcelBuilding = calcualteDifference(diffTreeParcel, bufferedBuldings);
+        List<NetTopologySuite.Geometries.Geometry?> diffTreeParcelBuilding = calcualteDifference(diffTreeParcel, bufferedBuldings);
 
 
         
 
         var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinRestrictionFlaechen.geojson");
 
-        // Add features to the feature collection
 
-        var polygonList = new List<NetTopologySuite.Geometries.Polygon>();
+
+        var featureCollection = new NetTopologySuite.Features.FeatureCollection();
 
         var k = 0;
-        foreach (var polygon in diffTreeParcelBuilding)
+        foreach (var geometry in diffTreeParcelBuilding)
         {
             k++;
             Console.WriteLine(k + " / " + (diffTreeParcelBuilding.Count() - 1));
-            if (polygon != null && polygon is NetTopologySuite.Geometries.Polygon)
+            if (geometry != null && (geometry is Polygon || geometry is MultiPolygon))
             {
-                polygonList.Add((NetTopologySuite.Geometries.Polygon)polygon);
+                var properties = new AttributesTable();
+                properties.Add("SRID", 28533);
+
+                var feature = new NetTopologySuite.Features.Feature(geometry, properties);
+                featureCollection.Add(feature);
             }
         }
 
-        var multiPolygon = new NetTopologySuite.Geometries.MultiPolygon(polygonList.ToArray());
-
-        multiPolygon.SRID = 25833;
-
-        var geoJsonWriter = new GeoJsonWriter();
-
-        string geoJson = geoJsonWriter.Write(multiPolygon);
-
-        File.WriteAllText(path, geoJson);
-
-
-
-        //List<NetTopologySuite.Geometries.Geometry?>
-
-
-        //var geoJsonWriter = new GeoJsonWriter();
-        //var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinWohnflaeche.geojson");
-        //File.WriteAllText(path, geoJsonWriter.Write(UsableArea));
-
-
-        /*NetTopologySuite.Geometries.Geometry? bufferedTrees = ax_tree!.Buffer(OfficalParameters.TreeDistance);
-
-        Polygon? landParcelPolygon = (Polygon?)researchData!.Geom;
-        LineString? landParcelLineString = landParcelPolygon?.ExteriorRing;
-
-        NetTopologySuite.Geometries.Geometry? bufferedLandParcel = landParcelLineString?.Buffer(OfficalParameters.LandParcelDistance);
-
-        NetTopologySuite.Geometries.Geometry? bufferedBuldings = ax_buildings?.Geom!.Buffer(OfficalParameters.BuildingDistance);
-
-
-
-        NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings).Difference(bufferedTrees);
-        UsableArea = UsableArea?.Union();
-
-        NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(bufferedBuldings).Union(bufferedTrees);
-        RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
-        RestictionArea = RestictionArea?.Union();
-
-        var geoJsonWriter = new GeoJsonWriter();
-
-        var returnValue = new Restricion
+        var serializer = GeoJsonSerializer.Create();
+        using (var stringWriter = new StringWriter())
         {
-            Geometry_Usable = UsableArea,
-            Geometry_Restiction = RestictionArea,
-            Geometry_Usable_geoJson = geoJsonWriter.Write(UsableArea),
-            Geometry_Restiction_geoJson = geoJsonWriter.Write(RestictionArea),
-            Usable_Area = UsableArea?.Area ?? 0,
-            Restiction_Area = RestictionArea?.Area ?? 0,
-        };
+            serializer.Serialize(stringWriter, featureCollection);
+            var geoJsonString = stringWriter.ToString();
 
-        var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinWohnfläche.geojson");
-        File.WriteAllText(path, returnValue.Geometry_Usable_geoJson);*/
+            File.WriteAllText(path, geoJsonString);
+        }
+
+
+
+ /*
+                var geometryList = new List<NetTopologySuite.Geometries.Geometry?>();
+
+                var k = 0;
+                foreach (var geometry in diffTreeParcelBuilding)
+                {
+                    k++;
+                    Console.WriteLine(k + " / " + (diffTreeParcelBuilding.Count() - 1));
+                    if (geometry != null && (geometry is Polygon || geometry is MultiPolygon))
+                    {
+                        geometryList.Add(geometry as NetTopologySuite.Geometries.Geometry);
+                    }
+                }
+
+
+
+                var geometryCollection = new GeometryCollection(geometryList.ToArray());
+
+                geometryCollection.SRID = 28533;
+
+                var serializer = GeoJsonSerializer.Create();
+                using (var stringWriter = new StringWriter())
+                {
+                    serializer.Serialize(stringWriter, geometryCollection);
+                    var geoJsonString = stringWriter.ToString();
+                    File.WriteAllText(path, geoJsonString);
+                }*/
+
+
+
+
+        
+
 
 
 
@@ -129,7 +129,7 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
         return "Test from Server";
     }
 
-    private List<Polygon?> calcualteDifference(List<Polygon?> sourcePolygon, List<NetTopologySuite.Geometries.Geometry?> differenceList)
+    private List<NetTopologySuite.Geometries.Geometry?> calcualteDifference(List<NetTopologySuite.Geometries.Geometry?> sourcePolygon, List<NetTopologySuite.Geometries.Geometry?> differenceList)
     {
         GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -149,7 +149,7 @@ public class CalcualteAllParameterForArea(DataContext context, IRestrictionFromL
 
             NetTopologySuite.Geometries.Geometry intersectingGeometryUnion = geometryFactory.BuildGeometry(intersectingGeometry).Union();
 
-            sourcePolygon[i] = single.Difference(intersectingGeometryUnion) as Polygon;
+            sourcePolygon[i] = single.Difference(intersectingGeometryUnion);
 
         }
 
