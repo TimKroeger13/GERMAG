@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GERMAG.Client", "Client\GER
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GERMAG.Shared", "Shared\GERMAG.Shared.csproj", "{22ADAF56-8A4D-4FB2-A258-543C377426F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GERMAG.Unittests.Server", "GERMAG.Unittests.Server\GERMAG.Unittests.Server.csproj", "{4555EF23-422D-4F12-9CA7-35DF61387CF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GERMAG.Unittests.Server", "GERMAG.Unittests.Server\GERMAG.Unittests.Server.csproj", "{4555EF23-422D-4F12-9CA7-35DF61387CF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

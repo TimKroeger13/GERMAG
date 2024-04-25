@@ -4,8 +4,12 @@ namespace GERMAG.DataModel.Database;
 
 public partial class DataContext : DbContext
 {
+    public virtual DbSet<AxBuilding> AxBuildings { get; set; }
+    public virtual DbSet<AxSelected> AxSelecteds { get; set; }
+    public virtual DbSet<AxTree> AxTrees { get; set; }
     public virtual DbSet<GeoDatum> GeoData { get; set; }
     public virtual DbSet<GeothermalParameter> GeothermalParameter { get; set; }
+    public virtual DbSet<Research> Researches { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +24,33 @@ public partial class DataContext : DbContext
             .HasPostgresExtension("postgis_raster")
             .HasPostgresExtension("tiger", "postgis_tiger_geocoder")
             .HasPostgresExtension("topology", "postgis_topology");
+
+        modelBuilder.Entity<AxBuilding>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ax_buildings");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
+
+        modelBuilder.Entity<AxSelected>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ax_selected");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
+
+        modelBuilder.Entity<AxTree>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("ax_tree");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
+        });
 
         modelBuilder.Entity<GeoDatum>(entity =>
         {
@@ -58,6 +89,15 @@ public partial class DataContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("last_update");
             entity.Property(e => e.Srid).HasColumnName("srid");
+        });
+
+        modelBuilder.Entity<Research>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("research");
+
+            entity.Property(e => e.Geom).HasColumnName("geom");
         });
 
         OnModelCreatingPartial(modelBuilder);

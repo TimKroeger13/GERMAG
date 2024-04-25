@@ -5,6 +5,7 @@ using GERMAG.Server.DataPulling;
 using GERMAG.Server.DataPulling.JsonDeserialize;
 using GERMAG.Server.GeometryCalculations;
 using GERMAG.Server.ReportCreation;
+using GERMAG.Server.Research;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -28,6 +29,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
+builder.Services.AddTransient<ICalcualteAllParameterForArea, CalcualteAllParameterForArea>();
 builder.Services.AddTransient<IJsonDeserialize, JsonDeserialize>();
 builder.Services.AddTransient<ICreateReportAsync, CreateReport>();
 builder.Services.AddTransient<IParameterDeserialator, ParameterDeserialator>();
@@ -39,6 +41,7 @@ builder.Services.AddTransient<IGeoThermalProbesCalcualtion, GeoThermalProbesCalc
 builder.Services.AddTransient<IGetProbeSpecificData, GetProbeSpecificData>();
 builder.Services.AddTransient<IGetPolylineData, GetPolylineData>();
 builder.Services.AddTransient<IGetProbeSepcificDataSingleProbe, GetProbeSepcificDataSingleProbe>();
+builder.Services.AddTransient<IFindLocalDirectoryPath, FindLocalDirectoryPath>();
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.DatabaseConnection);
 var dataSource = dataSourceBuilder.ConfigureAndBuild();
 builder.Services.AddDbContext<DataContext>(options =>
