@@ -7,20 +7,21 @@ namespace GERMAG.Server.GeometryCalculations;
 
 public interface IGetProbeSepcificDataSingleProbe
 {
-    Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint);
+    Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint, DataContext context);
 }
 
-public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDeserialator parameterDeserialator) : IGetProbeSepcificDataSingleProbe
+public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDeserialator) : IGetProbeSepcificDataSingleProbe
 {
-    public async Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint)
+    public async Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint, DataContext context)
     {
-
-        if (SingleProbePoint == null || SingleProbePoint.Geometry == null || SingleProbePoint.Properties == null)
+        if (SingleProbePoint == null || SingleProbePoint.Geometry == null)
         {
             return null;
         }
 
         SingleProbePoint.Geometry.SRID = 25833;
+
+        using var transaction = context.Database.BeginTransaction();
 
         var IntersectingGeometry = context.GeoData
             .Where(gd => gd.ParameterKey != landParcelElement.ParameterKey && gd.Geom!.Intersects(SingleProbePoint.Geometry))
@@ -41,6 +42,9 @@ public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDese
                 ParameterKey = ig.ParameterKey,
                 Parameter = ig.Parameter
             }).ToList();
+
+        context.SaveChanges();
+        transaction.Commit();
 
         var UnserilizedDepthRestrictions = intersectingResult.FirstOrDefault(element => element.Type == TypeOfData.depth_restrictions);
 
@@ -80,6 +84,17 @@ public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDese
             GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_40txt");
         }
 
+        if(SingleProbePoint.Properties == null)
+        {
+            var CorrectedProbpoint = new ProbePoint
+            {
+                Geometry = SingleProbePoint.Geometry,
+                Properties = new Shared.PointProperties.Properties { GeoPoten = null, MaxDepth = null, GeoPotenDepth = null }
+            };
+
+            SingleProbePoint = CorrectedProbpoint;
+        }
+
         SingleProbePoint.Properties.MaxDepth = MaxDepth;
         SingleProbePoint.Properties.GeoPotenDepth = GeoPotenDepth;
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
@@ -91,6 +106,9 @@ public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDese
     private double? GetPotential(List<GeometryElementParameter> intersectingResult, TypeOfData typeOfData, string ParameterKeyValue)
     {
         GeometryElementParameter? UnserilizedGeoPoten = intersectingResult.FirstOrDefault(element => element.Type == typeOfData);
+
+        if(UnserilizedGeoPoten == null) { return null;  }
+
         Shared.Properties DeserializedGeoPoten = parameterDeserialator.DeserializeParameters(UnserilizedGeoPoten?.Parameter ?? "");
         double? GeoPoten = ParseStringToValue(DeserializedGeoPoten.La_100txt ?? "");
 

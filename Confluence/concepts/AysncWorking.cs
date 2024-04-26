@@ -1,4 +1,4 @@
-﻿using GERMAG.DataModel.Database;
+using GERMAG.DataModel.Database;
 using GERMAG.Server.ReportCreation;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Operation.Union;
@@ -32,8 +32,6 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
     public async Task<String> calucalteAllParameters()
     {
         //Calcualte RestrictionArea
-
-        Console.WriteLine("Starting scientific calcualtion");
 
         var inputPath = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinRestrictionFlaechen.geojson");
 
@@ -124,11 +122,30 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
 
 
-        List<NetTopologySuite.Geometries.Geometry?> ProbeGeometricPosistions;
+        List<NetTopologySuite.Geometries.Geometry?> x;
+
+        DateTime start = DateTime.Now;
+        {
+            x = await CalcualteProbePositionAsync(featureCollection, landParcelElement2);
+        }
+        TimeSpan timeItTook = DateTime.Now - start;
+        Console.WriteLine(timeItTook);
 
 
-        ProbeGeometricPosistions = await CalcualteProbePositionAsync(featureCollection, landParcelElement2);
 
+        var y = CalcualteProbeValuesAsync(x!);
+
+
+
+        var u = 0;
+
+/*
+
+        List<ProbePoint?> FullPointProbe;
+
+        List<double?> MaxDepthList = new List<double?>();
+        List<double?> GeoPotenDepthList = new List<double?>();
+        List<double?> GeoPotenList = new List<double?>();
 
         var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
@@ -137,20 +154,44 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             ParameterKey = landParcelID,
         };
 
-        List<ProbePoint?> probePointsList = ProbeGeometricPosistions.Select(geometry => new ProbePoint
+        foreach (var FeatureElement in featureCollection)
         {
-            Geometry = geometry,
-        }).ToList()!;
+
+            if(u >= 100)
+            {
+                break;
+            }
+
+            u++;
+            Console.WriteLine("Calculating Probe position " + u + " / " + (featureCollection.Count() - 1));
+
+            var featureGeometry = (NetTopologySuite.Geometries.Geometry?)FeatureElement.Geometry;
+
+            var featureResrictionArea = new Restricion
+            {
+                Geometry_Usable = featureGeometry
+            };
+
+            FullPointProbe = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(featureResrictionArea);
+
+            List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+
+            MaxDepthList.AddRange(DataFilledProbePoints.Select(dfpp => dfpp?.Properties?.MaxDepth).ToList());
+            GeoPotenDepthList.AddRange(DataFilledProbePoints.Select(dfpp => dfpp?.Properties?.GeoPotenDepth).ToList());
+            GeoPotenList.AddRange(DataFilledProbePoints.Select(dfpp => dfpp?.Properties?.GeoPoten).ToList());
+
+        }
 
 
-        List<ProbePoint?> FullProbePointInformation = await getProbeSpecificData.GetPointProbeData(landParcelElement, probePointsList);
 
 
-        var MaxDepthList = FullProbePointInformation.Select(fppi => fppi?.Properties!.MaxDepth).ToList();
 
-        var GeoPotenDepthList = FullProbePointInformation.Select(fppi => fppi?.Properties!.GeoPotenDepth).ToList();
 
-        var GeoPotenList = FullProbePointInformation.Select(fppi => fppi?.Properties!.GeoPoten).ToList();
+
+
+
+
+
 
 
         var savePath = findLocalDirectoryPath.getLocalPath("CalculationResults", "MaxDepth.geojson");
@@ -160,13 +201,22 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         File.WriteAllText(savePath, JsonConvert.SerializeObject(GeoPotenDepthList));
 
         savePath = findLocalDirectoryPath.getLocalPath("CalculationResults", "GeoPoten.geojson");
-        File.WriteAllText(savePath, JsonConvert.SerializeObject(GeoPotenList));
+        File.WriteAllText(savePath, JsonConvert.SerializeObject(GeoPotenList));*/
 
         Console.WriteLine("All restricions for Berlin calculated!");
 
         return "Test from Server";
     }
 
+    private async Task<List<ProbePoint?>> CalcualteProbeValuesAsync(List<NetTopologySuite.Geometries.Geometry> geometryList)
+    {
+        List<Task<List<ProbePoint?>>> tasks = new List<Task<List<ProbePoint?>>>();
+
+        var a = new List<ProbePoint?>();
+
+        return a;
+
+    }
 
     private async Task<List<NetTopologySuite.Geometries.Geometry?>> CalcualteProbePositionAsync(NetTopologySuite.Features.FeatureCollection featureCollection, LandParcel landParcelElement)
     {
@@ -178,7 +228,7 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         {
             u++;
             Console.WriteLine(u);
-            if (u >= 10)
+            if (u >= 20)
             {
                 break;
             }
@@ -235,4 +285,37 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
     }
 
+
+
 }
+
+
+
+
+
+
+/*List<ProbePoint?> FullPointProbe;
+
+List<NetTopologySuite.Geometries.Polygon?> listofAllRestrictionPolygons = new List<NetTopologySuite.Geometries.Polygon?>();
+
+        foreach (var FeatureElement in featureCollection)
+        {
+            var featureGeometry = FeatureElement.Geometry;
+            
+            if (featureGeometry is Polygon)
+            {
+                listofAllRestrictionPolygons?.Add((Polygon?) featureGeometry);
+            }
+            else if (featureGeometry is MultiPolygon)
+{
+    MultiPolygon? unionPolygon = (MultiPolygon?)featureGeometry;
+
+    foreach (var singlepolygon in unionPolygon!)
+    {
+        listofAllRestrictionPolygons?.Add((Polygon?)singlepolygon);
+    }
+}
+        }
+
+        var b = 3;
+*/

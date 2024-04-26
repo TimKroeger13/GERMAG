@@ -16,7 +16,7 @@ public class ProbePoint
 
 public class Properties
 {
-    public double? GeoPoten { get; set; }
-    public double? MaxDepth { get; set; }
-    public double? GeoPotenDepth { get; set; }
+    public double? GeoPoten { get; set; } = null;
+    public double? MaxDepth { get; set; } = null;
+    public double? GeoPotenDepth { get; set; } = null;
 }
