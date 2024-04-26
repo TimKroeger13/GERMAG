@@ -33,6 +33,8 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
     {
         //Calcualte RestrictionArea
 
+        Console.WriteLine("Starting scientific calcualtion");
+
         var inputPath = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinRestrictionFlaechen.geojson");
 
         NetTopologySuite.Features.FeatureCollection featureCollection;
@@ -122,30 +124,14 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
 
 
-        List<NetTopologySuite.Geometries.Geometry?> x;
+        List<NetTopologySuite.Geometries.Geometry?> ProbeGeometricPosistions;
 
         DateTime start = DateTime.Now;
         {
-            x = await CalcualteProbePositionAsync(featureCollection, landParcelElement2);
+            ProbeGeometricPosistions = await CalcualteProbePositionAsync(featureCollection, landParcelElement2);
         }
         TimeSpan timeItTook = DateTime.Now - start;
         Console.WriteLine(timeItTook);
-
-
-
-        var y = CalcualteProbeValuesAsync(x!);
-
-
-
-        var u = 0;
-
-/*
-
-        List<ProbePoint?> FullPointProbe;
-
-        List<double?> MaxDepthList = new List<double?>();
-        List<double?> GeoPotenDepthList = new List<double?>();
-        List<double?> GeoPotenList = new List<double?>();
 
         var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
@@ -154,25 +140,18 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             ParameterKey = landParcelID,
         };
 
-        foreach (var FeatureElement in featureCollection)
+        List<ProbePoint?> probePointsList = ProbeGeometricPosistions.Select(geometry => new ProbePoint
         {
+            Geometry = geometry,
+        }).ToList()!;
 
-            if(u >= 100)
-            {
-                break;
-            }
+        var y = await getProbeSpecificData.GetPointProbeData(landParcelElement, probePointsList);
 
-            u++;
-            Console.WriteLine("Calculating Probe position " + u + " / " + (featureCollection.Count() - 1));
 
-            var featureGeometry = (NetTopologySuite.Geometries.Geometry?)FeatureElement.Geometry;
+        var u = 0;
 
-            var featureResrictionArea = new Restricion
-            {
-                Geometry_Usable = featureGeometry
-            };
-
-            FullPointProbe = await geoThermalProbesCalcualtion.CalculateGeoThermalProbes(featureResrictionArea);
+/*
+d
 
             List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
 
@@ -208,7 +187,7 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         return "Test from Server";
     }
 
-    private async Task<List<ProbePoint?>> CalcualteProbeValuesAsync(List<NetTopologySuite.Geometries.Geometry> geometryList)
+/*    private async Task<List<ProbePoint?>> CalcualteProbeValuesAsync(List<NetTopologySuite.Geometries.Geometry> geometryList)
     {
         var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
@@ -225,28 +204,25 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
         for(int i = 0; i< itterations; i++)
         {
-            var geometryBatch = geometryList.Skip(i * batchsize).Take(i * batchsize);
+            Console.WriteLine("Fetchign Probevalues " + i + " / " + (itterations-1));
 
-             List<ProbePoint> probePointsList = geometryBatch.Select(geometry => new ProbePoint
+            var geometryBatch = geometryList.Skip(i * batchsize).Take(batchsize);
+
+             List<ProbePoint?> probePointsList = geometryBatch.Select(geometry => new ProbePoint
             {
                 Geometry = geometry,
-            }).ToList();
+            }).ToList()!;
 
-
-           // List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+            tasks.Add(getProbeSpecificData.GetPointProbeData(landParcelElement, probePointsList));
         }
 
-
-
-
-
-
+        List<ProbePoint?>[] results = await Task.WhenAll(tasks);
 
         var a = new List<ProbePoint?>();
 
         return a;
 
-    }
+    }*/
 
     private async Task<List<NetTopologySuite.Geometries.Geometry?>> CalcualteProbePositionAsync(NetTopologySuite.Features.FeatureCollection featureCollection, LandParcel landParcelElement)
     {
@@ -258,7 +234,7 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         {
             u++;
             Console.WriteLine(u);
-            if (u >= 20)
+            if (u >= 4)
             {
                 break;
             }

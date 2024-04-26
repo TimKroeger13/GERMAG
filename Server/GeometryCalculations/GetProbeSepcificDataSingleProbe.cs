@@ -14,13 +14,14 @@ public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDese
 {
     public async Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint)
     {
-
-        if (SingleProbePoint == null || SingleProbePoint.Geometry == null || SingleProbePoint.Properties == null)
+        if (SingleProbePoint == null || SingleProbePoint.Geometry == null)
         {
             return null;
         }
 
         SingleProbePoint.Geometry.SRID = 25833;
+
+        using var transaction = context.Database.BeginTransaction();
 
         var IntersectingGeometry = context.GeoData
             .Where(gd => gd.ParameterKey != landParcelElement.ParameterKey && gd.Geom!.Intersects(SingleProbePoint.Geometry))
@@ -41,6 +42,9 @@ public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDese
                 ParameterKey = ig.ParameterKey,
                 Parameter = ig.Parameter
             }).ToList();
+
+        context.SaveChanges();
+        transaction.Commit();
 
         var UnserilizedDepthRestrictions = intersectingResult.FirstOrDefault(element => element.Type == TypeOfData.depth_restrictions);
 
@@ -78,6 +82,17 @@ public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDese
         else if (GeoPotenDepth >= 40)
         {
             GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_40txt");
+        }
+
+        if(SingleProbePoint.Properties == null)
+        {
+            var CorrectedProbpoint = new ProbePoint
+            {
+                Geometry = SingleProbePoint.Geometry,
+                Properties = new Shared.PointProperties.Properties { GeoPoten = null, MaxDepth = null, GeoPotenDepth = null }
+            };
+
+            SingleProbePoint = CorrectedProbpoint;
         }
 
         SingleProbePoint.Properties.MaxDepth = MaxDepth;
