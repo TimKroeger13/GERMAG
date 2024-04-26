@@ -210,7 +210,37 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
     private async Task<List<ProbePoint?>> CalcualteProbeValuesAsync(List<NetTopologySuite.Geometries.Geometry> geometryList)
     {
+        var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
+
+        var landParcelElement = new LandParcel
+        {
+            ParameterKey = landParcelID,
+        };
+
         List<Task<List<ProbePoint?>>> tasks = new List<Task<List<ProbePoint?>>>();
+
+        var batchsize = 100;
+
+        var itterations = Math.Ceiling((double)geometryList.Count() / batchsize);
+
+        for(int i = 0; i< itterations; i++)
+        {
+            var geometryBatch = geometryList.Skip(i * batchsize).Take(i * batchsize);
+
+             List<ProbePoint> probePointsList = geometryBatch.Select(geometry => new ProbePoint
+            {
+                Geometry = geometry,
+            }).ToList();
+
+
+           // List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+        }
+
+
+
+
+
+
 
         var a = new List<ProbePoint?>();
 
