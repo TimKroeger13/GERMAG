@@ -58,7 +58,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         if (currentArea == 0)
         {
-            return (ReportGeothermalPoints);
+            return ReportGeothermalPoints;
         }
 
         distances = new double[currentPoints!.Length];
@@ -77,7 +77,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         if (CandidatePoints.Count == 0)
         {
-            return (ReportGeothermalPoints);
+            return ReportGeothermalPoints;
         }
 
         //loop start
@@ -105,7 +105,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
             smallestAreaIndex = -1;
             double smallestArea = double.MaxValue;
-
 
             for (int i = 0; i < combinedIntersectionCollection.Count; i++)
             {
@@ -150,7 +149,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                             smallestAreaBuffer = combinedBufferCollection[i];
                             smallestAreaIndex = i;
                         }
-
                     }
                     else if (candidateGeometry is NetTopologySuite.Geometries.Polygon polygon)
                     {
@@ -206,7 +204,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
                 if (currentGeometry is MultiPolygon multiPolygon)
                 {
-                    List<Polygon> validPolygons = new List<Polygon>();
+                    List<Polygon> validPolygons = new();
 
                     foreach (var polygon in multiPolygon.Geometries.OfType<Polygon>())
                     {
@@ -233,7 +231,6 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                 currentOutline = currentGeometry?.Boundary;
                 currentPoints = currentGeometry?.Coordinates;
                 currentArea = currentGeometry?.Area;
-
             }
             else
             {
@@ -242,7 +239,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
             if (currentArea == 0 || currentPoints == null)
             {
-                return (ReportGeothermalPoints);
+                return ReportGeothermalPoints;
             }
 
             if (CandidatePoints.Count == 0)
@@ -263,13 +260,12 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
                 if (CandidatePoints.Count == 0 || currentPoints == null)
                 {
-                    return (ReportGeothermalPoints);
+                    return ReportGeothermalPoints;
                 }
             }
         }
 
-        return (ReportGeothermalPoints);
-
+        return ReportGeothermalPoints;
     }
 
     private async Task<List<NetTopologySuite.Geometries.Coordinate?>> FindNewCandidates(NetTopologySuite.Geometries.Geometry SearchLineRing, NetTopologySuite.Geometries.Geometry CandidateBufferRing, List<NetTopologySuite.Geometries.Coordinate?> CandidatePoints)
@@ -284,10 +280,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
             }
             else if (lineStringIntersection is NetTopologySuite.Geometries.MultiPoint multiPoint)
             {
-                foreach (var multiPointCoordinate in multiPoint.Coordinates)
-                {
-                    CandidatePoints.Add(multiPointCoordinate);
-                }
+                CandidatePoints.AddRange(multiPoint.Coordinates);
             }
             else if (lineStringIntersection is NetTopologySuite.Geometries.GeometryCollection geometryCollection)
             {

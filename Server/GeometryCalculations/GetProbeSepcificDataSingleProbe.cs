@@ -21,7 +21,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
         SingleProbePoint.Geometry.SRID = 25833;
 
-        using var transaction = context.Database.BeginTransaction();
+        await using var transaction = context.Database.BeginTransaction();
 
         var IntersectingGeometry = context.GeoData
             .Where(gd => gd.ParameterKey != landParcelElement.ParameterKey && gd.Geom!.Intersects(SingleProbePoint.Geometry))
@@ -46,7 +46,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         context.SaveChanges();
         transaction.Commit();
 
-        var UnserilizedDepthRestrictions = intersectingResult.FirstOrDefault(element => element.Type == TypeOfData.depth_restrictions);
+        var UnserilizedDepthRestrictions = intersectingResult.Find(element => element.Type == TypeOfData.depth_restrictions);
 
         double? MaxDepth;
 
@@ -61,27 +61,27 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         }
 
         //Poetential = 100,80,60,40
-        List<int> PotentialDepth = new List<int> { 100, 80, 60, 40, 0 }; //Berlin spesific
+        List<int> PotentialDepth = new() { 100, 80, 60, 40, 0 }; //Berlin spesific
 
-        int GeoPotenDepth = PotentialDepth.FirstOrDefault(value => value <= MaxDepth);
+        int GeoPotenDepth = PotentialDepth.Find(value => value <= MaxDepth);
 
         double? GeoPoten = null;
 
         if (GeoPotenDepth >= 100)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
+            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
         }
         else if (GeoPotenDepth >= 80)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_80txt");
+            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
         }
         else if (GeoPotenDepth >= 60)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_60txt");
+            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
         }
         else if (GeoPotenDepth >= 40)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_40txt");
+            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
         }
 
         if(SingleProbePoint.Properties == null)
@@ -100,12 +100,11 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
 
         return SingleProbePoint;
-
     }
 
-    private double? GetPotential(List<GeometryElementParameter> intersectingResult, TypeOfData typeOfData, string ParameterKeyValue)
+    private double? GetPotential(List<GeometryElementParameter> intersectingResult, TypeOfData typeOfData)
     {
-        GeometryElementParameter? UnserilizedGeoPoten = intersectingResult.FirstOrDefault(element => element.Type == typeOfData);
+        GeometryElementParameter? UnserilizedGeoPoten = intersectingResult.Find(element => element.Type == typeOfData);
 
         if(UnserilizedGeoPoten == null) { return null;  }
 
@@ -117,7 +116,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
     private double? ParseStringToValue(string valueRange)
     {
-        List<double> numbers = new List<double>();
+        List<double> numbers = new();
 
         string[] parts = valueRange.Split('-', '>');
 
@@ -139,5 +138,4 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
         return (minValue + maxValue) / 2.0;
     }
-
 }

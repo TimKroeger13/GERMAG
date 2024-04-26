@@ -15,7 +15,7 @@ public class GetProbeSpecificData(DataContext context, IGetProbeSepcificDataSing
 {
     public async Task<List<ProbePoint?>> GetPointProbeData(LandParcel landParcelElement, List<ProbePoint?> probePoints)
     {
-        List<Task<ProbePoint?>> tasks = new List<Task<ProbePoint?>>();
+        List<Task<ProbePoint?>> tasks = new();
 
         for(int i = 0; i < probePoints.Count; i++)
         {
@@ -24,18 +24,10 @@ public class GetProbeSpecificData(DataContext context, IGetProbeSepcificDataSing
 
         ProbePoint?[] results = await Task.WhenAll(tasks);
 
-        List<ProbePoint?> probePointList = new List<ProbePoint?>();
+        List<ProbePoint?> probePointList = new();
 
-        foreach (var result in results)
-        {
-            probePointList.Add(result);
-        }
+        probePointList.AddRange(results);
 
         return probePointList;
     }
-
-
-
-
-
 }

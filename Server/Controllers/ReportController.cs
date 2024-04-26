@@ -76,7 +76,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
         if (probeRes) //Probe Resulution
         {
-            List<ProbePoint?> DataFilledProbePoints = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+            FullPointProbe = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
         }
 
         //LineInformation - ExpectedGroundWaterHeight
@@ -84,7 +84,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
         FinalReport[0].ZeHGW = ZeHGW;
 
-        List<ProbePoint?> TruncatedPointProbe = new List<ProbePoint?>();
+        List<ProbePoint?> TruncatedPointProbe = new();
 
         foreach (var probePoint in FullPointProbe)
         {

@@ -23,10 +23,7 @@ builder.Services.AddSingleton(configuration);
 builder.Services.AddTransient<HttpClient>();
 builder.Services.AddHttpClient(HttpClients.LongTimeoutClient, o => o.Timeout = TimeSpan.FromMinutes(120));
 builder.Services.AddHttpClient(HttpClients.Default);
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(CorsPolicies.GetAllowed, policy => policy.WithMethods("GET").AllowAnyHeader().AllowAnyOrigin());
-});
+builder.Services.AddCors(options => options.AddPolicy(CorsPolicies.GetAllowed, policy => policy.WithMethods("GET").AllowAnyHeader().AllowAnyOrigin()));
 builder.Services.AddTransient<IDataFetcher, DataFetcher>();
 builder.Services.AddTransient<IDatabaseUpdater, DatabaseUpdater>();
 builder.Services.AddTransient<ICalcualteAllParameterForArea, CalcualteAllParameterForArea>();

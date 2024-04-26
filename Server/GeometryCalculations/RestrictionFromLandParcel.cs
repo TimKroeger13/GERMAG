@@ -41,7 +41,7 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             if (mergedBuildings?.IsEmpty != false)
             {
-                GeometryFactory geometryFactory = new GeometryFactory();
+                GeometryFactory geometryFactory = new();
                 mergedBuildings = geometryFactory.CreatePolygon();
             }
 
