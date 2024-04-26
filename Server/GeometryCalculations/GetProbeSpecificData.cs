@@ -11,16 +11,27 @@ public interface IGetProbeSpecificData
     Task<List<ProbePoint?>> GetPointProbeData(LandParcel landParcelElement, List<ProbePoint?> probePoints);
 }
 
-public class GetProbeSpecificData(IGetProbeSepcificDataSingleProbe getProbeSepcificDataSingleProbe) : IGetProbeSpecificData
+public class GetProbeSpecificData(DataContext context, IGetProbeSepcificDataSingleProbe getProbeSepcificDataSingleProbe) : IGetProbeSpecificData
 {
     public async Task<List<ProbePoint?>> GetPointProbeData(LandParcel landParcelElement, List<ProbePoint?> probePoints)
     {
-        for (int i = 0; i < probePoints.Count; i++)
+        List<Task<ProbePoint?>> tasks = new List<Task<ProbePoint?>>();
+
+        for(int i = 0; i < probePoints.Count; i++)
         {
-            probePoints[i] = await getProbeSepcificDataSingleProbe.GetSingleProbeData(landParcelElement,probePoints[i]);
+            tasks.Add(getProbeSepcificDataSingleProbe.GetSingleProbeData(landParcelElement, probePoints[i], context));
         }
 
-        return probePoints;
+        ProbePoint?[] results = await Task.WhenAll(tasks);
+
+        List<ProbePoint?> probePointList = new List<ProbePoint?>();
+
+        foreach (var result in results)
+        {
+            probePointList.Add(result);
+        }
+
+        return probePointList;
     }
 
 

@@ -7,12 +7,12 @@ namespace GERMAG.Server.GeometryCalculations;
 
 public interface IGetProbeSepcificDataSingleProbe
 {
-    Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint);
+    Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint, DataContext context);
 }
 
-public class GetProbeSepcificDataSingleProbe(DataContext context, IParameterDeserialator parameterDeserialator) : IGetProbeSepcificDataSingleProbe
+public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDeserialator) : IGetProbeSepcificDataSingleProbe
 {
-    public async Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint)
+    public async Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint, DataContext context)
     {
         if (SingleProbePoint == null || SingleProbePoint.Geometry == null)
         {
