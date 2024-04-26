@@ -1,4 +1,4 @@
-﻿using GERMAG.DataModel.Database;
+using GERMAG.DataModel.Database;
 using GERMAG.Server.ReportCreation;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Operation.Union;
