@@ -227,10 +227,17 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                         currentGeometry = null;
                     }
                 }
-
-                currentOutline = currentGeometry?.Boundary;
-                currentPoints = currentGeometry?.Coordinates;
-                currentArea = currentGeometry?.Area;
+                if (currentGeometry is Polygon || currentGeometry is MultiPolygon)
+                {
+                    currentOutline = currentGeometry?.Boundary;
+                    currentPoints = currentGeometry?.Coordinates;
+                    currentArea = currentGeometry?.Area;
+                }else
+                {
+                    currentOutline = null;
+                    currentPoints = null;
+                    currentArea = 0;
+                }
             }
             else
             {
