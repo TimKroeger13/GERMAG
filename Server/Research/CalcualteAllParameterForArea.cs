@@ -24,12 +24,12 @@ namespace GERMAG.Server.Research;
 
 public interface ICalcualteAllParameterForArea
 {
-    Task<string> calucalteAllParameters();
+    Task<string> CalucalteAllParameters();
 }
 
 public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirectoryPath findLocalDirectoryPath, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData) : ICalcualteAllParameterForArea
 {
-    public async Task<String> calucalteAllParameters()
+    public async Task<String> CalucalteAllParameters()
     {
         //Calcualte RestrictionArea
 
@@ -60,26 +60,25 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             var ax_tree = context.AxTrees.ToList();
             var ax_buildings = context.AxBuildings.ToList();
 
-            GeometryFactory geometryFactory = new GeometryFactory();
+            GeometryFactory geometryFactory = new();
 
-            List<NetTopologySuite.Geometries.Geometry?> bufferedTrees = ax_tree.Select(tree => tree.Geom?.Buffer(OfficalParameters.TreeDistance)).ToList();
+            List<NetTopologySuite.Geometries.Geometry?> bufferedTrees = ax_tree.ConvertAll(tree => tree.Geom?.Buffer(OfficalParameters.TreeDistance));
 
-            List<Polygon?> landParcelPolygon = selectedData.Select(selected => (Polygon?)selected.Geom).ToList();
+            List<Polygon?> landParcelPolygon = selectedData.ConvertAll(selected => (Polygon?)selected.Geom);
 
-            List<NetTopologySuite.Geometries.Geometry?> landParcelPolygonGeometry = selectedData.Select(selected => selected.Geom).ToList();
+            List<NetTopologySuite.Geometries.Geometry?> landParcelPolygonGeometry = selectedData.ConvertAll(selected => selected.Geom);
 
-            List<LineString?> landParcelLineString = landParcelPolygon.Select(land => land?.ExteriorRing).ToList();
+            List<LineString?> landParcelLineString = landParcelPolygon.ConvertAll(land => land?.ExteriorRing);
 
-            List<NetTopologySuite.Geometries.Geometry?> bufferedLandParcel = landParcelLineString.Select(landlinestring => landlinestring?.Buffer(OfficalParameters.LandParcelDistance)).ToList();
+            List<NetTopologySuite.Geometries.Geometry?> bufferedLandParcel = landParcelLineString.ConvertAll(landlinestring => landlinestring?.Buffer(OfficalParameters.LandParcelDistance));
 
-            List<NetTopologySuite.Geometries.Geometry?> bufferedBuldings = ax_buildings.Select(build => build.Geom?.Buffer(OfficalParameters.BuildingDistance)).ToList();
+            List<NetTopologySuite.Geometries.Geometry?> bufferedBuldings = ax_buildings.ConvertAll(build => build.Geom?.Buffer(OfficalParameters.BuildingDistance));
 
-            List<NetTopologySuite.Geometries.Geometry?> diffTree = calcualteDifference(landParcelPolygonGeometry, bufferedTrees);
+            List<NetTopologySuite.Geometries.Geometry?> diffTree = CalcualteDifference(landParcelPolygonGeometry, bufferedTrees);
 
-            List<NetTopologySuite.Geometries.Geometry?> diffTreeParcel = calcualteDifference(diffTree, bufferedLandParcel);
+            List<NetTopologySuite.Geometries.Geometry?> diffTreeParcel = CalcualteDifference(diffTree, bufferedLandParcel);
 
-            List<NetTopologySuite.Geometries.Geometry?> diffTreeParcelBuilding = calcualteDifference(diffTreeParcel, bufferedBuldings);
-
+            List<NetTopologySuite.Geometries.Geometry?> diffTreeParcelBuilding = CalcualteDifference(diffTreeParcel, bufferedBuldings);
 
             featureCollection = new NetTopologySuite.Features.FeatureCollection();
 
@@ -87,7 +86,7 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             foreach (var geometry in diffTreeParcelBuilding)
             {
                 k++;
-                Console.WriteLine(k + " / " + (diffTreeParcelBuilding.Count() - 1));
+                Console.WriteLine(k + " / " + (diffTreeParcelBuilding.Count - 1));
                 if (geometry != null && (geometry is Polygon || geometry is MultiPolygon))
                 {
                     var properties = new AttributesTable();
@@ -101,7 +100,7 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             var path = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinRestrictionFlaechen.geojson");
 
             var serializer = GeoJsonSerializer.Create();
-            using (var stringWriter = new StringWriter())
+            await using (var stringWriter = new StringWriter())
             {
                 serializer.Serialize(stringWriter, featureCollection);
                 var geoJsonString = stringWriter.ToString();
@@ -111,24 +110,9 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             context.Database.SetCommandTimeout(null);
         }
 
-        //Calcualte points in featureCollection
+        //Calcualte points in featureCollecti
 
-
-        var landParcelID2 = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
-
-        var landParcelElement2 = new LandParcel
-        {
-            ParameterKey = landParcelID2,
-        };
-
-
-
-
-        List<NetTopologySuite.Geometries.Geometry?> ProbeGeometricPosistions;
-
-
-        ProbeGeometricPosistions = await CalcualteProbePositionAsync(featureCollection, landParcelElement2);
-
+        List<NetTopologySuite.Geometries.Geometry?> ProbeGeometricPosistions = await CalcualteProbePositionAsync(featureCollection);
 
         var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
@@ -137,21 +121,18 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             ParameterKey = landParcelID,
         };
 
-        List<ProbePoint?> probePointsList = ProbeGeometricPosistions.Select(geometry => new ProbePoint
+        List<ProbePoint?> probePointsList = ProbeGeometricPosistions.ConvertAll(geometry => new ProbePoint
         {
             Geometry = geometry,
-        }).ToList()!;
-
+        })!;
 
         List<ProbePoint?> FullProbePointInformation = await getProbeSpecificData.GetPointProbeData(landParcelElement, probePointsList);
 
+        var MaxDepthList = FullProbePointInformation.ConvertAll(fppi => fppi?.Properties!.MaxDepth);
 
-        var MaxDepthList = FullProbePointInformation.Select(fppi => fppi?.Properties!.MaxDepth).ToList();
+        var GeoPotenDepthList = FullProbePointInformation.ConvertAll(fppi => fppi?.Properties!.GeoPotenDepth);
 
-        var GeoPotenDepthList = FullProbePointInformation.Select(fppi => fppi?.Properties!.GeoPotenDepth).ToList();
-
-        var GeoPotenList = FullProbePointInformation.Select(fppi => fppi?.Properties!.GeoPoten).ToList();
-
+        var GeoPotenList = FullProbePointInformation.ConvertAll(fppi => fppi?.Properties!.GeoPoten);
 
         var savePath = findLocalDirectoryPath.getLocalPath("CalculationResults", "MaxDepth.geojson");
         File.WriteAllText(savePath, JsonConvert.SerializeObject(MaxDepthList));
@@ -167,10 +148,9 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         return "Test from Server";
     }
 
-
-    private async Task<List<NetTopologySuite.Geometries.Geometry?>> CalcualteProbePositionAsync(NetTopologySuite.Features.FeatureCollection featureCollection, LandParcel landParcelElement)
+    private async Task<List<NetTopologySuite.Geometries.Geometry?>> CalcualteProbePositionAsync(NetTopologySuite.Features.FeatureCollection featureCollection)
     {
-        List<Task<List<ProbePoint?>>> tasks = new List<Task<List<ProbePoint?>>>();
+        List<Task<List<ProbePoint?>>> tasks = new();
 
         var u = 0;
 
@@ -195,25 +175,22 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
         List<ProbePoint?>[] results = await Task.WhenAll(tasks);
 
-        List<NetTopologySuite.Geometries.Geometry?> outputList = new List<NetTopologySuite.Geometries.Geometry?>();
+        List<NetTopologySuite.Geometries.Geometry?> outputList = new();
 
         foreach (var result in results)
         {
-            outputList.AddRange(result.Select(r => r.Geometry));
+            outputList.AddRange(result.Select(r => r?.Geometry));
         }
 
         return outputList;
-
     }
-
-
-    private List<NetTopologySuite.Geometries.Geometry?> calcualteDifference(List<NetTopologySuite.Geometries.Geometry?> sourcePolygon, List<NetTopologySuite.Geometries.Geometry?> differenceList)
+    private List<NetTopologySuite.Geometries.Geometry?> CalcualteDifference(List<NetTopologySuite.Geometries.Geometry?> sourcePolygon, List<NetTopologySuite.Geometries.Geometry?> differenceList)
     {
-        GeometryFactory geometryFactory = new GeometryFactory();
+        GeometryFactory geometryFactory = new();
 
         for (var i = 0; i < sourcePolygon.Count; i++)
         {
-            Console.WriteLine(i + " / " + (sourcePolygon.Count() - 1));
+            Console.WriteLine(i + " / " + (sourcePolygon.Count - 1));
 
             var single = sourcePolygon[i];
 
@@ -228,11 +205,8 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             NetTopologySuite.Geometries.Geometry intersectingGeometryUnion = geometryFactory.BuildGeometry(intersectingGeometry).Union();
 
             sourcePolygon[i] = single.Difference(intersectingGeometryUnion);
-
         }
 
         return sourcePolygon;
-
     }
-
 }

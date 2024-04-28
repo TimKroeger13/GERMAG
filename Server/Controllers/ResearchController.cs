@@ -16,6 +16,6 @@ public class ResearchController(ICalcualteAllParameterForArea calcualteAllParame
     [EnableCors(CorsPolicies.GetAllowed)]
     public async Task<string> calcualteResearch()
     {
-        return await calcualteAllParameterForArea.calucalteAllParameters();
+        return await calcualteAllParameterForArea.CalucalteAllParameters();
     }
 }
