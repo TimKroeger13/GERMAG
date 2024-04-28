@@ -131,7 +131,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
         if (numbers.Count == 0)
         {
-            throw new Exception("ParseStringToValue: Numbers could not get paresed");
+            return null;
         }
 
         double minValue = numbers.Min();

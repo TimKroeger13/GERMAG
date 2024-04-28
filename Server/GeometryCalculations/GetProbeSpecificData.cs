@@ -19,6 +19,8 @@ public class GetProbeSpecificData(DataContext context, IGetProbeSepcificDataSing
 
         for(int i = 0; i < probePoints.Count; i++)
         {
+            Console.WriteLine("Probe: " + i + " / " + (probePoints.Count-1));
+
             tasks.Add(getProbeSepcificDataSingleProbe.GetSingleProbeData(landParcelElement, probePoints[i], context));
         }
 
