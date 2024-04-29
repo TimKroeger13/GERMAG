@@ -158,10 +158,10 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         {
             u++;
             Console.WriteLine(u);
-            if (u >= 10)
+/*            if (u >= 10)
             {
                 break;
-            }
+            }*/
 
             var featureGeometry = (NetTopologySuite.Geometries.Geometry?)FeatureElement.Geometry;
 
