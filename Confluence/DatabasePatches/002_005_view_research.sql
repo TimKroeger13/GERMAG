@@ -89,19 +89,6 @@ WHERE ST_Intersects(usable_area.geom, building.geom)
 
 
 
---BU Tree Area
-CREATE TABLE bu_ax_tree AS
-SELECT st_buffer(st_union(geom),4) FROM ax_tree
-
-
---BU Selected Area
-CREATE TABLE bu_ax_selected AS
-SELECT st_buffer(st_union(ST_ExteriorRing(geom)),3) FROM ax_selected
-
-
-
-
-
 
 
 
