@@ -9,7 +9,7 @@ public partial class DataContext : DbContext
     public virtual DbSet<AxTree> AxTrees { get; set; }
     public virtual DbSet<GeoDatum> GeoData { get; set; }
     public virtual DbSet<GeothermalParameter> GeothermalParameter { get; set; }
-    public virtual DbSet<Research> Researches { get; set; }
+    public virtual DbSet<UsageArea> UsageAreas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,7 +29,7 @@ public partial class DataContext : DbContext
         {
             entity
                 .HasNoKey()
-                .ToTable("ax_buildings");
+                .ToView("ax_buildings");
 
             entity.Property(e => e.Geom).HasColumnName("geom");
         });
@@ -38,7 +38,7 @@ public partial class DataContext : DbContext
         {
             entity
                 .HasNoKey()
-                .ToTable("ax_selected");
+                .ToView("ax_selected");
 
             entity.Property(e => e.Geom).HasColumnName("geom");
         });
@@ -47,7 +47,7 @@ public partial class DataContext : DbContext
         {
             entity
                 .HasNoKey()
-                .ToTable("ax_tree");
+                .ToView("ax_tree");
 
             entity.Property(e => e.Geom).HasColumnName("geom");
         });
@@ -91,13 +91,15 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Srid).HasColumnName("srid");
         });
 
-        modelBuilder.Entity<Research>(entity =>
+        modelBuilder.Entity<UsageArea>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToView("research");
+                .ToTable("usage_area");
 
+            entity.Property(e => e.Bezeich).HasColumnName("bezeich");
             entity.Property(e => e.Geom).HasColumnName("geom");
+            entity.Property(e => e.Uuid).HasColumnName("uuid");
         });
 
         OnModelCreatingPartial(modelBuilder);

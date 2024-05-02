@@ -56,8 +56,11 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             //get geodata
             context.Database.SetCommandTimeout(TimeSpan.FromMinutes(60));
 
+            Console.WriteLine("Loading Select");
             var selectedData = context.AxSelecteds.ToList();
+            Console.WriteLine("Loading Trees");
             var ax_tree = context.AxTrees.ToList();
+            Console.WriteLine("Loading Buildings");
             var ax_buildings = context.AxBuildings.ToList();
 
             GeometryFactory geometryFactory = new();
@@ -110,7 +113,23 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
             context.Database.SetCommandTimeout(null);
         }
 
-        //Calcualte points in featureCollecti
+        // Quick restricted Area calculation
+
+        double areaSum = 0;
+
+        foreach (var element in featureCollection)
+        {
+            areaSum = areaSum + element.Geometry.Area;
+
+        }
+
+
+
+
+
+
+
+        //Calcualte points in featureCollection
 
         List<NetTopologySuite.Geometries.Geometry?> ProbeGeometricPosistions = await CalcualteProbePositionAsync(featureCollection);
 
