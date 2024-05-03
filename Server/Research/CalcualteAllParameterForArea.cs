@@ -123,15 +123,61 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
 
         }
 
+        var inputPathPoint = findLocalDirectoryPath.getLocalPath("CalculationResults", "berlinPointCalculation.geojson");
+
+        NetTopologySuite.Features.FeatureCollection FeatureCollectionOfProbeGeometricPosistions;
+        List<NetTopologySuite.Geometries.Geometry?> ProbeGeometricPosistions;
 
 
+        if (File.Exists(inputPathPoint))
+        {
+            string jsonString = File.ReadAllText(inputPathPoint);
 
+            var reader = new GeoJsonReader();
+            FeatureCollectionOfProbeGeometricPosistions = reader.Read<NetTopologySuite.Features.FeatureCollection>(jsonString);
 
+            foreach (var elementGeometry in featureCollection)
+            {
+                elementGeometry.Geometry.SRID = 25833;
+            }
 
+            ProbeGeometricPosistions = new List<NetTopologySuite.Geometries.Geometry?>();
 
-        //Calcualte points in featureCollection
+            foreach (var feature in FeatureCollectionOfProbeGeometricPosistions)
+            {
+                var geometry = feature.Geometry;
+                ProbeGeometricPosistions.Add(geometry);
+            }
 
-        List<NetTopologySuite.Geometries.Geometry?> ProbeGeometricPosistions = await CalcualteProbePositionAsync(featureCollection);
+        }
+        else
+        {
+            ProbeGeometricPosistions = await CalcualteProbePositionAsync(featureCollection);
+
+            var featureCollectionPoints = new NetTopologySuite.Features.FeatureCollection();
+
+            foreach (var geometry in ProbeGeometricPosistions)
+            {
+                if (geometry != null)
+                {
+                    var attributes = new AttributesTable();
+                    var feature = new NetTopologySuite.Features.Feature(geometry, attributes);
+                    featureCollectionPoints.Add(feature);
+                }
+            }
+
+            var serializer = GeoJsonSerializer.Create();
+            await using (var stringWriter = new StringWriter())
+            {
+                serializer.Serialize(stringWriter, featureCollectionPoints);
+                var geoJsonString = stringWriter.ToString();
+
+                File.WriteAllText(inputPathPoint, geoJsonString);
+            }
+
+        }
+
+         //Calcualte points in featureCollection
 
         var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
@@ -177,7 +223,7 @@ public class CalcualteAllParameterForArea(DataContext context, IFindLocalDirecto
         {
             u++;
             Console.WriteLine(u);
-/*            if (u >= 10)
+/*            if (u >= 2)
             {
                 break;
             }*/

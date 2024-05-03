@@ -98,7 +98,7 @@ WHERE ST_Intersects(usable_area.geom, building.geom)
 
 
 --Main
---ax_select Wohn, Industie und gewerbe, Besondere funktionale Prägung
+--ax_select Wohn, Industie und gewerbe
 CREATE TABLE ax_selected AS
 SELECT (ST_Dump(ST_UNION(parcel_area.geom))).geom AS geom
 FROM 
@@ -114,7 +114,6 @@ FROM
     AND (
         parameter ->> 'Bezeich' = 'AX_Wohnbauflaeche'
         OR parameter ->> 'Bezeich' = 'AX_IndustrieUndGewerbeflaeche'
-        OR parameter ->> 'Bezeich' = 'AX_FlaecheBesondererFunktionalerPraegung'
     )
 ) AS usable_area,
 (
