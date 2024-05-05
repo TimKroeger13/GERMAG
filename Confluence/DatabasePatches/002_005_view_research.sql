@@ -11,8 +11,7 @@ WHERE parameter_key =
 )
 
 --Main
---ax_select (Killer statement All intersections) 
-CREATE TABLE ax_selected AS
+--ax_select WOHN
 SELECT (ST_Dump(ST_UNION(parcel_area.geom))).geom AS geom
 FROM 
 (
@@ -35,9 +34,20 @@ FROM
 		FROM geothermal_parameter
 		WHERE typeofdata = 'land_parcels'
 	)
-) AS parcel_area
+) AS parcel_area,
+(
+	SELECT ST_Union(geom) AS geom 
+	FROM geo_data
+	WHERE parameter_key = 
+		(
+			SELECT id
+			FROM geothermal_parameter
+			WHERE typeofdata = 'water_protec_areas'
+		)
+) AS water_proc_area
 WHERE ST_Covers(usable_area.geom, parcel_area.geom)
 AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
+AND ST_Disjoint(water_proc_area.geom, parcel_area.geom)
 
 
 --Table creation
@@ -99,7 +109,6 @@ WHERE ST_Intersects(usable_area.geom, building.geom)
 
 --Main
 --ax_select Wohn, Industie und gewerbe
-CREATE TABLE ax_selected AS
 SELECT (ST_Dump(ST_UNION(parcel_area.geom))).geom AS geom
 FROM 
 (
@@ -125,9 +134,21 @@ FROM
 		FROM geothermal_parameter
 		WHERE typeofdata = 'land_parcels'
 	)
-) AS parcel_area
+) AS parcel_area,
+(
+	SELECT ST_Union(geom) AS geom 
+	FROM geo_data
+	WHERE parameter_key = 
+		(
+			SELECT id
+			FROM geothermal_parameter
+			WHERE typeofdata = 'water_protec_areas'
+		)
+) AS water_proc_area
 WHERE ST_Covers(usable_area.geom, parcel_area.geom)
 AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
+AND ST_Disjoint(water_proc_area.geom, parcel_area.geom)
+
 
 
 --Main
