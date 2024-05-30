@@ -466,12 +466,6 @@ async function GetRequestFullReport(reportType) {
         url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=false`;
     }
 
-    /*if(reportType == 'probe'){
-        url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=true`;
-    }else{
-        url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=false`;
-    }*/
-
     try {
         const response = await fetch(url);
 
