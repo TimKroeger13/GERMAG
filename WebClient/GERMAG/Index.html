@@ -85,8 +85,12 @@
     var popup = L.popup();
 
     map.on('click', function (e) {
-      onMapClick(e);
-    });
+    if (e.originalEvent.ctrlKey) {
+        onMapClickWithCtrl(e);
+    } else {
+        onMapClick(e);
+    }
+});
 
     async function removeLandParcels() {
       for (const layer of geoJsonList) {

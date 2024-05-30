@@ -14,19 +14,19 @@ namespace GERMAG.Server.GeometryCalculations;
 
 public interface IReceiveLandParcel
 {
-    Task<LandParcel> GetLandParcel(double Xcor, double Ycor, int Srid);
+    Task<LandParcel> GetLandParcel(List<double> Xcor, List<double> Ycor, int Srid);
 }
 
 public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
 {
-    public async Task<LandParcel> GetLandParcel(double Xcor, double Ycor, int Srid)
+    public async Task<LandParcel> GetLandParcel(List<double> Xcor, List<double> Ycor, int Srid)
     {
         return await Task.Run(() =>
         {
             var geoJsonWriter = new GeoJsonWriter();
 
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
-            var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
+            var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor[0], Ycor[0]));
 
             var transformedPoint = context.GeoData  //Database
                 .FromSql($"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({originalPoint.X}, {originalPoint.Y}), {Srid}), 25833) AS geom")

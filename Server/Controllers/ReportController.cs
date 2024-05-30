@@ -16,7 +16,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
-    public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
+    public async Task<IEnumerable<Report>> GetReport(List<double> Xcor, List<double> Ycor, int Srid)
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
 
