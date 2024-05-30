@@ -14,28 +14,66 @@ namespace GERMAG.Server.GeometryCalculations;
 
 public interface IReceiveLandParcel
 {
-    Task<LandParcel> GetLandParcel(double Xcor, double Ycor, int Srid);
+    Task<LandParcel> GetLandParcel(List<double> Xcor, List<double> Ycor, int Srid);
 }
 
 public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
 {
-    public async Task<LandParcel> GetLandParcel(double Xcor, double Ycor, int Srid)
+    public async Task<LandParcel> GetLandParcel(List<double> Xcor, List<double> Ycor, int Srid)
     {
         return await Task.Run(() =>
         {
             var geoJsonWriter = new GeoJsonWriter();
 
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: Srid);
-            var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor, Ycor));
+            var geometryFactoryTarget = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 25833);
 
-            var transformedPoint = context.GeoData  //Database
-                .FromSql($"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({originalPoint.X}, {originalPoint.Y}), {Srid}), 25833) AS geom")
+            List<NetTopologySuite.Geometries.Geometry> GeometryList = new List<NetTopologySuite.Geometries.Geometry>();
+
+            for ( var i = 0; i < Xcor.Count; i++)
+            {
+                var convertedPoint = geometryFactory.CreatePoint(new Coordinate(Xcor[i], Ycor[i]));
+
+                var transformedPoint = context.GeoData  //Database
+                .FromSql($"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({convertedPoint.X}, {convertedPoint.Y}), {Srid}), 25833) AS geom")
                 .Select(gd => gd.Geom)
                 .FirstOrDefault();
 
+                if (transformedPoint != null)
+                {
+                    GeometryList.Add(transformedPoint);
+                }
+            }
+            var pointsArray = GeometryList.OfType<Point>().ToArray();
+
+            // Create a MultiPoint from the array of Points.
+            MultiPoint multiPointList = geometryFactoryTarget.CreateMultiPoint(pointsArray);
+
+            //var originalPoint = geometryFactory.CreatePoint(new Coordinate(Xcor[0], Ycor[0]));
+
+            /*var transformedPoint = context.GeoData  //Database
+                .FromSql($"SELECT ST_Transform(ST_SetSRID(ST_MakePoint({originalPoint.X}, {originalPoint.Y}), {Srid}), 25833) AS geom")
+                .Select(gd => gd.Geom)
+                .FirstOrDefault();*/
+
             var landParcelID = context.GeothermalParameter.First(gp => gp.Type == TypeOfData.land_parcels).Id;
 
-            var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelID && gd.Geom!.Intersects(transformedPoint)).Select(gd => new { gd.Geom, gd.Id, gd.ParameterKey, gd.Parameter }).Take(1).ToList();
+            var landparcelIntersection = context.GeoData.Where(gd => gd.ParameterKey == landParcelID && gd.Geom!.Intersects(multiPointList)).Select(gd => new { gd.Geom, gd.Id, gd.ParameterKey, gd.Parameter }).ToList();
+
+
+
+            NetTopologySuite.Geometries.Geometry? unionGeometry = null;
+
+            foreach (var intersection in landparcelIntersection)
+            {
+                if (intersection.Geom == null)
+                {
+                    continue;
+                }
+
+                unionGeometry = unionGeometry == null ? intersection.Geom : unionGeometry.Union(intersection.Geom);
+            }
+
 
             if (landparcelIntersection.Count == 0)
             {
@@ -50,8 +88,8 @@ public class ReceiveLandParcel(DataContext context) : IReceiveLandParcel
                 GeoDataID = landparcelIntersection[0].Id,
                 ParameterKey = landParcelID,
                 Parameter = landparcelIntersection[0].Parameter,
-                Geometry = landparcelIntersection[0].Geom,
-                GeometryJson = geoJsonWriter.Write(landparcelIntersection[0].Geom),
+                Geometry = unionGeometry,
+                GeometryJson = geoJsonWriter.Write(unionGeometry),
             };
 
             return returnValue;

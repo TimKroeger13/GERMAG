@@ -4,9 +4,15 @@ proj4.defs("EPSG:25833", "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs");
 var Current_lat_coordiante = null;
 var Current_lng_coordiante = null;
 
+var Multiple_lat = [];
+var Multiple_lng = [];
+
 var NewObjectClicked = false;
 
 async function onMapClick(e, callback) {
+
+    Multiple_lng = [];
+    Multiple_lat = [];
 
     NewObjectClicked = true;
 
@@ -14,8 +20,18 @@ async function onMapClick(e, callback) {
 
     await InitalPointQuery(clickCoordinates.lng, clickCoordinates.lat)
 
-    Current_lat_coordiante = clickCoordinates.lat;
-    Current_lng_coordiante = clickCoordinates.lng;
+}
+
+async function onMapClickWithCtrl(e) {
+
+    NewObjectClicked = true;
+
+    var clickCoordinates = e.latlng;
+
+    Multiple_lng.push(clickCoordinates.lng);
+    Multiple_lat.push(clickCoordinates.lat);
+
+    await InitalPointQuery(Multiple_lng, Multiple_lat)
 }
 
 async function ShowDetailedReport(reportType) {
@@ -87,12 +103,27 @@ async function ShowDetailedReport(reportType) {
     return true;
 }
 
+//multiple buttons
+
 async function InitalPointQuery(lng, lat) {
+
+    if (!Array.isArray(lng) && !Array.isArray(lng) ){
+
+        lng = [lng]
+        lat = [lat]
+
+    }
+
+    Current_lat_coordiante = lat;
+    Current_lng_coordiante = lng;
 
     //Get Json from Server
     var ReportRequest_Json = await GetRequest(lng, lat);
 
     if (ReportRequest_Json[0].error != null) {
+        Multiple_lat.pop();
+        Multiple_lng.pop();
+        alert(ReportRequest_Json[0].error);
         return true
     }
 
@@ -383,10 +414,15 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
 }
 
 
-async function GetRequest(Xcor, Ycor) {
+async function GetRequest(XcorList, YcorList) {
     var Srid = 4326;
 
-    const url = `https://localhost:9999/api/report/reportdata?xCor=${Xcor}&yCor=${Ycor}&srid=${Srid}`;
+    const params = new URLSearchParams();
+    XcorList.forEach(x => params.append('xCor', x));
+    YcorList.forEach(y => params.append('yCor', y));
+    params.append('srid', Srid);
+
+    const url = `https://localhost:9999/api/report/reportdata?${params.toString()}`;
 
     try {
         const response = await fetch(url);
@@ -419,13 +455,22 @@ async function GetRequest(Xcor, Ycor) {
 async function GetRequestFullReport(reportType) {
     var Srid = 4326;
 
-    var url = ""
+    const params = new URLSearchParams();
+    Current_lng_coordiante.forEach(x => params.append('xCor', x));
+    Current_lat_coordiante.forEach(y => params.append('yCor', y));
+    params.append('srid', Srid);
 
     if(reportType == 'probe'){
+        url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=true`;
+    }else{
+        url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=false`;
+    }
+
+    /*if(reportType == 'probe'){
         url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=true`;
     }else{
         url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=false`;
-    }
+    }*/
 
     try {
         const response = await fetch(url);

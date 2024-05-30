@@ -7,6 +7,7 @@ using GERMAG.Server.ReportCreation;
 using GERMAG.Server.GeometryCalculations;
 using NetTopologySuite.IO;
 using GERMAG.Shared.PointProperties;
+using NetTopologySuite.Geometries;
 
 namespace GERMAG.Server.Controllers;
 
@@ -16,17 +17,12 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
-    public async Task<IEnumerable<Report>> GetReport(double Xcor, double Ycor, int Srid)
+    public async Task<IEnumerable<Report>> GetReport([FromQuery] List<double> Xcor, [FromQuery] List<double> Ycor, [FromQuery] int Srid)
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
 
-        if (landParcelElement.Error == true)
-        {
-            return new[] { new Report
-        {
-            Error = "Land Parcel not Found in the search area"
-        }};
-        }
+        if (landParcelElement.Error == true) { return new[] { new Report { Error = "Land parcel not found in the search area" }}; }
+        if (landParcelElement.Geometry is MultiPolygon) {return new[] { new Report { Error = "Selected land parcels don't form a single new land parcel" } }; }
 
         Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
 
@@ -40,7 +36,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
     [HttpGet("fullreport")]
     [EnableCors(CorsPolicies.GetAllowed)]
-    public async Task<IEnumerable<Report>> GetFullReport(double Xcor, double Ycor, int Srid, bool probeRes)
+    public async Task<IEnumerable<Report>> GetFullReport([FromQuery] List<double> Xcor, [FromQuery] List<double> Ycor, [FromQuery] int Srid, [FromQuery] bool probeRes)
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
 
