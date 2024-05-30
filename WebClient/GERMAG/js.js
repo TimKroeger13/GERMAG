@@ -11,6 +11,9 @@ var NewObjectClicked = false;
 
 async function onMapClick(e, callback) {
 
+    Multiple_lng = [];
+    Multiple_lat = [];
+
     NewObjectClicked = true;
 
     var clickCoordinates = e.latlng;
@@ -118,6 +121,9 @@ async function InitalPointQuery(lng, lat) {
     var ReportRequest_Json = await GetRequest(lng, lat);
 
     if (ReportRequest_Json[0].error != null) {
+        Multiple_lat.pop();
+        Multiple_lng.pop();
+        alert(ReportRequest_Json[0].error);
         return true
     }
 
@@ -411,7 +417,12 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
 async function GetRequest(XcorList, YcorList) {
     var Srid = 4326;
 
-    const url = `https://localhost:9999/api/report/reportdata?xCor=${XcorList}&yCor=${YcorList}&srid=${Srid}`;
+    const params = new URLSearchParams();
+    XcorList.forEach(x => params.append('xCor', x));
+    YcorList.forEach(y => params.append('yCor', y));
+    params.append('srid', Srid);
+
+    const url = `https://localhost:9999/api/report/reportdata?${params.toString()}`;
 
     try {
         const response = await fetch(url);
@@ -444,13 +455,22 @@ async function GetRequest(XcorList, YcorList) {
 async function GetRequestFullReport(reportType) {
     var Srid = 4326;
 
-    var url = ""
+    const params = new URLSearchParams();
+    Current_lng_coordiante.forEach(x => params.append('xCor', x));
+    Current_lat_coordiante.forEach(y => params.append('yCor', y));
+    params.append('srid', Srid);
 
     if(reportType == 'probe'){
+        url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=true`;
+    }else{
+        url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=false`;
+    }
+
+    /*if(reportType == 'probe'){
         url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=true`;
     }else{
         url = `https://localhost:9999/api/report/fullreport?xCor=${Current_lng_coordiante}&yCor=${Current_lat_coordiante}&srid=${Srid}&probeRes=false`;
-    }
+    }*/
 
     try {
         const response = await fetch(url);
