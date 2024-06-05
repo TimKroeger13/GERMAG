@@ -161,7 +161,6 @@ FlaecheGemischerNutzung
 FlaecheBesondererFunktionaler praegung
 
 */
-CREATE TABLE ax_selected AS
 SELECT (ST_Dump(ST_UNION(parcel_area.geom))).geom AS geom
 FROM 
 (
@@ -192,9 +191,32 @@ FROM
 		FROM geothermal_parameter
 		WHERE typeofdata = 'land_parcels'
 	)
-) AS parcel_area
+) AS parcel_area,
+(
+	SELECT ST_Union(geom) AS geom 
+	FROM geo_data
+	WHERE parameter_key = 
+		(
+			SELECT id
+			FROM geothermal_parameter
+			WHERE typeofdata = 'water_protec_areas'
+		)
+) AS water_proc_area
 WHERE ST_Covers(usable_area.geom, parcel_area.geom)
 AND ST_GeometryType(parcel_area.geom) = 'ST_Polygon'
+AND ST_Disjoint(water_proc_area.geom, parcel_area.geom)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
