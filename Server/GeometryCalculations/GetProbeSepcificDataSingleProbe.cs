@@ -10,7 +10,7 @@ public interface IGetProbeSepcificDataSingleProbe
     Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint, DataContext context);
 }
 
-public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDeserialator) : IGetProbeSepcificDataSingleProbe
+public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDeserialator, IRating rating) : IGetProbeSepcificDataSingleProbe
 {
     public async Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint, DataContext context)
     {
@@ -99,6 +99,8 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         SingleProbePoint.Properties.GeoPotenDepth = GeoPotenDepth;
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
         SingleProbePoint.Properties.RawExtractionKW = GeoPoten * MaxDepth * 2400 / 1000;
+
+        var ratingFactor = rating.CalculateRating(98,2.7,12.8,true);
 
         return SingleProbePoint;
     }
