@@ -2,6 +2,7 @@
 using GERMAG.Shared;
 using NetTopologySuite.Geometries;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.ReportCreation;
 
@@ -37,6 +38,8 @@ public class CreateReportStructure : ICreateReportStructure
     private readonly List<String>? _verordnung = [];
     private readonly List<String>? _veror_link = [];
     private readonly List<String>? _holstein_depth = [];
+    private bool? _activeRestriction = false;
+    private Regex protectionRex = new Regex("schutz", RegexOptions.IgnoreCase);
     public Report[] CreateReport(List<GeometryElementParameter> CoordinateParameters)
     {
         foreach (var CoordinateParameter in CoordinateParameters)
@@ -49,6 +52,7 @@ public class CreateReportStructure : ICreateReportStructure
                     break;
                 case DataModel.Database.TypeOfData.geo_poten_restrict:
                     _geo_poten_restrict?.Add(CoordinateParameter.JsonDataParameter?.Text?.ToString() ?? "");
+                    _activeRestriction = protectionRex.IsMatch(CoordinateParameter!.JsonDataParameter?.Text?.ToString() ?? string.Empty);
                     break;
                 case DataModel.Database.TypeOfData.mean_water_temp_20to100:
                     _mean_water_temp_20to100?.Add(CoordinateParameter.JsonDataParameter?.Grwtemp_text?.ToString() ?? "");
@@ -176,6 +180,7 @@ public class CreateReportStructure : ICreateReportStructure
             Land_parcel_number = _land_parcel_number,
             Land_parcels_gemeinde = _land_parcels_gemeinde,
             Building_begzgkt = _building_begzgkt,
+            ActiveRestriction = _activeRestriction,
             //ZeHGW = _zeHGW <- polylines
 
         }};
