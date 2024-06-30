@@ -348,8 +348,10 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
         holstein = `<p><strong>Holstein-Schicht:</strong> ${reportData.holstein} meter</p>`
     }
 
+    var backgroundColor = reportData.activeRestriction ? 'background-color: rgba(255, 87, 51, 0.2);' : '';
+
     var html = `
-    <div class="geothermal-report">
+    <div class="geothermal-report" style="${backgroundColor}">
         <p><strong>Gemeinde:</strong> ${reportData.land_parcels_gemeinde}</p>
         <p><strong>Flurstück:</strong> ${reportData.land_parcel_number}</p>
         <p><strong>Entzugsleistungen 2400ha (W/m):</strong></p>
@@ -395,11 +397,13 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
         html = html + `
     <p><strong>Amount of possible probes:</strong> ${reportData.probePoint.length}</p>`
 
+    }
+
     html = html + `
     ${String_geo_poten_restrict}
     ${String_Water_protec_areas}`
 
-    }
+    //reportData.activeRestriction
 
     if(DisplayGoogleGrafics) {
         html = html + `<div id="piechart" style="width: 500px; height: 300px;"></div>`
