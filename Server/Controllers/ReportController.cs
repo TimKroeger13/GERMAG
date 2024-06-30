@@ -13,7 +13,7 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData, IGetPolylineData getPolylineData) : ControllerBase
+public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData) : ControllerBase // IGetPolylineData getPolylineData)
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
@@ -70,15 +70,15 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
             return FinalReport;
         }
 
-        if (probeRes) //Probe Resulution
-        {
-            FullPointProbe = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
-        }
+        //if (probeRes) //Probe Resulution
+        //{
+         FullPointProbe = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+        //}
 
         //LineInformation - ExpectedGroundWaterHeight
-        var ZeHGW = await getPolylineData.GetNearestPolylineData(landParcelElement);
+        //var ZeHGW = await getPolylineData.GetNearestPolylineData(landParcelElement);
 
-        FinalReport[0].ZeHGW = ZeHGW;
+        //FinalReport[0].ZeHGW = ZeHGW;
 
         List<ProbePoint?> TruncatedPointProbe = new();
 
@@ -96,6 +96,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         }
 
         FinalReport[0].ProbePoint = TruncatedPointProbe;
+        FinalReport[0].TotalRawExtraction = TruncatedPointProbe.Select(x => x?.Properties?.RawExtractionKW).Sum();
 
         return FinalReport;
     }

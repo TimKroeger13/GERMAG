@@ -19,4 +19,6 @@ public class Properties
     public double? GeoPoten { get; set; } = null;
     public double? MaxDepth { get; set; } = null;
     public double? GeoPotenDepth { get; set; } = null;
+    public double? RawExtractionKW { get; set; } = null;
+    public double? Rating { get; set; } = null;
 }

@@ -350,8 +350,20 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
 
     var backgroundColor = reportData.activeRestriction ? 'background-color: rgba(255, 87, 51, 0.2);' : '';
 
+    if(reportData.geo_poten_100m_with_2400ha == ''){
+        backgroundColor = 'background-color: rgba(255, 87, 51, 0.2);'
+    }
+
     var html = `
-    <div class="geothermal-report" style="${backgroundColor}">
+    <div class="geothermal-report" style="${backgroundColor}">`
+
+    if (ReportIsDetailed) {
+        html = html + `
+            <h3><strong>Entzug (MW|2400):</strong> ${Math.round(reportData.totalRawExtraction/10)/100} Megawatt</h3>
+            <br>`
+    }
+
+    html = html + `
         <p><strong>Gemeinde:</strong> ${reportData.land_parcels_gemeinde}</p>
         <p><strong>Flurstück:</strong> ${reportData.land_parcel_number}</p>
         <p><strong>Entzugsleistungen 2400ha (W/m):</strong></p>
@@ -387,8 +399,8 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
     if (ReportIsDetailed) {
 
         //Expected groundwater hight
-        html = html + `
-        <p><strong>ZeHGW:</strong> ${reportData.zeHGW} meter</p>`
+        //html = html + `
+        //<p><strong>ZeHGW:</strong> ${reportData.zeHGW} meter</p>`
 
         //Usable Area
         html = html + `
