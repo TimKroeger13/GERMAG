@@ -352,28 +352,28 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
     <div class="geothermal-report">
         <p><strong>Gemeinde:</strong> ${reportData.land_parcels_gemeinde}</p>
         <p><strong>Flurstück:</strong> ${reportData.land_parcel_number}</p>
-        <p><strong>Entzugsleistungen 2400ha:</strong></p>
+        <p><strong>Entzugsleistungen 2400ha (W/m):</strong></p>
         <ul>
             <li><strong>100:</strong> ${reportData.geo_poten_100m_with_2400ha}</li>
             <li><strong>80:</strong> ${reportData.geo_poten_80m_with_2400ha}</li>
             <li><strong>60:</strong> ${reportData.geo_poten_60m_with_2400ha}</li>
             <li><strong>40:</strong> ${reportData.geo_poten_40m_with_2400ha}</li>
         </ul>
-        <p><strong>Entzugsleistungen 1800ha:</strong></p>
+        <p><strong>Entzugsleistungen 1800ha (W/m):</strong></p>
         <ul>
             <li><strong>100:</strong> ${reportData.geo_poten_100m_with_1800ha}</li>
             <li><strong>80:</strong> ${reportData.geo_poten_80m_with_1800ha}</li>
             <li><strong>60:</strong> ${reportData.geo_poten_60m_with_1800ha}</li>
             <li><strong>40:</strong> ${reportData.geo_poten_40m_with_1800ha}</li>
         </ul>
-        <p><strong>Spezifische Wärmeleitfähigkeit:</strong></p>
+        <p><strong>Spezifische Wärmeleitfähigkeit (Wm<sup>-1</sup>K<sup>-1</sup>):</strong></p>
         <ul>
             <li><strong>100:</strong> ${reportData.thermal_con_100}</li>
             <li><strong>80:</strong> ${reportData.thermal_con_80}</li>
             <li><strong>60:</strong> ${reportData.thermal_con_60}</li>
             <li><strong>40:</strong> ${reportData.thermal_con_40}</li>
         </ul>
-        <p><strong>Grundwassertemperatur unter Geländeoberfläche:</strong></p>
+        <p><strong>Grundwassertemperatur unter Geländeoberfläche (°C):</strong></p>
         <ul>
             <li><strong>20to100:</strong> ${reportData.mean_water_temp_20to100}</li>
             <li><strong>60:</strong> ${reportData.mean_water_temp_60}</li>

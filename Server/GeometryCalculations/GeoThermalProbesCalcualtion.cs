@@ -92,7 +92,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
             foreach (var TempCandidatePoint in CandidateMultiPoint.Geometries)
             {
-                candidateBuffer = (NetTopologySuite.Geometries.Polygon)TempCandidatePoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2));
+                candidateBuffer = (NetTopologySuite.Geometries.Polygon)TempCandidatePoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter));
 
                 var TempBufferIntersectionSingle = currentGeometry?.Intersection(candidateBuffer);
 
@@ -181,7 +181,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
                 //Find Candiate Points in nearby geometry
 
-                CandidateBufferRing = lastCurrentPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter / 2)).Boundary;
+                CandidateBufferRing = lastCurrentPoint.Buffer(OfficalParameters.ProbeDistance + (OfficalParameters.ProbeDiameter)).Boundary;
 
                 if (currentOutline is NetTopologySuite.Geometries.MultiLineString multiLineString)
                 {
