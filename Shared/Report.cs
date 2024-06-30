@@ -44,6 +44,7 @@ public class Report
     public List<ProbePoint?>? ProbePoint { get; set; }
     public String? Geometry_LeftOverArea { get; set; }
     public bool? ActiveRestriction { get; set; }
+    public double? TotalRawExtraction { get; set; }
 
     public String? Holstein { get; set; }
 }

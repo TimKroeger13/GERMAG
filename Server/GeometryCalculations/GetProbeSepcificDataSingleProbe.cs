@@ -98,6 +98,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         SingleProbePoint.Properties.MaxDepth = MaxDepth;
         SingleProbePoint.Properties.GeoPotenDepth = GeoPotenDepth;
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
+        SingleProbePoint.Properties.RawExtractionKW = GeoPoten * MaxDepth * 2400 / 1000;
 
         return SingleProbePoint;
     }

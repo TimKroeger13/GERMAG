@@ -172,7 +172,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
                 {
                     Geometry = lastCurrentPoint,
                     GeometryJson = geoJsonWriter.Write(lastCurrentPoint),
-                    Properties = new Shared.PointProperties.Properties { GeoPoten = null, MaxDepth = null, GeoPotenDepth = null }
+                    Properties = new Shared.PointProperties.Properties { GeoPoten = null, MaxDepth = null, GeoPotenDepth = null, RawExtractionKW = null, Rating = null}
                 };
 
                 ReportGeothermalPoints.Add(CandidateChoosenPoint);
