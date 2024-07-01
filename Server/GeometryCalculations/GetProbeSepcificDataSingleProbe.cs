@@ -100,18 +100,22 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         if (GeoPotenDepth >= 100)
         {
             GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
+            ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_100, "La_100txt");
         }
         else if (GeoPotenDepth >= 80)
         {
-            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
+            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_80m_with_2400ha, "La_80txt");
+            ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_80, "La_80txt");
         }
         else if (GeoPotenDepth >= 60)
         {
-            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
+            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_60m_with_2400ha, "La_60txt");
+            ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_60, "La_60txt");
         }
         else if (GeoPotenDepth >= 40)
         {
-            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
+            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_40m_with_2400ha, "La_40txt");
+            ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_40, "La_40txt");
         }
 
         if(SingleProbePoint.Properties == null)
