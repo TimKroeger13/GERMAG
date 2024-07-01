@@ -138,7 +138,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
         SingleProbePoint.Properties.RawExtractionKW = GeoPoten * MaxDepth * 2400 / 1000;
 
-        var ratingFactor = await rating.CalculateRating(MaxDepth, 2.7,12.8, IsProtectedBool);
+        var ratingFactor = await rating.CalculateRating(MaxDepth, ThermalCon, 12.8, IsProtectedBool);
 
         return SingleProbePoint;
     }
