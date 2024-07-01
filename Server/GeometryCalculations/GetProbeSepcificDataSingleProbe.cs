@@ -2,6 +2,7 @@
 using GERMAG.Shared;
 using GERMAG.DataModel.Database;
 using GERMAG.Server.ReportCreation;
+using System.Text.RegularExpressions;
 
 namespace GERMAG.Server.GeometryCalculations;
 
@@ -12,8 +13,10 @@ public interface IGetProbeSepcificDataSingleProbe
 
 public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDeserialator, IRating rating) : IGetProbeSepcificDataSingleProbe
 {
+    private Regex protectionRex = new Regex("schutz", RegexOptions.IgnoreCase);
     public async Task<ProbePoint?> GetSingleProbeData(LandParcel landParcelElement, ProbePoint? SingleProbePoint, DataContext context)
     {
+
         if (SingleProbePoint == null || SingleProbePoint.Geometry == null)
         {
             return null;
@@ -46,8 +49,25 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         context.SaveChanges();
         transaction.Commit();
 
-        var UnserilizedDepthRestrictions = intersectingResult.Find(element => element.Type == TypeOfData.depth_restrictions);
 
+
+        //var RestrictionText = intersectingResult.Find(element => element.Type == TypeOfData.geo_poten_restrict);
+        //var DeserializedRestrictionText = await Task.Run(() => parameterDeserialator.DeserializeParameters(RestrictionText?.Parameter ?? ""));
+        //var IsProtectedBool = protectionRex.IsMatch(DeserializedRestrictionText.Text ?? string.Empty);
+
+
+
+
+
+
+
+
+
+
+
+
+
+        var UnserilizedDepthRestrictions = intersectingResult.Find(element => element.Type == TypeOfData.depth_restrictions);
         double? MaxDepth;
 
         if (UnserilizedDepthRestrictions == null)
@@ -95,12 +115,16 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
             SingleProbePoint = CorrectedProbpoint;
         }
 
+        //Water Protection
+        //Conductfity
+        //Tempeture
+
         SingleProbePoint.Properties.MaxDepth = MaxDepth;
         SingleProbePoint.Properties.GeoPotenDepth = GeoPotenDepth;
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
         SingleProbePoint.Properties.RawExtractionKW = GeoPoten * MaxDepth * 2400 / 1000;
 
-        var ratingFactor = rating.CalculateRating(98,2.7,12.8,true);
+        var ratingFactor = await rating.CalculateRating(MaxDepth, 2.7,12.8,false);
 
         return SingleProbePoint;
     }
