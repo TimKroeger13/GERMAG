@@ -4,6 +4,7 @@ using GERMAG.DataModel.Database;
 using GERMAG.Server.ReportCreation;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Globalization;
 
 namespace GERMAG.Server.GeometryCalculations;
 
@@ -60,8 +61,11 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
             var DeserializedRestrictionText = await Task.Run(() => parameterDeserialator.DeserializeParameters(RestrictionText?.Parameter ?? ""));
             IsProtectedBool = protectionRex.IsMatch(DeserializedRestrictionText.Text ?? string.Empty);
         }
-       
-        //var ThermalConductivityValue = intersectingResult.Find(element => element.Type == TypeOfData.th)
+
+        //var test = intersectingResult.Where(element => element.Type == TypeOfData.mean_water_temp_20to100).ToList();
+
+        var test2 = GetValue(intersectingResult, TypeOfData.mean_water_temp_20to100, "Grwtemp_text");
+        //hier
 
 
 
@@ -145,21 +149,29 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
     private double? GetValue(List<GeometryElementParameter> intersectingResult, TypeOfData typeOfData, String ParameterName)
     {
-        GeometryElementParameter? UnserilizedGeoPoten = intersectingResult.Find(element => element.Type == typeOfData);
+        var UnserilizedParameter = intersectingResult.Where(element => element.Type == typeOfData).ToList();
+
+        if (UnserilizedParameter == null) { return null; }
 
         var propertyInfo = typeof(Shared.Properties).GetProperty(ParameterName);
         if (propertyInfo == null) { return null; }
 
-        if (UnserilizedGeoPoten == null) { return null;  }
+        double? HeighestValue = double.NegativeInfinity;
 
-        Shared.Properties DeserializedGeoPoten = parameterDeserialator.DeserializeParameters(UnserilizedGeoPoten?.Parameter ?? "");
+        foreach (var SingleUnParameter in UnserilizedParameter)
+        {
+            Shared.Properties DeserializedGeoPoten = parameterDeserialator.DeserializeParameters(SingleUnParameter?.Parameter ?? "");
 
-        string? propertyValue = propertyInfo.GetValue(DeserializedGeoPoten) as string;
-        double? GeoPoten = ParseStringToValue(propertyValue ?? string.Empty);
+            string? propertyValue = propertyInfo.GetValue(DeserializedGeoPoten) as string;
+            double? CurrentValue = ParseStringToValue(propertyValue ?? string.Empty);
 
-        return GeoPoten;
+            if(HeighestValue < CurrentValue) { HeighestValue = CurrentValue; }
+        }
+
+        return HeighestValue;
     }
 
+    /*
     private double? ParseStringToValue(string valueRange)
     {
         List<double> numbers = new();
@@ -183,5 +195,38 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         double maxValue = numbers.Max();
 
         return (minValue + maxValue) / 2.0;
+    }*/
+
+    private double? ParseStringToValue(string valueRange)
+    {
+        // Replace commas with dots
+        valueRange = CommaToDotRegex().Replace(valueRange, ".");
+        valueRange = CutRegex().Replace(valueRange, "-");
+
+        // Split the string by "bis"
+        string[] parts = valueRange.Split('-', '>');
+
+        List<double> numbers = new();
+
+        foreach (string part in parts)
+        {
+            if (double.TryParse(part.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out double number))
+            {
+                numbers.Add(number);
+            }
+        }
+
+        if (numbers.Count == 0)
+        {
+            return null;
+        }
+
+        double minValue = numbers.Min();
+        double maxValue = numbers.Max();
+
+        return (minValue + maxValue) / 2.0;
     }
+
+    private static Regex CutRegex() => new Regex("bis", RegexOptions.Compiled);
+    private static Regex CommaToDotRegex() => new Regex(",", RegexOptions.Compiled);
 }
