@@ -3,6 +3,7 @@ using GERMAG.Shared;
 using GERMAG.DataModel.Database;
 using GERMAG.Server.ReportCreation;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GERMAG.Server.GeometryCalculations;
 
@@ -51,9 +52,17 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
 
 
-        //var RestrictionText = intersectingResult.Find(element => element.Type == TypeOfData.geo_poten_restrict);
-        //var DeserializedRestrictionText = await Task.Run(() => parameterDeserialator.DeserializeParameters(RestrictionText?.Parameter ?? ""));
-        //var IsProtectedBool = protectionRex.IsMatch(DeserializedRestrictionText.Text ?? string.Empty);
+        var RestrictionText = intersectingResult.Find(element => element.Type == TypeOfData.geo_poten_restrict);
+
+        bool IsProtectedBool = false;
+        if (RestrictionText != null)
+        {
+            var DeserializedRestrictionText = await Task.Run(() => parameterDeserialator.DeserializeParameters(RestrictionText?.Parameter ?? ""));
+            IsProtectedBool = protectionRex.IsMatch(DeserializedRestrictionText.Text ?? string.Empty);
+        }
+       
+        //var ThermalConductivityValue = intersectingResult.Find(element => element.Type == TypeOfData.th)
+
 
 
 
@@ -86,22 +95,23 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         int GeoPotenDepth = PotentialDepth.Find(value => value <= MaxDepth);
 
         double? GeoPoten = null;
+        double? ThermalCon = null;
 
         if (GeoPotenDepth >= 100)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
+            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
         }
         else if (GeoPotenDepth >= 80)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
+            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
         }
         else if (GeoPotenDepth >= 60)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
+            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
         }
         else if (GeoPotenDepth >= 40)
         {
-            GeoPoten = GetPotential(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha);
+            GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
         }
 
         if(SingleProbePoint.Properties == null)
@@ -124,19 +134,24 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
         SingleProbePoint.Properties.RawExtractionKW = GeoPoten * MaxDepth * 2400 / 1000;
 
-        var ratingFactor = await rating.CalculateRating(MaxDepth, 2.7,12.8,false);
+        var ratingFactor = await rating.CalculateRating(MaxDepth, 2.7,12.8, IsProtectedBool);
 
         return SingleProbePoint;
     }
 
-    private double? GetPotential(List<GeometryElementParameter> intersectingResult, TypeOfData typeOfData)
+    private double? GetValue(List<GeometryElementParameter> intersectingResult, TypeOfData typeOfData, String ParameterName)
     {
         GeometryElementParameter? UnserilizedGeoPoten = intersectingResult.Find(element => element.Type == typeOfData);
 
-        if(UnserilizedGeoPoten == null) { return null;  }
+        var propertyInfo = typeof(Shared.Properties).GetProperty(ParameterName);
+        if (propertyInfo == null) { return null; }
+
+        if (UnserilizedGeoPoten == null) { return null;  }
 
         Shared.Properties DeserializedGeoPoten = parameterDeserialator.DeserializeParameters(UnserilizedGeoPoten?.Parameter ?? "");
-        double? GeoPoten = ParseStringToValue(DeserializedGeoPoten.La_100txt ?? "");
+
+        string? propertyValue = propertyInfo.GetValue(DeserializedGeoPoten) as string;
+        double? GeoPoten = ParseStringToValue(propertyValue ?? string.Empty);
 
         return GeoPoten;
     }
