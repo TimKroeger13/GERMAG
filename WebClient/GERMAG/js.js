@@ -66,6 +66,15 @@ async function ShowDetailedReport(reportType) {
         var ProbePointsGeometry = await BackTransformationOfProbepoints(ReportRequest_Json[0].probePoint);
     }
 
+    var totalRating = [];
+    if (ReportRequest_Json[0].probePoint.length != 0) {
+        for (let k = 0; k < ProbePointsGeometry.length; k++) {
+            var Singlerating  = ProbePointsGeometry[k].properties.rating;
+            totalRating.push(Singlerating);
+        }
+    }
+    ReportRequest_Json[0].totalRating = totalRating
+
     //Create Gethermalreport
     if(reportType == 'probe'){
         var GeothermalReport = await CreateReportHTML(ReportRequest_Json[0], true, true);
@@ -359,7 +368,12 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
 
     if (ReportIsDetailed) {
         html = html + `
-            <h3><strong>Entzug (MW|2400):</strong> ${Math.round(reportData.totalRawExtraction/10)/100} Megawatt</h3>
+            <h3><strong>Entzug (MW|2400):</strong> ${Math.round(reportData.totalRawExtraction/10)/100} Megawatt</h3>`
+    }
+
+    if (ReportIsDetailed) {
+        html = html + `
+            <h3><strong>Rating:</strong> ${Math.round(median(reportData.totalRating) * 100) / 100} von 10</h3>
             <br>`
     }
 
@@ -612,3 +626,19 @@ function transformCoordinates(coordinates) {
 
     return transformedCoordinates;
 }
+
+
+
+
+function median(numbers) {
+    if (numbers.length === 0) return 0;
+    numbers.sort((a, b) => a - b);
+  
+    const mid = Math.floor(numbers.length / 2);
+  
+    if (numbers.length % 2 !== 0) {
+      return numbers[mid];
+    }
+  
+    return (numbers[mid - 1] + numbers[mid]) / 2;
+  }

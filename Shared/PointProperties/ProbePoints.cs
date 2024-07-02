@@ -20,5 +20,5 @@ public class Properties
     public double? MaxDepth { get; set; } = null;
     public double? GeoPotenDepth { get; set; } = null;
     public double? RawExtractionKW { get; set; } = null;
-    public double? Rating { get; set; } = null;
+    public decimal? Rating { get; set; } = null;
 }
