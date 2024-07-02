@@ -102,8 +102,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
             ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_60, "La_60txt");
             Temperature = GetValue(intersectingResult, TypeOfData.mean_water_temp_60, "Grwtemp_text");
         }
-        else if (GeoPotenDepth >= 40)
-        {
+        else{
             GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_40m_with_2400ha, "La_40txt");
             ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_40, "La_40txt");
             Temperature = GetValue(intersectingResult, TypeOfData.mean_water_temp_40, "Grwtemp_text");
@@ -188,6 +187,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         valueRange = CommaToDotRegex().Replace(valueRange, ".");
         valueRange = CutRegex().Replace(valueRange, "-");
         valueRange = RemoveLessThanRegex().Replace(valueRange, "");
+        valueRange = RemoveGreaterThanRegex().Replace(valueRange, "");
 
         // Split the string by "bis"
         string[] parts = valueRange.Split('-', '>');
@@ -216,4 +216,5 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
     private static Regex CutRegex() => new Regex("bis", RegexOptions.Compiled);
     private static Regex CommaToDotRegex() => new Regex(",", RegexOptions.Compiled);
     private static Regex RemoveLessThanRegex() => new Regex("<", RegexOptions.Compiled);
+    private static Regex RemoveGreaterThanRegex() => new Regex(">", RegexOptions.Compiled);
 }

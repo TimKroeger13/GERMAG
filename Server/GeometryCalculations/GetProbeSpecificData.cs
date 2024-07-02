@@ -17,7 +17,7 @@ public class GetProbeSpecificData(DataContext context, IGetProbeSepcificDataSing
     {
         List<Task<ProbePoint?>> tasks = new();
 
-        for(int i = 0; i < probePoints.Count; i++)
+        for (int i = 0; i < probePoints.Count; i++) //probePoints.Count    (int i = 0; i < probePoints.Count; i++)
         {
             Console.WriteLine("Probe: " + i + " / " + (probePoints.Count-1));
 
