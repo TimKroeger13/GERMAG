@@ -62,20 +62,6 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
             IsProtectedBool = protectionRex.IsMatch(DeserializedRestrictionText.Text ?? string.Empty);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         var UnserilizedDepthRestrictions = intersectingResult.Find(element => element.Type == TypeOfData.depth_restrictions);
         double? MaxDepth;
 
@@ -201,6 +187,7 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
         // Replace commas with dots
         valueRange = CommaToDotRegex().Replace(valueRange, ".");
         valueRange = CutRegex().Replace(valueRange, "-");
+        valueRange = RemoveLessThanRegex().Replace(valueRange, "");
 
         // Split the string by "bis"
         string[] parts = valueRange.Split('-', '>');
@@ -228,4 +215,5 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
     private static Regex CutRegex() => new Regex("bis", RegexOptions.Compiled);
     private static Regex CommaToDotRegex() => new Regex(",", RegexOptions.Compiled);
+    private static Regex RemoveLessThanRegex() => new Regex("<", RegexOptions.Compiled);
 }
