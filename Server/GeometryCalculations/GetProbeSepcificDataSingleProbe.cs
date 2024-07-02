@@ -62,10 +62,6 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
             IsProtectedBool = protectionRex.IsMatch(DeserializedRestrictionText.Text ?? string.Empty);
         }
 
-        //var test = intersectingResult.Where(element => element.Type == TypeOfData.mean_water_temp_20to100).ToList();
-
-        var test2 = GetValue(intersectingResult, TypeOfData.mean_water_temp_20to100, "Grwtemp_text");
-        //hier
 
 
 
@@ -100,26 +96,31 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
 
         double? GeoPoten = null;
         double? ThermalCon = null;
+        double? Temperature = null;
 
         if (GeoPotenDepth >= 100)
         {
             GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_100m_with_2400ha, "La_100txt");
             ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_100, "La_100txt");
+            Temperature = GetValue(intersectingResult, TypeOfData.mean_water_temp_20to100, "Grwtemp_text");
         }
         else if (GeoPotenDepth >= 80)
         {
             GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_80m_with_2400ha, "La_80txt");
             ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_80, "La_80txt");
+            Temperature = GetValue(intersectingResult, TypeOfData.mean_water_temp_20to100, "Grwtemp_text");
         }
         else if (GeoPotenDepth >= 60)
         {
             GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_60m_with_2400ha, "La_60txt");
             ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_60, "La_60txt");
+            Temperature = GetValue(intersectingResult, TypeOfData.mean_water_temp_60, "Grwtemp_text");
         }
         else if (GeoPotenDepth >= 40)
         {
             GeoPoten = GetValue(intersectingResult, TypeOfData.geo_poten_40m_with_2400ha, "La_40txt");
             ThermalCon = GetValue(intersectingResult, TypeOfData.thermal_con_40, "La_40txt");
+            Temperature = GetValue(intersectingResult, TypeOfData.mean_water_temp_40, "Grwtemp_text");
         }
 
         if(SingleProbePoint.Properties == null)
@@ -133,16 +134,14 @@ public class GetProbeSepcificDataSingleProbe(IParameterDeserialator parameterDes
             SingleProbePoint = CorrectedProbpoint;
         }
 
-        //Water Protection
-        //Conductfity
-        //Tempeture
+        var ratingFactor = await rating.CalculateRating(MaxDepth, ThermalCon, Temperature, IsProtectedBool);
 
         SingleProbePoint.Properties.MaxDepth = MaxDepth;
         SingleProbePoint.Properties.GeoPotenDepth = GeoPotenDepth;
         SingleProbePoint.Properties.GeoPoten = GeoPoten;
         SingleProbePoint.Properties.RawExtractionKW = GeoPoten * MaxDepth * 2400 / 1000;
 
-        var ratingFactor = await rating.CalculateRating(MaxDepth, ThermalCon, 12.8, IsProtectedBool);
+        SingleProbePoint.Properties.Rating = ratingFactor;
 
         return SingleProbePoint;
     }
