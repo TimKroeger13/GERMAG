@@ -16,9 +16,9 @@ public static class OfficalParameters
     public static double ProbeDistance { get; } = 6; //meter (radius)
     public static int MaximalAreaSizeForCalculations { get; } = 100000; //sqaure meters
 
-    public static double DepthFactorRatio { get; } = (double)1/ (double)3;
-    public static double ThermalConFactorRatio { get; } = (double)1 / (double)3;
-    public static double UnderGroundTempFactorRatio { get; } = (double)1 / (double)3;
+    public static double DepthFactorRatio { get; } = (double)24.74 / (double)100;
+    public static double ThermalConFactorRatio { get; } = (double)18.26 / (double)100;
+    public static double UnderGroundTempFactorRatio { get; } = (double)57 / (double)100;
 
     public static double DepthFactorMin { get; } = 30;
     public static double DepthFactorMax { get; } = 100;

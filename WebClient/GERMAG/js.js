@@ -375,7 +375,7 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGrafics) {
 
     if (ReportIsDetailed) {
         html = html + `
-            <h3><strong>Entzug (MW|2400):</strong> ${Math.round(reportData.totalRawExtraction/10)/100} Megawatt</h3>`
+            <h3><strong>Entzug (MW|2400):</strong> ${Math.round(reportData.totalRawExtraction/10)/100} Megawatt Stunden</h3>`
     }
 
     if (ReportIsDetailed) {

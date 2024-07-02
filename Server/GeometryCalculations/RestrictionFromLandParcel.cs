@@ -47,6 +47,7 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance); // + (OfficalParameters.ProbeDiameter / 2)
 
+            //NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedTrees);
             NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings).Difference(bufferedTrees);
             UsableArea = UsableArea?.Union();
 
