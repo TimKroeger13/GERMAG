@@ -88,9 +88,12 @@ async function ShowDetailedReport(reportType) {
 
     if(reportType == 'probe'){
         await openModal(GeothermalReport, true, ReportRequest_Json[0]);
+        renderBoxplot(ReportRequest_Json[0].totalRating);
     }else{
         await openModal(GeothermalReport, false);
     }
+
+    
 
     await removeLandParcels()
     await CreateLandParcel(UsabeGeometry, '#00ff00', '#00ff00', 2, 0, 0.2);  //2,0,0.2
@@ -192,12 +195,14 @@ async function openModal(html, ReportIsDetailed, jsonData) {
 
     $("#myModal").off('shown.bs.modal');
 
+    /*
     if (ReportIsDetailed) {
         await loadGoogleCharts();
         $("#myModal").on('shown.bs.modal', function (e) {
             drawChart(jsonData);
         });
     }
+        */
 
     $("#myModal").on('hide.bs.modal', function (e) {
         $(".modal iframe").attr('src', "");
@@ -221,6 +226,7 @@ async function loadGoogleCharts() {
     });
 }
 
+/*
 function drawChart(JasonData) {
 
     var classifedData = classifyData(JasonData)
@@ -243,6 +249,7 @@ function drawChart(JasonData) {
         console.error("Container for chart not found");
     }
 }
+    */
 
 function classifyData(JasonData) {
     const counts = {};
@@ -332,7 +339,7 @@ function httpGet(theUrl) {
 }
 
 
-async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafics) {
+async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGrafics) {
 
     String_geo_poten_restrict = ``;
     if (reportData.geo_poten_restrict.length > 0) {
@@ -375,6 +382,12 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
         html = html + `
             <h3><strong>Rating:</strong> ${Math.round(median(reportData.totalRating) * 100) / 100} von 10</h3>
             <br>`
+    }
+
+    if (ReportIsDetailed) {
+        if(DisplayGrafics) {
+            html = html + `<div id='boxplotDiv' style='width: 550px; height: 400px;'></div>`
+        }
     }
 
     html = html + `
@@ -431,9 +444,9 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
 
     //reportData.activeRestriction
 
-    if(DisplayGoogleGrafics) {
-        html = html + `<div id="piechart" style="width: 500px; height: 300px;"></div>`
-    }
+    //if(DisplayGrafics) {
+    //    html = html + `<div id="piechart" style="width: 500px; height: 300px;"></div>`
+    //}
 
     html = html + `
         
@@ -441,6 +454,48 @@ async function CreateReportHTML(reportData, ReportIsDetailed, DisplayGoogleGrafi
 
     return html
 
+}
+
+function renderBoxplot(totalRating) {
+    var y0 = totalRating;
+    var trace1 = {
+        y: y0,
+        type: 'box',
+        name: 'Punkte',
+        jitter: 0.3,
+        pointpos: -1.8,
+        marker: {
+            size: 8
+        },
+        boxpoints: 'all'
+    };
+    var data = [trace1];
+    var layout = {
+        title: {
+            text: 'Bewertung',
+            font: {
+                size: 40
+            }
+        },
+        yaxis: {
+            tickfont: {
+                size: 30
+            }
+        },
+        xaxis: {
+            title: {
+                font: {
+                    size: 25
+                }
+            },
+            tickfont: {
+                size: 25
+            }
+        },
+        showlegend: false,
+        dragmode: false
+    };
+    Plotly.newPlot('boxplotDiv', data, layout, { staticPlot: false });
 }
 
 
