@@ -84,6 +84,7 @@ public class GeoThermalProbesCalcualtion : IGeoThermalProbesCalcualtion
 
         while (currentArea > 0)
         {
+            Console.WriteLine(currentArea);
             CandidateMultiPoint = new GeometryFactory().CreateMultiPointFromCoords(CandidatePoints.ToArray());
 
             NetTopologySuite.Geometries.Polygon? candidateBuffer;
