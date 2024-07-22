@@ -704,11 +704,15 @@ async function clearSelected() {
     Current_lng_coordiante = null;
     Multiple_lat = [];
     Multiple_lng = [];
-    
 
+    document.getElementById('address-bar').style.backgroundColor = '#2D2D2D';
+    document.getElementById('functions').style.backgroundColor = '#2D2D2D';
+    document.getElementById('branding-text').textContent = 'GERMAG';
+    document.getElementById('btnNewArea').style.backgroundColor = 'white';
+
+    
     await removeLandParcels();
     await SetMode(0);
-
 
 }
 
@@ -717,5 +721,20 @@ async function commit() {
 }
 
 async function modeNewArea(){
+    var mode = await GetMode();
+    await clearSelected();
+
+    if (mode == 1){
+        await SetMode(0);
+        return;
+    }
+
+
+    await SetMode(1);
+    document.getElementById('address-bar').style.backgroundColor = '#AF4600';
+    document.getElementById('functions').style.backgroundColor = '#AF4600';
+    document.getElementById('branding-text').textContent = 'Edit Mode';
+    document.getElementById('btnNewArea').style.backgroundColor = '#ff6700';
+ 
     
 }

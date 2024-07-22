@@ -70,16 +70,16 @@
       <button onclick="searchAddress()">Search</button>
     </div>
     <div id="functions">
-      <button class="Iconbutton" onclick="clearSelected()" title="Deselect all areas">
+      <button id="btnClear" class="Iconbutton" onclick="clearSelected()" title="Deselect all areas">
         <img src="pic/clear.svg" alt="Icon">
       </button>
-      <button class="Iconbutton" onclick="modeNewArea()" title="Create new Area">
+      <button id="btnNewArea" class="Iconbutton" onclick="modeNewArea()" title="Create new area">
         <img src="pic/newArea.svg" alt="Icon">
       </button>
-      <button class="Iconbutton" onclick="AddArea()" title="Add to exsisting area">
+      <button id="btnAddArea" class="Iconbutton" onclick="AddArea()" title="Add to exsisting area">
         <img src="pic/plusArea.svg" alt="Icon">
       </button>
-      <button class="Iconbutton" onclick="SubtractArea()" title="Substract from exsistig area">
+      <button id="btnSubtractArea" class="Iconbutton" onclick="SubtractArea()" title="Substract from exsistig area">
         <img src="pic/minusArea.svg" alt="Icon">
       </button>
     </div>
@@ -191,10 +191,13 @@
       SelectedMode = set;
     }
 
+    async function GetMode(){
+      return SelectedMode;
+    }
+
     document.addEventListener('contextmenu', function(event) {
             event.preventDefault(); // Prevent the default context menu from appearing
 
-            // Call the commit function
             commit();
         });
 

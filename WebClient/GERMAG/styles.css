@@ -133,9 +133,6 @@ p {
   pointer-events: auto;
 }
 
-
-
-
 #functions {
   display: flex;
   height: 3vh; 
@@ -148,8 +145,6 @@ p {
   box-sizing: border-box;
   pointer-events: auto;
 }
-
-
 
 .Iconbutton {
   height: 100%;
