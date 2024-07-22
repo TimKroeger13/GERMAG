@@ -21,8 +21,8 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
     {
         LandParcel landParcelElement = await receiveLandParcel.GetLandParcel(Xcor, Ycor, Srid);
 
-        if (landParcelElement.Error == true) { return new[] { new Report { Error = "Land parcel not found in the search area" }}; }
-        if (landParcelElement.Geometry is MultiPolygon) {return new[] { new Report { Error = "Selected land parcels don't form a single new land parcel" } }; }
+        if (landParcelElement.Error == true) { return new[] { new Report { Error = "Land parcel not found in the search area" } }; }
+        if (landParcelElement.Geometry is MultiPolygon) { return new[] { new Report { Error = "Selected land parcels don't form a single new land parcel" } }; }
 
         Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
 
@@ -72,7 +72,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
         //if (probeRes) //Probe Resulution
         //{
-         FullPointProbe = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
+        FullPointProbe = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
         //}
 
         //LineInformation - ExpectedGroundWaterHeight
@@ -101,4 +101,24 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 
         return FinalReport;
     }
+
+    [HttpPost("geojsonreport")]
+    [EnableCors(CorsPolicies.GetAllowed)]
+    public async Task<int> GetGeoJsonReport([FromBody] GeoJsonRequest request)
+    {
+        var a = request.Srid;
+        var RequestGeoJson = request.Geojson;
+
+
+        return 3;
+    }
+}
+
+
+
+
+public class GeoJsonRequest
+{
+    public int Srid { get; set; }
+    public object? Geojson { get; set; } // Use a more specific type if needed
 }

@@ -594,17 +594,23 @@ async function GetRequestFullReport(reportType) {
 
 
 async function GetRequestEditGeometry() {
-    var Srid = 4326;
+    if (EditGeometry == null) { return; }
 
-    const params = new URLSearchParams();
-    XcorList.forEach(x => params.append('xCor', x));
-    YcorList.forEach(y => params.append('yCor', y));
-    params.append('srid', Srid);
+    const payload = {
+        srid: 4326,
+        geojson: EditGeometry
+    };
 
-    const url = `https://localhost:9999/api/report/reportdata?${params.toString()}`;
+    const url = `https://localhost:9999/api/report/geojsonreport`;
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload) // Send the payload with SRID and GeoJSON
+        });
 
         if (!response.ok) {
             console.error('Server error:', response.status);
