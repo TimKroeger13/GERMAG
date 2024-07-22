@@ -7,6 +7,9 @@ var Current_lng_coordiante = null;
 var Multiple_lat = [];
 var Multiple_lng = [];
 
+var EditGeometryList = [];
+var EditGeometry = null;
+
 var NewObjectClicked = false;
 
 async function onMapClick(e, callback) {
@@ -32,6 +35,16 @@ async function onMapClickWithCtrl(e) {
     Multiple_lat.push(clickCoordinates.lat);
 
     await InitalPointQuery(Multiple_lng, Multiple_lat)
+}
+
+async function onMapClickAddArea(e) {
+
+    NewObjectClicked = true;
+
+    var clickCoordinates = e.latlng;
+
+    await CreateEditArea(clickCoordinates.lng, clickCoordinates.lat)
+
 }
 
 async function ShowDetailedReport(reportType) {
@@ -710,14 +723,12 @@ async function clearSelected() {
     document.getElementById('branding-text').textContent = 'GERMAG';
     document.getElementById('btnNewArea').style.backgroundColor = 'white';
 
-    
+    EditGeometryList = [];
+    EditGeometry = null;
+
     await removeLandParcels();
     await SetMode(0);
 
-}
-
-async function commit() {
-    console.log('commit');
 }
 
 async function modeNewArea(){
@@ -729,12 +740,55 @@ async function modeNewArea(){
         return;
     }
 
-
     await SetMode(1);
     document.getElementById('address-bar').style.backgroundColor = '#AF4600';
     document.getElementById('functions').style.backgroundColor = '#AF4600';
     document.getElementById('branding-text').textContent = 'Edit Mode';
     document.getElementById('btnNewArea').style.backgroundColor = '#ff6700';
- 
-    
+}
+
+async function CreateEditArea(lng, lat){
+
+    EditGeometryList.push([lng, lat]);
+
+    EditGeometry = createGeometry(EditGeometryList);
+
+    await removeLandParcels()
+    await AddGeoJson(EditGeometry);
+}
+
+
+function createGeometry(Orginalcoords) {
+
+    let coords = Orginalcoords.slice();
+
+    if (coords.length === 1) {
+        // Create a point
+        let point = turf.point(coords[0]);
+        return point;
+    } else if (coords.length === 2) {
+        // Create a line
+        let line = turf.lineString(coords);
+        return line;
+    } else if (coords.length >= 3) {
+        // Ensure the polygon is closed
+        if (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]) {
+            coords.push(coords[0]);
+        }
+        // Create a polygon
+        let polygon = turf.polygon([coords]);
+        return polygon;
+    } else {
+        console.error("Invalid coordinates array");
+        return null;
+    }
+}
+
+async function popEditGeometryList() {
+    if(EditGeometryList[0] == null){return;}
+    EditGeometryList.pop()
+    await removeLandParcels()
+    if(EditGeometryList[0] == null){return;}
+    EditGeometry = createGeometry(EditGeometryList);
+    await AddGeoJson(EditGeometry);
 }

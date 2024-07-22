@@ -113,6 +113,7 @@
         }
       }
       if(SelectedMode == 1){
+        onMapClickAddArea(e);
       }
       if(SelectedMode == 2){
       }
@@ -162,6 +163,12 @@
       geoJsonList.push(marker);
     }
 
+    async function AddGeoJson(geoJsonFeature){
+      let layer = L.geoJSON(geoJsonFeature).addTo(map);
+      geoJsonList.push(layer);
+
+    }
+
     //Address Postion
     async function flyToPoint(x, y) {
       var targetLatLng = L.latLng(x, y);
@@ -198,9 +205,10 @@
     document.addEventListener('contextmenu', function(event) {
             event.preventDefault(); // Prevent the default context menu from appearing
 
-            commit();
+            if(SelectedMode == 1){
+              popEditGeometryList();
+            }
         });
-
 
   </script>
 
