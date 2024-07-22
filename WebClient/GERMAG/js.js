@@ -682,9 +682,6 @@ function transformCoordinates(coordinates) {
     return transformedCoordinates;
 }
 
-
-
-
 function median(numbers) {
     if (numbers.length === 0) return 0;
     numbers.sort((a, b) => a - b);
@@ -696,4 +693,9 @@ function median(numbers) {
     }
   
     return (numbers[mid - 1] + numbers[mid]) / 2;
+  }
+
+  async function clearSelected() {
+    $('.modal').modal('hide');
+    await removeLandParcels();
   }
