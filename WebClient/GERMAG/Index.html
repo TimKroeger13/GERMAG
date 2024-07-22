@@ -73,7 +73,7 @@
       <button class="Iconbutton" onclick="clearSelected()" title="Deselect all areas">
         <img src="pic/clear.svg" alt="Icon">
       </button>
-      <button class="Iconbutton" onclick="newArea()" title="Create new Area">
+      <button class="Iconbutton" onclick="modeNewArea()" title="Create new Area">
         <img src="pic/newArea.svg" alt="Icon">
       </button>
       <button class="Iconbutton" onclick="AddArea()" title="Add to exsisting area">
@@ -90,6 +90,8 @@
 
   <script>
 
+    var SelectedMode = 0; // 0 = normal, 1 = new area, 2 = add area, 3 = subtract area
+
     let geoJsonList = [];
 
     var map = L.map('map', {
@@ -103,12 +105,21 @@
     var popup = L.popup();
 
     map.on('click', function (e) {
-    if (e.originalEvent.ctrlKey) {
+      if(SelectedMode == 0){
+        if (e.originalEvent.ctrlKey) {
         onMapClickWithCtrl(e);
-    } else {
-        onMapClick(e);
-    }
-});
+        } else {
+            onMapClick(e);
+        }
+      }
+      if(SelectedMode == 1){
+      }
+      if(SelectedMode == 2){
+      }
+      if(SelectedMode == 3){
+      }
+
+  });
 
     async function removeLandParcels() {
       for (const layer of geoJsonList) {
@@ -171,8 +182,13 @@
     async function SetReport(html) {
       GeothermalReport = html;
     }
+
     async function GetReport() {
       return GeothermalReport;
+    }
+
+    async function SetMode(set){
+      SelectedMode = set;
     }
 
     document.addEventListener('contextmenu', function(event) {

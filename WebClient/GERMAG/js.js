@@ -700,10 +700,22 @@ async function clearSelected() {
     Current_lng_coordiante = null;
     Multiple_lat = [];
     Multiple_lng = [];
-    $('.modal').modal('hide');
+    
+    if ($('.modal').hasClass('show')) {
+        $('.modal').modal('hide');
+    }
+
+    //$('.modal').modal('hide');
     await removeLandParcels();
+    await SetMode(0);
+
+
 }
 
 async function commit() {
     console.log('commit');
+}
+
+async function modeNewArea(){
+    
 }
