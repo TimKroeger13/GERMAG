@@ -9,7 +9,7 @@ body, html {
 }
 
 #map {
-  height: 92vh;
+  height: 95vh;
   width: 100vw;
 }
 
@@ -42,7 +42,7 @@ p {
 #myModal .modal-dialog {
   left: 2.4vw;
   margin-left: 0;
-  top: 9vh;
+  top: 5.8vh;
   margin: 0;
   padding: 0;
   pointer-events: auto; 
@@ -132,47 +132,3 @@ p {
   color: white;
   pointer-events: auto;
 }
-
-
-
-
-#functions {
-  display: flex;
-  height: 3vh; 
-  background-color: #2D2D2D;
-  padding-left: 1vw;
-  padding-right: 1vw;
-  padding-top: 0vh;
-  padding-bottom: 0.5vh;
-  margin: 0;
-  box-sizing: border-box;
-  pointer-events: auto;
-}
-
-
-
-.Iconbutton {
-  height: 100%;
-  border: none;
-  color: white; /* White text */
-  margin: 0;
-  padding: 0;
-  font-size: 16px; 
-  cursor: pointer;
-  vertical-align: baseline;
-  pointer-events: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 5px;
-}
-
-.Iconbutton:hover {
-  background-color: #D8D8D8;
-}
-
-.Iconbutton img {
-  width: 100%; /* Adjust the width according to your icon size */
-  height: 100%; /* Adjust the height according to your icon size */
-}
-
