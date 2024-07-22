@@ -695,7 +695,15 @@ function median(numbers) {
     return (numbers[mid - 1] + numbers[mid]) / 2;
   }
 
-  async function clearSelected() {
+async function clearSelected() {
+    Current_lat_coordiante = null;
+    Current_lng_coordiante = null;
+    Multiple_lat = [];
+    Multiple_lng = [];
     $('.modal').modal('hide');
     await removeLandParcels();
-  }
+}
+
+async function commit() {
+    console.log('commit');
+}

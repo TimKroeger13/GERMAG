@@ -11,7 +11,9 @@ public class CrossInfluence : ICrossInfluence
 {
     public async Task<double> GetCrossInfluence(List<ProbePoint?> PointProbe)
     {
-        int n = PointProbe.Count;
+        return await Task.Run(() =>
+        {
+            int n = PointProbe.Count;
         double CrossFactor;
 
         var RawSum = PointProbe.Select(x => x?.Properties?.RawExtractionKW).Sum() ?? 0;
@@ -27,7 +29,7 @@ public class CrossInfluence : ICrossInfluence
 
         var AdeptedSum = Math.Round((double)RawSum * CrossFactor, 2);
 
-
         return AdeptedSum;
+        });
     }
 }
