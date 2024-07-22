@@ -13,7 +13,7 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData, ICrossInfluence crossInfluence) : ControllerBase // IGetPolylineData getPolylineData)
+public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData, ICrossInfluence crossInfluence, IGeometryFromGeoJson geometryFromGeoJson) : ControllerBase // IGetPolylineData getPolylineData)
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
@@ -70,8 +70,6 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
             return FinalReport;
         }
 
-        //if (probeRes) //Probe Resulution
-        //{
         FullPointProbe = await getProbeSpecificData.GetPointProbeData(landParcelElement, FullPointProbe);
         //}
 
@@ -106,9 +104,14 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
     [EnableCors(CorsPolicies.GetAllowed)]
     public async Task<int> GetGeoJsonReport([FromBody] GeoJsonRequest request)
     {
-        var a = request.Srid;
-        var RequestGeoJson = request.Geojson;
+        if (request == null || request.Geojson == null || request.Srid <= 0)
+        {
+            //error
+            return 0;
+        }
 
+
+        var x = await geometryFromGeoJson.GetGeometryFromgeoJson(request.Geojson, request.Srid);
 
         return 3;
     }
@@ -120,5 +123,5 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 public class GeoJsonRequest
 {
     public int Srid { get; set; }
-    public object? Geojson { get; set; } // Use a more specific type if needed
+    public string? Geojson { get; set; } // Use a more specific type if needed
 }

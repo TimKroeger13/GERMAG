@@ -598,7 +598,7 @@ async function GetRequestEditGeometry() {
 
     const payload = {
         srid: 4326,
-        geojson: EditGeometry
+        geojson: JSON.stringify(EditGeometry)
     };
 
     const url = `https://localhost:9999/api/report/geojsonreport`;
