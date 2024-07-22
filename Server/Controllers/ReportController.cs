@@ -13,7 +13,7 @@ namespace GERMAG.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData) : ControllerBase // IGetPolylineData getPolylineData)
+public class ReportController(ICreateReportAsync createReport, IReceiveLandParcel receiveLandParcel, IRestrictionFromLandParcel restrictionFromLandParcel, IGeoThermalProbesCalcualtion geoThermalProbesCalcualtion, IGetProbeSpecificData getProbeSpecificData, ICrossInfluence crossInfluence) : ControllerBase // IGetPolylineData getPolylineData)
 {
     [HttpGet("reportdata")]
     [EnableCors(CorsPolicies.GetAllowed)]
@@ -96,7 +96,8 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         }
 
         FinalReport[0].ProbePoint = TruncatedPointProbe;
-        FinalReport[0].TotalRawExtraction = TruncatedPointProbe.Select(x => x?.Properties?.RawExtractionKW).Sum();
+
+        FinalReport[0].TotalRawExtraction = await crossInfluence.GetCrossInfluence(TruncatedPointProbe);
 
         return FinalReport;
     }
