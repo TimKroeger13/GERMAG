@@ -696,16 +696,16 @@ function median(numbers) {
   }
 
 async function clearSelected() {
+
+    if(Current_lat_coordiante != null && Current_lng_coordiante != null){
+        $('.modal').modal('hide');
+    }
     Current_lat_coordiante = null;
     Current_lng_coordiante = null;
     Multiple_lat = [];
     Multiple_lng = [];
     
-    if ($('.modal').hasClass('show')) {
-        $('.modal').modal('hide');
-    }
 
-    //$('.modal').modal('hide');
     await removeLandParcels();
     await SetMode(0);
 
