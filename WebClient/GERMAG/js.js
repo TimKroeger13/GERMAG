@@ -593,6 +593,45 @@ async function GetRequestFullReport(reportType) {
 }
 
 
+async function GetRequestEditGeometry() {
+    var Srid = 4326;
+
+    const params = new URLSearchParams();
+    XcorList.forEach(x => params.append('xCor', x));
+    YcorList.forEach(y => params.append('yCor', y));
+    params.append('srid', Srid);
+
+    const url = `https://localhost:9999/api/report/reportdata?${params.toString()}`;
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.error('Server error:', response.status);
+
+            try {
+                const errorData = await response.json();
+                console.error('Error details:', errorData);
+                alert(`Server error: ${response.status} - ${errorData.message}`);
+            } catch (parseError) {
+                console.error('Error parsing JSON:', parseError);
+                alert(`Server error: ${response.status} - Error parsing response`);
+            }
+
+            return null;
+        }
+
+        const GetJsonString = await response.json();
+        return GetJsonString;
+
+    } catch (error) {
+        console.error('Error:', error.message);
+        alert('Network error or failed request. Please try again.');
+        return null;
+    }
+}
+
+
 //Quick search by hitting enter
 function handleKeyPress(event) {
     if (event.keyCode === 13) {
@@ -710,6 +749,8 @@ function median(numbers) {
 
 async function clearSelected() {
 
+    document.getElementById('btnSubmit').disabled = true;
+
     if(Current_lat_coordiante != null && Current_lng_coordiante != null){
         $('.modal').modal('hide');
     }
@@ -753,6 +794,10 @@ async function CreateEditArea(lng, lat){
 
     EditGeometry = createGeometry(EditGeometryList);
 
+    if(EditGeometryList.length >= 3){
+        document.getElementById('btnSubmit').disabled = false;
+    }
+
     await removeLandParcels()
     await AddGeoJson(EditGeometry);
 }
@@ -785,10 +830,14 @@ function createGeometry(Orginalcoords) {
 }
 
 async function popEditGeometryList() {
+    document.getElementById('btnSubmit').disabled = true;
     if(EditGeometryList[0] == null){return;}
-    EditGeometryList.pop()
-    await removeLandParcels()
+    EditGeometryList.pop();
+    await removeLandParcels();
     if(EditGeometryList[0] == null){return;}
+    if(EditGeometryList.length >= 3){
+        document.getElementById('btnSubmit').disabled = false;
+    }
     EditGeometry = createGeometry(EditGeometryList);
     await AddGeoJson(EditGeometry);
 }

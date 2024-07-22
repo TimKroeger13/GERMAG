@@ -149,7 +149,7 @@ p {
 .Iconbutton {
   height: 100%;
   border: none;
-  color: white; /* White text */
+  color: black; /* White text */
   margin: 0;
   padding: 0;
   font-size: 16px; 
@@ -171,3 +171,28 @@ p {
   height: 100%; /* Adjust the height according to your icon size */
 }
 
+
+
+.Submitbutton {
+  height: 100%;
+  border: none;
+  color: black; /* White text */
+  font-size: 16px; 
+  cursor: pointer;
+  vertical-align: baseline;
+  pointer-events: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 20px;
+  margin-right: 5px;
+}
+
+.Submitbutton:hover {
+  background-color: #D8D8D8;
+}
+
+.Submitbutton:disabled {
+  background-color: #ccc;
+  color: #666;
+}
