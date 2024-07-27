@@ -1,0 +1,159 @@
+﻿using NetTopologySuite.Geometries;
+using System;
+using NetTopologySuite.Features;
+using NetTopologySuite.IO;
+using NetTopologySuite.CoordinateSystems.Transformations;
+using Newtonsoft.Json;
+using ProjNet.CoordinateSystems;
+using ProjNet.CoordinateSystems.Transformations;
+using GeoAPI.Geometries;
+
+namespace GERMAG.Server.GeometryCalculations;
+
+public interface IGeometryTransformation
+{
+    Task<int> TransformGeometry(Geometry geometry, int srid);
+}
+
+public class GeometryTransformation : IGeometryTransformation
+{
+    public async Task<int> TransformGeometry(NetTopologySuite.Geometries.Geometry geometry, int srid)
+    {
+        int sourceSrid = 4326; // WGS 84
+        int targetSrid = 25833; // ETRS89 / UTM zone 33N
+
+        // Create the coordinate systems from SRIDs
+        var sourceCsFactory = new CoordinateSystemFactory();
+        var sourceCs = sourceCsFactory.CreateFromWkt(CoordinateSystemWkt.WGS84);
+
+        var targetCsFactory = new CoordinateSystemFactory();
+        var targetCs = targetCsFactory.CreateFromWkt(CoordinateSystemWkt.ETRS89_UTM33N);
+
+        // Create the transformation
+        var coordinateTransformationFactory = new CoordinateTransformationFactory();
+        var transformation = coordinateTransformationFactory.CreateFromCoordinateSystems(sourceCs, targetCs);
+
+        // Transform the geometry
+        NetTopologySuite.Geometries.Geometry transformedGeometry = TransformGeometry(geometry.Factory, geometry, transformation.MathTransform);
+
+        transformedGeometry.SRID = targetSrid;
+
+        return 1;
+    }
+
+    private static class CoordinateSystemWkt
+    {
+        public static string WGS84 = "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]]";
+        public static string ETRS89_UTM33N = "PROJCS[\"ETRS89 / UTM zone 33N\",GEOGCS[\"ETRS89\",DATUM[\"European_Terrestrial_Reference_System_1989\",SPHEROID[\"GRS 1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",15],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],AUTHORITY[\"EPSG\",\"25833\"]]";
+    }
+
+    private NetTopologySuite.Geometries.Geometry TransformGeometry(NetTopologySuite.Geometries.GeometryFactory geometryFactory, NetTopologySuite.Geometries.Geometry geom, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        if (geom is NetTopologySuite.Geometries.Point)
+        {
+            return geometryFactory.CreatePoint(TransformCoordinate(((NetTopologySuite.Geometries.Point)geom).Coordinate, transform));
+        }
+        else if (geom is NetTopologySuite.Geometries.LineString)
+        {
+            return geometryFactory.CreateLineString(TransformCoordinates(((NetTopologySuite.Geometries.LineString)geom).Coordinates, transform));
+        }
+        else if (geom is NetTopologySuite.Geometries.Polygon)
+        {
+            var polygon = (NetTopologySuite.Geometries.Polygon)geom;
+            return TransformPolygon(geometryFactory, polygon, transform);
+        }
+        else if (geom is NetTopologySuite.Geometries.MultiPoint)
+        {
+            var points = (NetTopologySuite.Geometries.MultiPoint)geom;
+            var transformedPoints = new NetTopologySuite.Geometries.Point[points.NumGeometries];
+            for (int i = 0; i < points.NumGeometries; i++)
+            {
+                transformedPoints[i] = (NetTopologySuite.Geometries.Point)TransformGeometry(geometryFactory, points.GetGeometryN(i), transform);
+            }
+            return geometryFactory.CreateMultiPoint(transformedPoints);
+        }
+        else if (geom is NetTopologySuite.Geometries.MultiLineString)
+        {
+            var lineStrings = (NetTopologySuite.Geometries.MultiLineString)geom;
+            return geometryFactory.CreateMultiLineString(TransformLineStrings(geometryFactory, lineStrings, transform));
+        }
+        else if (geom is NetTopologySuite.Geometries.MultiPolygon)
+        {
+            var polygons = (NetTopologySuite.Geometries.MultiPolygon)geom;
+            return geometryFactory.CreateMultiPolygon(TransformPolygons(geometryFactory, polygons, transform));
+        }
+        else
+        {
+            throw new NotSupportedException("Geometry type not supported: " + geom.GeometryType);
+        }
+    }
+
+    private NetTopologySuite.Geometries.Polygon TransformPolygon(NetTopologySuite.Geometries.GeometryFactory geometryFactory, NetTopologySuite.Geometries.Polygon polygon, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        // Step 1: Extract the shell (outer boundary) of the polygon
+        var shell = polygon.Shell;
+
+        // Step 2: Transform the shell
+        var transformedShell = (NetTopologySuite.Geometries.LinearRing)TransformGeometry(geometryFactory, shell, transform);
+
+        // Step 3: Extract the holes (inner boundaries) of the polygon
+        var holes = polygon.Holes;
+
+        // Step 4: Transform the holes
+        var transformedHoles = TransformLinearRings(geometryFactory, holes, transform);
+
+        // Step 5: Create and return a new polygon with the transformed shell and holes
+        return geometryFactory.CreatePolygon(transformedShell, transformedHoles);
+    }
+
+    private NetTopologySuite.Geometries.LinearRing TransformLinearRing(NetTopologySuite.Geometries.GeometryFactory geometryFactory, NetTopologySuite.Geometries.LinearRing ring, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        return (NetTopologySuite.Geometries.LinearRing)TransformGeometry(geometryFactory, ring, transform);
+    }
+
+    private NetTopologySuite.Geometries.LinearRing[] TransformLinearRings(NetTopologySuite.Geometries.GeometryFactory geometryFactory, NetTopologySuite.Geometries.LinearRing[] rings, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        var transformedRings = new NetTopologySuite.Geometries.LinearRing[rings.Length];
+        for (int i = 0; i < rings.Length; i++)
+        {
+            transformedRings[i] = TransformLinearRing(geometryFactory, rings[i], transform);
+        }
+        return transformedRings;
+    }
+
+    private NetTopologySuite.Geometries.Coordinate TransformCoordinate(NetTopologySuite.Geometries.Coordinate coord, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        var transformedCoord = transform.Transform(new[] { coord.X, coord.Y });
+        return new NetTopologySuite.Geometries.Coordinate(transformedCoord[0], transformedCoord[1]);
+    }
+
+    private NetTopologySuite.Geometries.Coordinate[] TransformCoordinates(NetTopologySuite.Geometries.Coordinate[] coords, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        var transformedCoords = new NetTopologySuite.Geometries.Coordinate[coords.Length];
+        for (int i = 0; i < coords.Length; i++)
+        {
+            transformedCoords[i] = TransformCoordinate(coords[i], transform);
+        }
+        return transformedCoords;
+    }
+
+    private NetTopologySuite.Geometries.LineString[] TransformLineStrings(NetTopologySuite.Geometries.GeometryFactory geometryFactory, NetTopologySuite.Geometries.MultiLineString lineStrings, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        var transformedLineStrings = new NetTopologySuite.Geometries.LineString[lineStrings.NumGeometries];
+        for (int i = 0; i < lineStrings.NumGeometries; i++)
+        {
+            transformedLineStrings[i] = (NetTopologySuite.Geometries.LineString)TransformGeometry(geometryFactory, lineStrings.GetGeometryN(i), transform);
+        }
+        return transformedLineStrings;
+    }
+
+    private NetTopologySuite.Geometries.Polygon[] TransformPolygons(NetTopologySuite.Geometries.GeometryFactory geometryFactory, NetTopologySuite.Geometries.MultiPolygon polygons, ProjNet.CoordinateSystems.Transformations.MathTransform transform)
+    {
+        var transformedPolygons = new NetTopologySuite.Geometries.Polygon[polygons.NumGeometries];
+        for (int i = 0; i < polygons.NumGeometries; i++)
+        {
+            transformedPolygons[i] = (NetTopologySuite.Geometries.Polygon)TransformGeometry(geometryFactory, polygons.GetGeometryN(i), transform);
+        }
+        return transformedPolygons;
+    }
+}

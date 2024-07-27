@@ -42,6 +42,7 @@ builder.Services.AddTransient<IFindLocalDirectoryPath, FindLocalDirectoryPath>()
 builder.Services.AddTransient<IRating, Rating>();
 builder.Services.AddTransient<ICrossInfluence, CrossInfluence>();
 builder.Services.AddTransient<IGeometryFromGeoJson, GeometryFromGeoJson>();
+builder.Services.AddTransient<IGeometryTransformation, GeometryTransformation>();
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.DatabaseConnection);
 var dataSource = dataSourceBuilder.ConfigureAndBuild();
 builder.Services.AddDbContext<DataContext>(options =>
