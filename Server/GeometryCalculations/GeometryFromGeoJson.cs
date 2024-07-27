@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
+using Newtonsoft.Json;
+using GERMAG.DataModel.Database;
 
 namespace GERMAG.Server.GeometryCalculations;
 
@@ -21,16 +23,18 @@ public class GeometryFromGeoJson : IGeometryFromGeoJson
         var sridSource = srid;
         var sridTarget = 25833;
 
+        var serializer = GeoJsonSerializer.Create();
 
-        var geoJsonReader = new GeoJsonReader();
+        // Deserialize the GeoJSON string to a Feature
+        NetTopologySuite.Features.Feature? feature;
+        using (var stringReader = new System.IO.StringReader(Geojson))
+        using (var jsonReader = new JsonTextReader(stringReader))
+        {
+            feature = serializer.Deserialize<NetTopologySuite.Features.Feature>(jsonReader);
+        }
 
-
-        string test = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[13.411353528499603,52.52885227740295],[13.41178134083748,52.529114901119456],[13.411820232868196,52.52880660355282],[13.411353528499603,52.52885227740295]]]}}";
-
-
-        // Read the GeoJson string into a Geometry object
-        var geometry = geoJsonReader.Read<Geometry>(test);
-
+        // Get the Geometry from the Feature
+        NetTopologySuite.Geometries.Geometry? geometry = feature.Geometry;
 
 
 
