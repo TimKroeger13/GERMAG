@@ -51,7 +51,14 @@ async function ShowDetailedReport(reportType) {
 
     NewObjectClicked = true;
 
-    var ReportRequest_Json = await GetRequestFullReport(reportType);
+    if(reportType == 'custom'){
+        var ReportRequest_Json = await GetRequestEditGeometry();
+    }
+    else{
+        var ReportRequest_Json = await GetRequestFullReport(reportType);
+    }
+
+    
 
     if (ReportRequest_Json[0].error != null) {
         alert(ReportRequest_Json[0].error)

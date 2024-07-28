@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Newtonsoft.Json;
 using GERMAG.DataModel.Database;
+using GERMAG.Shared;
 
 namespace GERMAG.Server.GeometryCalculations;
 
 public interface IGeometryFromGeoJson
 {
-    Task<int> GetGeometryFromgeoJson(string Geojson, int srid);
+    Task<LandParcel> GetGeometryFromgeoJson(string Geojson, int srid);
 }
 
 public class GeometryFromGeoJson(IGeometryTransformation geometryTransformation) : IGeometryFromGeoJson
 {
-    public async Task<int> GetGeometryFromgeoJson(string Geojson, int srid)
+    public async Task<LandParcel> GetGeometryFromgeoJson(string Geojson, int srid)
     {
 
         var serializer = GeoJsonSerializer.Create();
@@ -33,18 +34,15 @@ public class GeometryFromGeoJson(IGeometryTransformation geometryTransformation)
 
         if (feature == null)
         {
-            return 0;
+            throw new Exception("Geometry string could not be converted into geometry");
         }
 
         // Get the Geometry from the Feature
         NetTopologySuite.Geometries.Geometry? geometry = feature.Geometry;
 
-        var x = await geometryTransformation.TransformGeometry(geometry, srid);
+        LandParcel landParcelElement = await geometryTransformation.TransformGeometry(geometry, srid);
 
-
-
-
-        return 1;
+        return landParcelElement;
     }
 
 
