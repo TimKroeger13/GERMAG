@@ -22,16 +22,40 @@ public class GeometryTransformation : IGeometryTransformation
     {
         var TagedSrid = 25833;
 
+        if (geometry is NetTopologySuite.Geometries.Polygon)
+        {
+
+            for (int i = 0; i < geometry.Coordinates.Count(); i++)
+            {
+                var RawCoordinates = geometry.Coordinates[i];
+
+                var transformedCoordinate = await transformCoordinates(RawCoordinates[0], RawCoordinates[1], SourceSrid, TagedSrid) ?? throw new Exception("Coordiantes could not be transformed");
+                geometry.Coordinates[i][0] = transformedCoordinate[0];
+            }
+
+
+            //geometry.Coordinates.Count()
+            //geometry.Coordinates[0].CoordinateValue[0]  geometry.Coordinates[0].CoordinateValue[1]
+
+            var b = 3;
+        }
+
+
+
+
+
+            
+
         var coordinate = (x: 13.407990038394928, y: 52.52984737034732);
 
-        var transformedCoordinate = transformCoordinates(coordinate.x, coordinate.y, SourceSrid, TagedSrid);
+        //var transformedCoordinate = transformCoordinates(coordinate.x, coordinate.y, SourceSrid, TagedSrid);
 
         return 1;
     }
 
 
 
-    private double[]? transformCoordinates (double lon, double lat, int SourceSrid, int TagedSrid)
+    async private Task<double[]?> transformCoordinates (double lon, double lat, int SourceSrid, int TagedSrid)
     {
         if (SourceSrid == 4326 && TagedSrid == 25833)
         {
