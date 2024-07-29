@@ -764,7 +764,9 @@ async function clearSelected() {
 
     document.getElementById('btnSubmit').disabled = true;
 
-    if(Current_lat_coordiante != null && Current_lng_coordiante != null){
+    var mode = await GetMode();
+
+    if((Current_lat_coordiante != null && Current_lng_coordiante != null) || mode > 0){
         $('.modal').modal('hide');
     }
     Current_lat_coordiante = null;
