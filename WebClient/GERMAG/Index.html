@@ -84,11 +84,13 @@
       </button>
       <button id="btnSubmit" class="Submitbutton" onclick="ShowDetailedReport('custom')" title="Submit corrently displayed area">Submit
       </button>
+      <div class="checkbox-container">
+        <input type="checkbox" id="Boundary" name="Boundary" checked />
+        <label for="Boundary">Boundary</label>
+    </div>
     </div>
     <div id="map"></div>
   </div>
-
-
 
   <script>
 
@@ -124,7 +126,11 @@
       if(SelectedMode == 3){
       }
 
-  });
+    });
+
+    function changeCursor(cursorStyle) {
+      map.getContainer().style.cursor = cursorStyle;
+    }
 
     async function removeLandParcels() {
       for (const layer of geoJsonList) {
@@ -209,10 +215,22 @@
     document.addEventListener('contextmenu', function(event) {
             event.preventDefault(); // Prevent the default context menu from appearing
 
-            if(SelectedMode == 1){
-              popEditGeometryList();
-            }
+            //if(SelectedMode == 1){
+              //popEditGeometryList();
+            //}
         });
+
+    document.addEventListener('keydown', function(event) {
+      if (event.ctrlKey && event.key === 'z') {
+          event.preventDefault(); // Prevent the default undo action
+  
+          if (SelectedMode == 1) {
+              popEditGeometryList();
+          }
+      }
+    });
+
+    changeCursor('default')
 
   </script>
 

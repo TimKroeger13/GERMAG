@@ -49,6 +49,8 @@ async function onMapClickAddArea(e) {
 
 async function ShowDetailedReport(reportType) {
 
+    changeCursor('progress');
+
     NewObjectClicked = true;
 
     if(reportType == 'custom'){
@@ -131,6 +133,8 @@ async function ShowDetailedReport(reportType) {
             await CreatePoint(ProbePointsGeometry[k].coordinates[0]);
         }
     }
+
+    changeCursor('default');
 
     return true;
 }
@@ -603,9 +607,12 @@ async function GetRequestFullReport(reportType) {
 async function GetRequestEditGeometry() {
     if (EditGeometry == null) { return; }
 
+    var CheckBox = document.getElementById('Boundary')
+
     const payload = {
         srid: 4326,
-        geojson: JSON.stringify(EditGeometry)
+        geojson: JSON.stringify(EditGeometry),
+        boundary: CheckBox.checked
     };
 
     const url = `https://localhost:9999/api/report/geojsonreport`;
@@ -762,6 +769,8 @@ function median(numbers) {
 
 async function clearSelected() {
 
+    changeCursor('default');
+
     document.getElementById('btnSubmit').disabled = true;
 
     var mode = await GetMode();
@@ -788,8 +797,11 @@ async function clearSelected() {
 }
 
 async function modeNewArea(){
+
     var mode = await GetMode();
     await clearSelected();
+
+    changeCursor('crosshair');
 
     if (mode == 1){
         await SetMode(0);

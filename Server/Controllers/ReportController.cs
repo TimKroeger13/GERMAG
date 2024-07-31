@@ -24,7 +24,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         if (landParcelElement.Error == true) { return new[] { new Report { Error = "Land parcel not found in the search area" } }; }
         if (landParcelElement.Geometry is MultiPolygon) { return new[] { new Report { Error = "Selected land parcels don't form a single new land parcel" } }; }
 
-        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement, true);
 
         IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement, RestrictionFile, true);
 
@@ -48,7 +48,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         }};
         }
 
-        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement, true);
 
         IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement, RestrictionFile, true);
 
@@ -104,17 +104,12 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
     [EnableCors(CorsPolicies.GetAllowed)]
     public async Task<IEnumerable<Report>> GetGeoJsonReport([FromBody] GeoJsonRequest request)
     {
-        if (request == null || request.Geojson == null || request.Srid <= 0)
+        if (request == null || request.Geojson == null || request.Srid <= 0 || request.boundary == null)
         { //error
             throw new Exception("Geometry is incorrect");
         }
 
         LandParcel landParcelElement = await geometryFromGeoJson.GetGeometryFromgeoJson(request.Geojson, request.Srid);
-
-
-
-
-
 
         if (landParcelElement.Error == true)
         {
@@ -124,7 +119,7 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
         }};
         }
 
-        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement);
+        Restricion RestrictionFile = await restrictionFromLandParcel.CalculateRestrictions(landParcelElement, request.boundary);
 
         IEnumerable<Report> polygonBasedReport = await createReport.CreateGeothermalReportAsync(landParcelElement, RestrictionFile, false);
 
@@ -183,5 +178,6 @@ public class ReportController(ICreateReportAsync createReport, IReceiveLandParce
 public class GeoJsonRequest
 {
     public int Srid { get; set; }
-    public string? Geojson { get; set; } // Use a more specific type if needed
+    public string? Geojson { get; set; }
+    public bool? boundary { get; set; }
 }

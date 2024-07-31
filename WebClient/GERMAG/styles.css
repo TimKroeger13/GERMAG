@@ -196,3 +196,26 @@ p {
   background-color: #ccc;
   color: #666;
 }
+
+.checkbox-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+}
+
+/* Increase the size of the checkbox */
+.checkbox-container input[type="checkbox"] {
+  width: 20px; /* Increase width */
+  height: 20px; /* Increase height */
+  cursor: pointer; /* Change cursor to pointer */
+}
+
+/* Style the label */
+.checkbox-container label {
+  justify-content: center;
+  align-items: center;
+  color: white; /* Set text color to white */
+  margin-left: 10px; /* Space between checkbox and label */
+  font-size: 15px; /* Increase font size */
+}
