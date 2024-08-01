@@ -9,7 +9,7 @@ body, html {
 }
 
 #map {
-  height: 95vh;
+  height: 92vh;
   width: 100vw;
 }
 
@@ -42,7 +42,7 @@ p {
 #myModal .modal-dialog {
   left: 2.4vw;
   margin-left: 0;
-  top: 5.8vh;
+  top: 9vh;
   margin: 0;
   padding: 0;
   pointer-events: auto; 
