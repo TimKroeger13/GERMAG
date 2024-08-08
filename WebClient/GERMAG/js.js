@@ -546,7 +546,7 @@ async function GetRequestFullReport(reportType) {
     params.append('srid', Srid);
 
     if(reportType == 'probe'){
-        url = `hhttps://tkroeger.com:8443/api/report/fullreport?${params.toString()}&probeRes=true`;
+        url = `https://tkroeger.com:8443/api/report/fullreport?${params.toString()}&probeRes=true`;
     }else{
         url = `https://tkroeger.com:8443/api/report/fullreport?${params.toString()}&probeRes=false`;
     }
