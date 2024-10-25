@@ -531,8 +531,8 @@ async function GetRequest(XcorList, YcorList) {
     YcorList.forEach(y => params.append('yCor', y));
     params.append('srid', Srid);
 
-    const url = `https://localhost:9999/api/report/reportdata?${params.toString()}`;
-    ////const url = `https://tkroeger.com:8443/api/report/reportdata?${params.toString()}`;
+    ////const url = `https://localhost:9999/api/report/reportdata?${params.toString()}`;
+    const url = `https://tkroeger.com:8443/api/report/reportdata?${params.toString()}`;
 
     try {
         const response = await fetch(url);
@@ -571,11 +571,11 @@ async function GetRequestFullReport(reportType) {
     params.append('srid', Srid);
 
     if(reportType == 'probe'){
-        url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=true`;
-        ////url = `https://tkroeger.com:8443/api/report/fullreport?${params.toString()}&probeRes=true`;
+        ////url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=true`;
+        url = `https://tkroeger.com:8443/api/report/fullreport?${params.toString()}&probeRes=true`;
     }else{
-        url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=false`;
-        ////url = `https://tkroeger.com:8443/api/report/fullreport?${params.toString()}&probeRes=false`;
+        ////url = `https://localhost:9999/api/report/fullreport?${params.toString()}&probeRes=false`;
+        url = `https://tkroeger.com:8443/api/report/fullreport?${params.toString()}&probeRes=false`;
     }
 
     try {
@@ -618,8 +618,8 @@ async function GetRequestEditGeometry() {
         boundary: CheckBox.checked
     };
 
-    const url = `https://localhost:9999/api/report/geojsonreport`;
-    ////const url = `https://tkroeger.com:8443/api/report/geojsonreport`;
+    ////const url = `https://localhost:9999/api/report/geojsonreport`;
+    const url = `https://tkroeger.com:8443/api/report/geojsonreport`;
 
     try {
         const response = await fetch(url, {
