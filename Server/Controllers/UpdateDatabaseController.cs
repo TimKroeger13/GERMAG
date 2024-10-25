@@ -12,7 +12,7 @@ public class UpdateDatabaseController(IDataFetcher fetchData) : Controller
     [HttpGet("greet")]
     public string GreetFunction()
     {
-        return "Database Update command was run successfully! But the function is not fully impelmented yet.";
+        return "Server is running";
     }
 
     [HttpGet("checkForUpdates")]
