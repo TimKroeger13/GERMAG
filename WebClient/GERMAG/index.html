@@ -134,18 +134,6 @@ var NativeMaxZoom = 19;
         maxNativeZoom: NativeMaxZoom // Maximum zoom level for which WMS tiles are available
     }).addTo(map);
 
-    var wmsLayerALKIS = L.tileLayer.wms('https://gdi.berlin.de/services/wms/alkis_flurstuecke', {
-        layers: 'alkis:flurstuecke', // Internal name for the "Vegetationshöhen 2020 (Raster)" layer
-        format: 'image/png',
-        transparent: true,
-        opacity: 0.5,
-        attribution: '&copy; <a href="http://www.stadtentwicklung.berlin.de/geoinformation/fis-broker/">Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen Berlin</a>',
-        crs: L.CRS.EPSG4326, // Coordinate Reference System
-        minZoom: ZoomVegeationLimit, // Adjust these zoom levels as needed
-        maxZoom: ZoomMax, // Max zoom level for the map
-        maxNativeZoom: NativeMaxZoom // Maximum zoom level for which WMS tiles are available
-    }).addTo(map);
-
     var wmsBounds = L.latLngBounds(
         L.latLng(52.3284, 13.079), // SouthWest corner
         L.latLng(52.6877, 13.7701) // NorthEast corner
@@ -153,30 +141,20 @@ var NativeMaxZoom = 19;
     
     // Event listener for zoom levels
     map.on('zoomend', function() {
-    var currentZoom = map.getZoom();
-    var mapBounds = map.getBounds();
-
-    // Toggle Vegetation layer visibility
-    if (currentZoom < ZoomVegeationLimit || currentZoom > ZoomMax || !wmsBounds.overlaps(mapBounds)) {
-        map.removeLayer(wmsLayerVegetation);
-    } else if (!map.hasLayer(wmsLayerVegetation)) {
-        map.addLayer(wmsLayerVegetation);
-    }
-
-    // Toggle ALKIS layer visibility
-    if (currentZoom < ZoomVegeationLimit || currentZoom > ZoomMax || !wmsBounds.overlaps(mapBounds)) {
-        map.removeLayer(wmsLayerALKIS);
-    } else if (!map.hasLayer(wmsLayerALKIS)) {
-        map.addLayer(wmsLayerALKIS);
-    }
-
-    // Ensure the base layer is visible if no WMS layers are active
-    if (!map.hasLayer(wmsLayerVegetation) && !map.hasLayer(wmsLayerALKIS)) {
-        map.addLayer(baseLayer);
-    } else if (map.hasLayer(baseLayer) && (map.hasLayer(wmsLayerVegetation) || map.hasLayer(wmsLayerALKIS))) {
-        map.removeLayer(baseLayer);
-    }
-});
+        var currentZoom = map.getZoom();
+        var mapBounds = map.getBounds();
+        
+        if (currentZoom < ZoomVegeationLimit || currentZoom > ZoomMax || !wmsBounds.overlaps(mapBounds)) {
+            map.removeLayer(wmsLayerVegetation); // Remove WMS layer when zoomed too far out or in
+            if (!map.hasLayer(baseLayer)) {
+                map.addLayer(baseLayer); // Ensure base layer is visible
+            }
+        } else {
+            if (!map.hasLayer(wmsLayerVegetation)) {
+                map.addLayer(wmsLayerVegetation); // Add WMS layer when within the zoom range
+            }
+        }
+    });
 
     map.on('click', function (e) {
       if(SelectedMode == 0){
