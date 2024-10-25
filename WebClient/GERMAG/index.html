@@ -94,13 +94,19 @@
 
   <script>
 
+var map;
+var L;
+var ZoomMax = 23; // Allows zooming to level 21
+var ZoomVegeationLimit = 15;
+var NativeMaxZoom = 19;
+
     document.getElementById('btnSubmit').disabled = true;
 
     var SelectedMode = 0; // 0 = normal, 1 = new area, 2 = add area, 3 = subtract area
 
     let geoJsonList = [];
 
-    var map = L.map('map', {
+    map = L.map('map', {
       keyboard: false
     }).setView([52.52, 13.40], 12);
 
@@ -109,6 +115,68 @@
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
     var popup = L.popup();
+
+    var baseLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: ZoomMax, // Max zoom level for the map
+        maxNativeZoom: NativeMaxZoom, // Maximum zoom level for which tiles are available
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    var wmsLayerVegetation = L.tileLayer.wms('https://fbinter.stadt-berlin.de/fb/wms/senstadt/k_06_10_2veghoehe?', {
+        layers: '3', // Internal name for the "Vegetationshöhen 2020 (Raster)" layer
+        format: 'image/png',
+        transparent: true,
+        opacity: 0.5,
+        attribution: '&copy; <a href="http://www.stadtentwicklung.berlin.de/geoinformation/fis-broker/">Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen Berlin</a>',
+        crs: L.CRS.EPSG4326, // Coordinate Reference System
+        minZoom: ZoomVegeationLimit, // Adjust these zoom levels as needed
+        maxZoom: ZoomMax, // Max zoom level for the map
+        maxNativeZoom: NativeMaxZoom // Maximum zoom level for which WMS tiles are available
+    }).addTo(map);
+
+    var wmsLayerALKIS = L.tileLayer.wms('https://gdi.berlin.de/services/wms/alkis_flurstuecke', {
+        layers: 'alkis:flurstuecke', // Internal name for the "Vegetationshöhen 2020 (Raster)" layer
+        format: 'image/png',
+        transparent: true,
+        opacity: 0.5,
+        attribution: '&copy; <a href="http://www.stadtentwicklung.berlin.de/geoinformation/fis-broker/">Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen Berlin</a>',
+        crs: L.CRS.EPSG4326, // Coordinate Reference System
+        minZoom: ZoomVegeationLimit, // Adjust these zoom levels as needed
+        maxZoom: ZoomMax, // Max zoom level for the map
+        maxNativeZoom: NativeMaxZoom // Maximum zoom level for which WMS tiles are available
+    }).addTo(map);
+
+    var wmsBounds = L.latLngBounds(
+        L.latLng(52.3284, 13.079), // SouthWest corner
+        L.latLng(52.6877, 13.7701) // NorthEast corner
+    );
+    
+    // Event listener for zoom levels
+    map.on('zoomend', function() {
+    var currentZoom = map.getZoom();
+    var mapBounds = map.getBounds();
+
+    // Toggle Vegetation layer visibility
+    if (currentZoom < ZoomVegeationLimit || currentZoom > ZoomMax || !wmsBounds.overlaps(mapBounds)) {
+        map.removeLayer(wmsLayerVegetation);
+    } else if (!map.hasLayer(wmsLayerVegetation)) {
+        map.addLayer(wmsLayerVegetation);
+    }
+
+    // Toggle ALKIS layer visibility
+    if (currentZoom < ZoomVegeationLimit || currentZoom > ZoomMax || !wmsBounds.overlaps(mapBounds)) {
+        map.removeLayer(wmsLayerALKIS);
+    } else if (!map.hasLayer(wmsLayerALKIS)) {
+        map.addLayer(wmsLayerALKIS);
+    }
+
+    // Ensure the base layer is visible if no WMS layers are active
+    if (!map.hasLayer(wmsLayerVegetation) && !map.hasLayer(wmsLayerALKIS)) {
+        map.addLayer(baseLayer);
+    } else if (map.hasLayer(baseLayer) && (map.hasLayer(wmsLayerVegetation) || map.hasLayer(wmsLayerALKIS))) {
+        map.removeLayer(baseLayer);
+    }
+});
 
     map.on('click', function (e) {
       if(SelectedMode == 0){
