@@ -8,12 +8,12 @@ namespace GERMAG.Server.GeometryCalculations;
 
 public interface IRestrictionFromLandParcel
 {
-    Task<Restricion> CalculateRestrictions(LandParcel landParcelElement);
+    Task<Restricion> CalculateRestrictions(LandParcel landParcelElement, bool? boundary);
 }
 
 public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLandParcel
 {
-    public async Task<Restricion> CalculateRestrictions(LandParcel landParcelElement)
+    public async Task<Restricion> CalculateRestrictions(LandParcel landParcelElement, bool? boundary)
     {
         return await Task.Run(() =>
         {
@@ -47,11 +47,33 @@ public class RestrictionFromLandParcel(DataContext context) : IRestrictionFromLa
 
             NetTopologySuite.Geometries.Geometry? bufferedBuldings = mergedBuildings?.Buffer(OfficalParameters.BuildingDistance); // + (OfficalParameters.ProbeDiameter / 2)
 
-            //NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedTrees);
-            NetTopologySuite.Geometries.Geometry? UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings).Difference(bufferedTrees);
+            NetTopologySuite.Geometries.Geometry? UsableArea;
+
+            if(boundary == true)
+            {
+                UsableArea = landParcelPolygon?.Difference(bufferedLandParcel).Difference(bufferedBuldings).Difference(bufferedTrees);
+            }
+            else
+            {
+                UsableArea = landParcelPolygon?.Difference(bufferedBuldings).Difference(bufferedTrees);
+            }
+            
             UsableArea = UsableArea?.Union();
 
-            NetTopologySuite.Geometries.Geometry? RestictionArea = bufferedLandParcel?.Union(bufferedBuldings).Union(bufferedTrees);
+            NetTopologySuite.Geometries.Geometry? RestictionArea;
+
+            if (boundary == true)
+            {
+                RestictionArea = bufferedLandParcel?
+                    .Union(bufferedBuldings)
+                    .Union(bufferedTrees);
+            }
+            else
+            {
+                RestictionArea = bufferedBuldings?
+                    .Union(bufferedTrees);
+            }
+
             RestictionArea = landParcelPolygon?.Intersection(RestictionArea);
             RestictionArea = RestictionArea?.Union();
 
