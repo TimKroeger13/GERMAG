@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>GERMAG</title>
+  <title>Adress Testsite</title>
   <meta charset="UTF-8">
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -25,7 +25,6 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js?version={version}"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js?version={version}"></script>
   <script src='https://cdn.plot.ly/plotly-2.32.0.min.js'></script>
-  <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
   
 
   <script src="js.js"></script>
@@ -69,34 +68,10 @@
       <input type="text" id="address-input" placeholder="Type an address..." onkeypress="handleKeyPress(event)">
       <button onclick="searchAddress()">Search</button>
     </div>
-    <div id="functions">
-      <button id="btnClear" class="Iconbutton" onclick="clearSelected()" title="Deselect all areas">
-        <img src="pic/clear.svg" alt="Icon">
-      </button>
-      <button id="btnNewArea" class="Iconbutton" onclick="modeNewArea()" title="Create new area">
-        <img src="pic/newArea.svg" alt="Icon">
-      </button>
-      <button id="btnAddArea" class="Iconbutton" onclick="AddArea()" title="Add to exsisting area">
-        <img src="pic/plusArea.svg" alt="Icon">
-      </button>
-      <button id="btnSubtractArea" class="Iconbutton" onclick="SubtractArea()" title="Substract from exsistig area">
-        <img src="pic/minusArea.svg" alt="Icon">
-      </button>
-      <button id="btnSubmit" class="Submitbutton" onclick="ShowDetailedReport('custom')" title="Submit corrently displayed area">Submit
-      </button>
-      <div class="checkbox-container">
-        <input type="checkbox" id="Boundary" name="Boundary" checked />
-        <label for="Boundary">Boundary</label>
-    </div>
-    </div>
     <div id="map"></div>
   </div>
 
   <script>
-
-    document.getElementById('btnSubmit').disabled = true;
-
-    var SelectedMode = 0; // 0 = normal, 1 = new area, 2 = add area, 3 = subtract area
 
     let geoJsonList = [];
 
@@ -111,26 +86,12 @@
     var popup = L.popup();
 
     map.on('click', function (e) {
-      if(SelectedMode == 0){
-        if (e.originalEvent.ctrlKey) {
+    if (e.originalEvent.ctrlKey) {
         onMapClickWithCtrl(e);
-        } else {
-            onMapClick(e);
-        }
-      }
-      if(SelectedMode == 1){
-        onMapClickAddArea(e);
-      }
-      if(SelectedMode == 2){
-      }
-      if(SelectedMode == 3){
-      }
-
-    });
-
-    function changeCursor(cursorStyle) {
-      map.getContainer().style.cursor = cursorStyle;
+    } else {
+        onMapClick(e);
     }
+});
 
     async function removeLandParcels() {
       for (const layer of geoJsonList) {
@@ -161,7 +122,7 @@
     async function CreatePoint(point) {
 
       var greenIcon = L.icon({
-        iconUrl: 'pic/probe.png',
+        iconUrl: 'probe.png',
     
         iconSize:     [8, 8], // size of the icon
         iconAnchor:   [4, 4], // point of the icon which will correspond to marker's location
@@ -171,12 +132,6 @@
       var marker = L.marker([point[1], point[0]], {icon: greenIcon}).addTo(map);
 
       geoJsonList.push(marker);
-    }
-
-    async function AddGeoJson(geoJsonFeature){
-      let layer = L.geoJSON(geoJsonFeature).addTo(map);
-      geoJsonList.push(layer);
-
     }
 
     //Address Postion
@@ -199,38 +154,10 @@
     async function SetReport(html) {
       GeothermalReport = html;
     }
-
     async function GetReport() {
       return GeothermalReport;
     }
 
-    async function SetMode(set){
-      SelectedMode = set;
-    }
-
-    async function GetMode(){
-      return SelectedMode;
-    }
-
-    document.addEventListener('contextmenu', function(event) {
-            event.preventDefault(); // Prevent the default context menu from appearing
-
-            //if(SelectedMode == 1){
-              //popEditGeometryList();
-            //}
-        });
-
-    document.addEventListener('keydown', function(event) {
-      if (event.ctrlKey && event.key === 'z') {
-          event.preventDefault(); // Prevent the default undo action
-  
-          if (SelectedMode == 1) {
-              popEditGeometryList();
-          }
-      }
-    });
-
-    changeCursor('default')
 
   </script>
 
