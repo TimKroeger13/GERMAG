@@ -7,9 +7,6 @@ var Current_lng_coordiante = null;
 var Multiple_lat = [];
 var Multiple_lng = [];
 
-var EditGeometryList = [];
-var EditGeometry = null;
-
 var NewObjectClicked = false;
 
 async function onMapClick(e, callback) {
@@ -37,30 +34,11 @@ async function onMapClickWithCtrl(e) {
     await InitalPointQuery(Multiple_lng, Multiple_lat)
 }
 
-async function onMapClickAddArea(e) {
-
-    NewObjectClicked = true;
-
-    var clickCoordinates = e.latlng;
-
-    await CreateEditArea(clickCoordinates.lng, clickCoordinates.lat)
-
-}
-
 async function ShowDetailedReport(reportType) {
 
-    changeCursor('progress');
-
     NewObjectClicked = true;
 
-    if(reportType == 'custom'){
-        var ReportRequest_Json = await GetRequestEditGeometry();
-    }
-    else{
-        var ReportRequest_Json = await GetRequestFullReport(reportType);
-    }
-
-    
+    var ReportRequest_Json = await GetRequestFullReport(reportType);
 
     if (ReportRequest_Json[0].error != null) {
         alert(ReportRequest_Json[0].error)
@@ -133,8 +111,6 @@ async function ShowDetailedReport(reportType) {
             await CreatePoint(ProbePointsGeometry[k].coordinates[0]);
         }
     }
-
-    changeCursor('default');
 
     return true;
 }
@@ -758,6 +734,9 @@ function transformCoordinates(coordinates) {
     return transformedCoordinates;
 }
 
+
+
+
 function median(numbers) {
     if (numbers.length === 0) return 0;
     numbers.sort((a, b) => a - b);
@@ -770,105 +749,3 @@ function median(numbers) {
   
     return (numbers[mid - 1] + numbers[mid]) / 2;
   }
-
-async function clearSelected() {
-
-    changeCursor('default');
-
-    document.getElementById('btnSubmit').disabled = true;
-
-    var mode = await GetMode();
-
-    if((Current_lat_coordiante != null && Current_lng_coordiante != null) || mode > 0){
-        $('.modal').modal('hide');
-    }
-    Current_lat_coordiante = null;
-    Current_lng_coordiante = null;
-    Multiple_lat = [];
-    Multiple_lng = [];
-
-    document.getElementById('address-bar').style.backgroundColor = '#2D2D2D';
-    document.getElementById('functions').style.backgroundColor = '#2D2D2D';
-    document.getElementById('branding-text').textContent = 'GERMAG';
-    document.getElementById('btnNewArea').style.backgroundColor = 'white';
-
-    EditGeometryList = [];
-    EditGeometry = null;
-
-    await removeLandParcels();
-    await SetMode(0);
-
-}
-
-async function modeNewArea(){
-
-    var mode = await GetMode();
-    await clearSelected();
-
-    changeCursor('crosshair');
-
-    if (mode == 1){
-        await SetMode(0);
-        return;
-    }
-
-    await SetMode(1);
-    document.getElementById('address-bar').style.backgroundColor = '#AF4600';
-    document.getElementById('functions').style.backgroundColor = '#AF4600';
-    document.getElementById('branding-text').textContent = 'Edit Mode';
-    document.getElementById('btnNewArea').style.backgroundColor = '#ff6700';
-}
-
-async function CreateEditArea(lng, lat){
-
-    EditGeometryList.push([lng, lat]);
-
-    EditGeometry = createGeometry(EditGeometryList);
-
-    if(EditGeometryList.length >= 3){
-        document.getElementById('btnSubmit').disabled = false;
-    }
-
-    await removeLandParcels()
-    await AddGeoJson(EditGeometry);
-}
-
-
-function createGeometry(Orginalcoords) {
-
-    let coords = Orginalcoords.slice();
-
-    if (coords.length === 1) {
-        // Create a point
-        let point = turf.point(coords[0]);
-        return point;
-    } else if (coords.length === 2) {
-        // Create a line
-        let line = turf.lineString(coords);
-        return line;
-    } else if (coords.length >= 3) {
-        // Ensure the polygon is closed
-        if (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]) {
-            coords.push(coords[0]);
-        }
-        // Create a polygon
-        let polygon = turf.polygon([coords]);
-        return polygon;
-    } else {
-        console.error("Invalid coordinates array");
-        return null;
-    }
-}
-
-async function popEditGeometryList() {
-    document.getElementById('btnSubmit').disabled = true;
-    if(EditGeometryList[0] == null){return;}
-    EditGeometryList.pop();
-    await removeLandParcels();
-    if(EditGeometryList[0] == null){return;}
-    if(EditGeometryList.length >= 3){
-        document.getElementById('btnSubmit').disabled = false;
-    }
-    EditGeometry = createGeometry(EditGeometryList);
-    await AddGeoJson(EditGeometry);
-}
